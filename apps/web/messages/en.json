@@ -1,0 +1,175 @@
+{
+  "Nav": {
+    "logoAlt": "STEM CF",
+    "openMenu": "Open menu",
+    "menu": "Navigation",
+    "language": "Language",
+    "apply": "Apply Now",
+    "programs": "Programs",
+    "events": "Events",
+    "resources": "Resources",
+    "capstones": "Capstones",
+    "about": "About Us",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "Hero": {
+    "heading": "The Leading Community for\nSTEM Schools Educators",
+    "description": "Follow with one or two sentences that expand on your value proposition and focus on key benefits.",
+    "cta": "Learn More",
+    "imageAlt": "Hero image"
+  },
+  "CtaOne": {
+    "heading": "OUR MISSION & CORE VALUES",
+    "description": "The philosophy of STEM schools aims to move beyond purely academic subjects to integrate science, technology, engineering, and mathematics (STEM) and apply them to address major societal challenges.\nTherefore, STEM Bachelor of Science and Education programs strive to prepare thoughtful, professional, practicing, and research-oriented teachers capable of self-learning.",
+    "apply": "Apply Now",
+    "browsePrograms": "Browse Programs",
+    "quickLinks": "QUICK LINKS",
+    "programs": {
+      "physics": "Bachelor of Science and Education (Physics)",
+      "chemistry": "Bachelor of Science and Education (Chemistry)",
+      "biology": "Bachelor of Science and Education (Biology)",
+      "geology": "Bachelor of Science and Education (Geology)",
+      "mathematics": "Bachelor of Science and Education (Mathematics)"
+    }
+  },
+  "Life": {
+    "tagline": "Student Life",
+    "title": "Student Life at STEM",
+    "description": "Experience more than just education — explore the vibrant student life and diverse cultural clubs at STEM.",
+    "cta": "See More",
+    "imageAlt": "Student life at STEM"
+  },
+  "CapstoneShow": {
+    "tagline": "Capstone Gallery",
+    "heading": "Showcase for students capstones",
+    "description": "Browse a curated gallery of student capstone projects across STEM disciplines.",
+    "slideAlt": "Capstone project {n}",
+    "goToSlide": "Go to slide {n}"
+  },
+  "Events": {
+    "tagline": "SEE ALL EVENTS",
+    "heading": "Join us in latest events",
+    "description": "Meet the STEM program at our latest events.",
+    "items": {
+      "sustainability": {
+        "title": "Awareness event about sustainability and recycling",
+        "description": "Presented by students of the STEM Level 4 program (Chemistry major), as part of the program's efforts to spread the culture of sustainable development and safe handling of technical waste."
+      },
+      "placeholder1": {
+        "title": "Coming soon",
+        "description": "Details about this event will be announced shortly."
+      },
+      "placeholder2": {
+        "title": "Coming soon",
+        "description": "Details about this event will be announced shortly."
+      },
+      "newcomers": {
+        "title": "Newcomers party",
+        "description": "A welcome event celebrating our newest students joining the STEM community."
+      }
+    }
+  },
+  "Aword": {
+    "quote": "STEM gives our students the tools, community, and vision to tackle tomorrow's biggest challenges — we're proud of every educator who makes that possible.",
+    "name": "Dr. Marian Milad",
+    "role": "Program Coordinator"
+  },
+  "ProgramsHeader": {
+    "title": "Programs",
+    "imageAlt": "Programs hero illustration"
+  },
+  "Programs": {
+    "subjects": {
+      "physics": "Physics",
+      "chemistry": "Chemistry",
+      "biology": "Biology",
+      "geology": "Geology",
+      "mathematics": "Mathematics"
+    },
+    "overview": {
+      "heading": "Overview",
+      "subheading": "In a nutshell..."
+    },
+    "labels": {
+      "course": "Course",
+      "duration": "Duration",
+      "credit": "Credit",
+      "degree": "Degree"
+    },
+    "details": {
+      "physics": {
+        "course": "Science in Education (STEM Education Physics in English)",
+        "duration": "4 years",
+        "credit": "120 Hours",
+        "degree": "Bachelor of Science in Education (Physics)",
+        "description": "This program integrates advanced physics with modern pedagogy, preparing graduates to teach mechanics, electromagnetism, thermodynamics, and quantum concepts in STEM-focused classrooms. Coursework combines theoretical study with laboratory practice, research methods, and supervised teaching experience to build confident, inquiry-driven educators."
+      },
+      "chemistry": {
+        "course": "Science in Education (STEM Education Chemistry in English)",
+        "duration": "4 years",
+        "credit": "120 Hours",
+        "degree": "Bachelor of Science in Education (Chemistry)",
+        "description": "Students explore organic, inorganic, physical, and analytical chemistry alongside education courses that bridge theory and classroom practice. The curriculum emphasizes laboratory safety, experimental design, and the role of chemistry in solving real-world problems across industry, health, and the environment."
+      },
+      "biology": {
+        "course": "Science in Education (STEM Education Biology in English)",
+        "duration": "4 years",
+        "credit": "120 Hours",
+        "degree": "Bachelor of Science in Education (Biology)",
+        "description": "This track examines cells, genetics, ecology, evolution, and human biology through a combination of lectures, labs, and fieldwork. Teaching methodology courses prepare graduates to lead inquiry-based science classrooms and connect biological concepts to sustainability, health, and everyday life."
+      },
+      "geology": {
+        "course": "Science in Education (STEM Education Geology in English)",
+        "duration": "4 years",
+        "credit": "120 Hours",
+        "degree": "Bachelor of Science in Education (Geology)",
+        "description": "The program covers earth systems, mineralogy, plate tectonics, paleontology, and environmental geoscience alongside education pedagogy. Graduates are prepared to teach earth and space science with a focus on field observation, data interpretation, and the role of geoscience in climate and resource challenges."
+      },
+      "mathematics": {
+        "course": "Science in Education (STEM Education Mathematics in English)",
+        "duration": "4 years",
+        "credit": "120 Hours",
+        "degree": "Bachelor of Science in Education (Mathematics)",
+        "description": "Students study calculus, linear algebra, statistics, discrete mathematics, and mathematical reasoning, paired with modern approaches to teaching secondary-school mathematics. The program builds both mathematical depth and the ability to design clear, engaging lessons for diverse learners."
+      }
+    },
+    "imageAlt": "Program illustration"
+  },
+  "Fees": {
+    "tuition": {
+      "title": "Tuition Fees",
+      "description": "200 EGP per hour per semester + administrative fees (ID card)."
+    },
+    "graduation": {
+      "title": "Graduation Requirements",
+      "description": "Students must complete 150 credit hours.\nStudents must achieve a minimum cumulative grade point average (CGPA) of 2.0.\nStudents must pass the Arabic language course."
+    }
+  },
+  "Footer": {
+    "logoAlt": "STEM Program",
+    "orgName": "STEM Program Faculty of Education",
+    "contact": "Asyut University, Faculty of Education\nemail: edu@aun.edu.eg\ntelephone: (088) 2080243",
+    "followUs": "Follow us",
+    "resources": "Resources",
+    "sitemap": "Map",
+    "copyright": "Copyright © 2026 STEM Program by Computer Science department",
+    "privacy": "Privacy Policy",
+    "social": {
+      "facebook": "Facebook",
+      "whatsapp": "WhatsApp"
+    },
+    "resourceLinks": {
+      "schedules": "Lecture schedules",
+      "gallery": "Gallery",
+      "apply": "Apply"
+    },
+    "mapLinks": {
+      "home": "Home",
+      "programs": "Programs",
+      "events": "Events",
+      "capstones": "Capstones",
+      "about": "About"
+    }
+  }
+}
