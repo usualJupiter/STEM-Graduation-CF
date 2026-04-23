@@ -1,9 +1,13 @@
+"use client"
+
 import Image from "next/image"
 import { ArrowRight } from "lucide-react"
+import { motion, type Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { BrushFrame } from "@/components/brush-frame"
 import { Link } from "@/i18n/navigation"
 
 interface LifeProps {
@@ -11,53 +15,90 @@ interface LifeProps {
   imageSrc?: string
 }
 
+const container: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+}
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+}
+
 export default function Life({
-  ctaHref = "#",
-  imageSrc = "https://ui.shadcn.com/placeholder.svg",
+  ctaHref = "/gallery",
+  imageSrc = "assets/life.jpg",
 }: LifeProps) {
   const t = useTranslations("Life")
 
   return (
-    <section className="w-full bg-web-third py-16 md:py-24">
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={container}
+      className="w-full bg-web-third py-16 md:py-24"
+    >
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-10 px-6 md:flex-row md:gap-16 md:px-16">
         <div className="flex flex-1 flex-col gap-8">
           <div className="flex flex-col gap-5">
-            <span className="text-sm font-medium text-black">
+            <motion.span
+              variants={fadeUp}
+              className="text-sm font-medium text-black"
+            >
               {t("tagline")}
-            </span>
-            <h2 className="text-3xl font-semibold tracking-tight text-black md:text-5xl md:leading-[48px]">
+            </motion.span>
+            <motion.h2
+              variants={fadeUp}
+              className="text-3xl font-semibold tracking-tight text-black md:text-5xl md:leading-[48px]"
+            >
               {t("title")}
-            </h2>
-            <p className="text-lg text-black/90 md:text-2xl md:leading-8">
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-lg text-black/90 md:text-2xl md:leading-8"
+            >
               {t("description")}
-            </p>
+            </motion.p>
           </div>
-          <div>
+          <motion.div variants={fadeUp}>
             <Button
               variant="transparent-outline"
               asChild
-              className="border-black font-bold text-black hover:bg-black/10 hover:text-black"
+              className="h-12 border-black px-6 text-base font-bold text-black [&_svg]:size-5 hover:bg-black/10 hover:text-black"
             >
               <Link href={ctaHref}>
                 {t("cta")}
                 <ArrowRight aria-hidden className="rtl:rotate-180" />
               </Link>
             </Button>
-          </div>
+          </motion.div>
         </div>
-        <div className="w-full shrink-0 md:w-[344px]">
-          <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <motion.div
+          variants={fadeUp}
+          className="w-full shrink-0 md:w-[360px] lg:w-[440px] xl:w-[520px]"
+        >
+          <BrushFrame>
             <Image
               src={imageSrc}
               alt={t("imageAlt")}
               fill
               className="object-cover"
-              sizes="(min-width: 768px) 344px, 100vw"
+              sizes="(min-width: 1280px) 520px, (min-width: 1024px) 440px, (min-width: 768px) 360px, 100vw"
               unoptimized
             />
-          </div>
-        </div>
+          </BrushFrame>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }

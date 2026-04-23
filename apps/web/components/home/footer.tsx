@@ -43,7 +43,7 @@ export default function Footer({ className }: FooterProps) {
                 alt={t("logoAlt")}
                 width={231}
                 height={110}
-                className="h-14 w-auto object-contain brightness-0 invert"
+                className="h-14 w-auto object-contain"
               />
               <div className="flex flex-col gap-4">
                 <h2 className="text-2xl font-semibold tracking-tight text-white">

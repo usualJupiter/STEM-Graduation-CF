@@ -1,4 +1,7 @@
+"use client"
+
 import { ArrowRight } from "lucide-react"
+import { motion, type Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 
 import { Button } from "@workspace/ui/components/button"
@@ -39,6 +42,25 @@ const CARD_CLASSES = [
   "bg-web-card-4 text-main [a]:hover:bg-web-card-4/90",
 ] as const
 
+const container: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+}
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+}
+
 export default function CtaOne({
   applyHref = "/apply",
   programsHref = "/programs",
@@ -47,33 +69,56 @@ export default function CtaOne({
   const t = useTranslations("CtaOne")
 
   return (
-    <section className="w-full bg-secondry-web">
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={container}
+      className="w-full bg-secondry-web"
+    >
       <div className="mx-auto flex max-w-7xl flex-col items-start gap-10 px-6 py-12 md:flex-row md:items-stretch md:justify-between md:gap-16 md:px-16 md:py-24">
         <div className="flex max-w-[700px] flex-col gap-10">
           <div className="flex flex-col gap-5">
-            <h2 className="text-2xl font-bold text-main-foreground md:text-4xl">
+            <motion.h2
+              variants={fadeUp}
+              className="text-2xl font-bold text-main-foreground md:text-4xl"
+            >
               {t("heading")}
-            </h2>
-            <p className="whitespace-pre-line text-base text-main-foreground/80 md:text-lg md:leading-8">
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="whitespace-pre-line text-base text-main-foreground/80 md:text-lg md:leading-8"
+            >
               {t("description")}
-            </p>
+            </motion.p>
           </div>
-          <div className="flex flex-wrap gap-5">
-            <Button variant="transparent-outline" asChild className="font-bold">
+          <motion.div variants={fadeUp} className="flex flex-wrap gap-5">
+            <Button
+              variant="transparent-outline"
+              asChild
+              className="h-12 px-6 text-base font-bold [&_svg]:size-5"
+            >
               <Link href={applyHref}>
                 {t("apply")}
                 <ArrowRight aria-hidden className="rtl:rotate-180" />
               </Link>
             </Button>
-            <Button variant="transparent-outline" asChild className="font-bold">
+            <Button
+              variant="transparent-outline"
+              asChild
+              className="h-12 px-6 text-base font-bold [&_svg]:size-5"
+            >
               <Link href={programsHref}>
                 {t("browsePrograms")}
                 <ArrowRight aria-hidden className="rtl:rotate-180" />
               </Link>
             </Button>
-          </div>
+          </motion.div>
         </div>
-        <div className="flex w-full max-w-xl flex-col gap-2">
+        <motion.div
+          variants={fadeUp}
+          className="flex w-full max-w-xl flex-col gap-2"
+        >
           <p className="mb-1 text-sm font-bold text-main-foreground/80">
             {t("quickLinks")}
           </p>
@@ -83,7 +128,7 @@ export default function CtaOne({
                 <Button
                   asChild
                   className={cn(
-                    "w-full justify-start font-bold",
+                    "h-auto min-h-12 w-full justify-start whitespace-normal px-4 py-2 text-start text-sm font-bold leading-snug [&_svg]:size-5 md:px-6 md:text-base",
                     CARD_CLASSES[i % CARD_CLASSES.length]
                   )}
                 >
@@ -95,8 +140,8 @@ export default function CtaOne({
               </li>
             ))}
           </ul>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }

@@ -1,6 +1,7 @@
 import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { setRequestLocale } from "next-intl/server"
-import { Geist, JetBrains_Mono, Noto_Sans_Arabic } from "next/font/google"
+import { Geist, JetBrains_Mono } from "next/font/google"
+import localFont from "next/font/local"
 import { notFound } from "next/navigation"
 import Footer from "@/components/home/footer"
 import { Nav } from "@/components/home/nav"
@@ -20,9 +21,18 @@ const fontMono = JetBrains_Mono({
   variable: "--font-mono",
 })
 
-const fontArabic = Noto_Sans_Arabic({
-  subsets: ["arabic"],
+const fontArabic = localFont({
+  src: [
+    { path: "../../public/assets/fonts/KOSans-Thin.otf", weight: "100", style: "normal" },
+    { path: "../../public/assets/fonts/KOSans-ExtraLight.otf", weight: "200", style: "normal" },
+    { path: "../../public/assets/fonts/KOSans-Light.otf", weight: "300", style: "normal" },
+    { path: "../../public/assets/fonts/KOSans-Regular.otf", weight: "400", style: "normal" },
+    { path: "../../public/assets/fonts/KOSans-Medium.otf", weight: "500", style: "normal" },
+    { path: "../../public/assets/fonts/KOSans-SemiBold.otf", weight: "600", style: "normal" },
+    { path: "../../public/assets/fonts/KOSans-Bold.otf", weight: "700", style: "normal" },
+  ],
   variable: "--font-arabic",
+  display: "swap",
 })
 
 export function generateStaticParams() {
@@ -56,6 +66,7 @@ export default async function RootLayout({
         fontSans.variable,
         fontMono.variable,
         fontArabic.variable,
+        locale === "ar" && fontArabic.className,
       )}
     >
       <body>

@@ -2,13 +2,34 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { motion, type Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 
-import { AspectRatio } from "@workspace/ui/components/aspect-ratio"
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
+
+import { BrushFrame } from "@/components/brush-frame"
+
+const container: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    },
+  },
+}
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+}
 
 const SUBJECT_KEYS = [
   "physics",
@@ -34,7 +55,14 @@ export default function Programs({
 
   return (
     <section className="bg-background px-6 py-12 md:px-8 md:py-16 lg:py-20">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.15 }}
+        variants={container}
+        className="mx-auto flex max-w-7xl flex-col gap-6"
+      >
+        <motion.div variants={fadeUp}>
         <ToggleGroup
           type="single"
           value={subject}
@@ -42,21 +70,33 @@ export default function Programs({
             if (val) setSubject(val as SubjectKey)
           }}
           variant="outline"
+          className="w-full max-w-full flex-wrap md:w-fit md:flex-nowrap"
         >
           {SUBJECT_KEYS.map((key) => (
             <ToggleGroupItem
               key={key}
               value={key}
-              className="border-transparent bg-secondry-web text-white hover:bg-secondry-web/90 hover:text-white data-[state=on]:bg-main data-[state=on]:text-main-foreground"
+              className="h-10 min-w-[84px] max-w-[160px] flex-1 border-transparent bg-secondry-web px-3 text-sm font-medium text-white hover:bg-secondry-web/90 hover:text-white data-[state=on]:bg-main data-[state=on]:text-main-foreground md:h-14 md:min-w-12 md:max-w-none md:flex-none md:px-8 md:text-lg"
             >
               {t(`subjects.${key}`)}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
+        </motion.div>
 
-        <div className="flex flex-col gap-6 lg:flex-row">
+        <motion.div
+          key={subject}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={container}
+          className="flex flex-col gap-6 lg:flex-row"
+        >
           <div className="flex min-w-0 flex-1 flex-col gap-6">
-            <article className="rounded-xl border border-secondry-web bg-card shadow-sm">
+            <motion.article
+              variants={fadeUp}
+              className="rounded-xl border border-secondry-web bg-card shadow-sm"
+            >
               <header className="flex flex-col gap-1 p-4">
                 <h2 className="text-base font-medium text-card-foreground">
                   {t("overview.heading")}
@@ -77,27 +117,33 @@ export default function Programs({
                   </div>
                 ))}
               </dl>
-            </article>
+            </motion.article>
 
-            <p className="whitespace-pre-line break-words text-base leading-7 text-foreground">
+            <motion.p
+              variants={fadeUp}
+              className="whitespace-pre-line break-words text-base leading-7 text-foreground"
+            >
               {t(`details.${subject}.description`)}
-            </p>
+            </motion.p>
           </div>
 
-          <div className="w-full shrink-0 lg:w-[380px]">
-            <AspectRatio ratio={3 / 4}>
+          <motion.div
+            variants={fadeUp}
+            className="w-full shrink-0 lg:w-[420px]"
+          >
+            <BrushFrame variant="secondary">
               <Image
                 src="https://ui.shadcn.com/placeholder.svg"
                 alt={t("imageAlt")}
                 fill
-                sizes="(max-width: 1024px) 100vw, 380px"
-                className="rounded-lg object-cover"
+                sizes="(max-width: 1024px) 100vw, 420px"
+                className="object-cover"
                 unoptimized
               />
-            </AspectRatio>
-          </div>
-        </div>
-      </div>
+            </BrushFrame>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </section>
   )
 }

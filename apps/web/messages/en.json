@@ -8,13 +8,15 @@
     "programs": "Programs",
     "events": "Events",
     "resources": "Resources",
+    "gallery": "Gallery",
+    "schedules": "Lecture Schedules",
     "capstones": "Capstones",
     "about": "About Us",
     "english": "English",
     "arabic": "العربية"
   },
   "Hero": {
-    "heading": "The Leading Community for\nSTEM Schools Educators",
+    "heading": "The Leading Community\nfor STEM Schools Educators",
     "description": "Follow with one or two sentences that expand on your value proposition and focus on key benefits.",
     "cta": "Learn More",
     "imageAlt": "Hero image"
@@ -45,7 +47,10 @@
     "heading": "Showcase for students capstones",
     "description": "Browse a curated gallery of student capstone projects across STEM disciplines.",
     "slideAlt": "Capstone project {n}",
-    "goToSlide": "Go to slide {n}"
+    "slideTitle": "Project {n}",
+    "goToSlide": "Go to slide {n}",
+    "previous": "Previous project",
+    "next": "Next project"
   },
   "Events": {
     "tagline": "SEE ALL EVENTS",
@@ -145,6 +150,26 @@
       "title": "Graduation Requirements",
       "description": "Students must complete 150 credit hours.\nStudents must achieve a minimum cumulative grade point average (CGPA) of 2.0.\nStudents must pass the Arabic language course."
     }
+  },
+  "GalleryHeader": {
+    "title": "Gallery",
+    "imageAlt": "Gallery hero illustration"
+  },
+  "EventsHeader": {
+    "title": "Events",
+    "imageAlt": "Events hero illustration"
+  },
+  "AboutHeader": {
+    "title": "About Us",
+    "imageAlt": "About us hero illustration"
+  },
+  "CapstonesHeader": {
+    "title": "Capstones",
+    "imageAlt": "Capstones hero illustration"
+  },
+  "SchedulesHeader": {
+    "title": "Lecture Schedules",
+    "imageAlt": "Lecture schedules hero illustration"
   },
   "Footer": {
     "logoAlt": "STEM Program",

@@ -1,28 +1,70 @@
+"use client"
+
 import Image from "next/image"
+import { motion, type Variants } from "motion/react"
 import { useTranslations } from "next-intl"
 
-export default function Header() {
+import { BrushFrame } from "@/components/brush-frame"
+
+interface HeaderProps {
+  imageUrl?: string
+}
+
+const container: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.08,
+    },
+  },
+}
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+}
+
+export default function Header({
+  imageUrl = "/assets/programs.jpeg",
+}: HeaderProps) {
   const t = useTranslations("ProgramsHeader")
 
   return (
-    <section className="bg-main">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-6 py-10 md:flex-row md:py-0">
-        <div className="flex w-full flex-col items-start justify-end md:w-auto">
-          <h1 className="text-4xl font-bold leading-tight text-main-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+    <section className="bg-main text-main-foreground">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={container}
+        className="mx-auto flex w-full max-w-7xl flex-col items-center gap-8 px-6 py-3 lg:flex-row lg:items-center lg:gap-12"
+      >
+        <div className="flex flex-1 flex-col items-start gap-8">
+          <motion.h1
+            variants={fadeUp}
+            className="whitespace-pre-line text-3xl font-bold leading-tight sm:text-5xl xl:text-7xl xl:leading-none"
+          >
             {t("title")}
-          </h1>
+          </motion.h1>
         </div>
-        <div className="relative aspect-[404/302] w-full max-w-[404px] shrink-0 p-2.5">
-          <Image
-            src="https://ui.shadcn.com/placeholder.svg"
-            alt={t("imageAlt")}
-            fill
-            sizes="(max-width: 768px) 100vw, 404px"
-            className="object-contain"
-            unoptimized
-          />
+        <div className="w-full max-w-[320px] flex-shrink-0 lg:w-[380px] lg:max-w-none xl:w-[440px]">
+          <motion.div variants={fadeUp}>
+            <BrushFrame>
+              <Image
+                src={imageUrl}
+                alt={t("imageAlt")}
+                fill
+                sizes="(min-width: 1280px) 440px, (min-width: 1024px) 380px, 320px"
+                className="object-cover"
+                unoptimized
+              />
+            </BrushFrame>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }
