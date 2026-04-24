@@ -1,4 +1,34 @@
 {
+  "Metadata": {
+    "home": {
+      "title": "STEM Program | Home",
+      "description": "STEM Program at Asyut University"
+    },
+    "programs": {
+      "title": "STEM Program | Programs",
+      "description": "Explore STEM Program bachelor degrees at Asyut University."
+    },
+    "events": {
+      "title": "STEM Program | Events",
+      "description": "Latest events, activities, and gatherings at the STEM Program."
+    },
+    "gallery": {
+      "title": "STEM Program | Gallery",
+      "description": "A visual look at student life and activities at the STEM Program."
+    },
+    "schedules": {
+      "title": "STEM Program | Lecture Schedules",
+      "description": "Up-to-date lecture schedules for STEM Program courses."
+    },
+    "capstones": {
+      "title": "STEM Program | Capstones",
+      "description": "Student capstone projects across STEM Program disciplines."
+    },
+    "about": {
+      "title": "STEM Program | About Us",
+      "description": "Learn about the STEM Program at the Faculty of Education, Asyut University."
+    }
+  },
   "Nav": {
     "logoAlt": "STEM CF",
     "openMenu": "Open menu",
