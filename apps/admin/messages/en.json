@@ -4,6 +4,29 @@
     "description": "You may now add components and start building.",
     "buttonHint": "We've already added the button component for you.",
     "button": "Button",
-    "darkModeHint": "(Press <kbd>d</kbd> to toggle dark mode)"
+    "darkModeHint": "(Press <kbd>d</kbd> to toggle dark mode)",
+    "welcome": "Welcome back",
+    "overview": "Overview"
+  },
+  "Nav": {
+    "logoAlt": "STEM Admin",
+    "dashboard": "Dashboard",
+    "capstones": "Capstones",
+    "events": "Events",
+    "applications": "Applications",
+    "website": "Website",
+    "settings": "Settings",
+    "toggleMenu": "Toggle menu",
+    "changeLanguage": "Change language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "UserMenu": {
+    "openMenu": "Open user menu",
+    "signedInAs": "Signed in as",
+    "signOut": "Sign out"
+  },
+  "AuthGuard": {
+    "loading": "Loading…"
   }
 }

@@ -4,7 +4,6 @@ import { Geist, JetBrains_Mono, Noto_Sans_Arabic } from "next/font/google"
 import { notFound } from "next/navigation"
 
 import "@workspace/ui/globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import { routing } from "@/i18n/routing"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -58,7 +57,7 @@ export default async function RootLayout({
     >
       <body>
         <NextIntlClientProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          {children}
         </NextIntlClientProvider>
       </body>
     </html>

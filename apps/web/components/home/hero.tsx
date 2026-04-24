@@ -83,7 +83,7 @@ export default function Hero({
                 alt={t("imageAlt")}
                 fill
                 sizes="(min-width: 1280px) 680px, (min-width: 1024px) 560px, 100vw"
-                className="object-cover"
+                className="object-cover object-[center_30%]"
                 unoptimized
               />
             </BrushFrame>

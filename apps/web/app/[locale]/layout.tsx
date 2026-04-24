@@ -7,7 +7,6 @@ import Footer from "@/components/home/footer"
 import { Nav } from "@/components/home/nav"
 import "@workspace/ui/globals.css"
 import { DirectionProvider } from "@workspace/ui/components/direction"
-import { ThemeProvider } from "@/components/theme-provider"
 import { routing } from "@/i18n/routing"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -72,11 +71,9 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
-            <ThemeProvider>
               <Nav />
               {children}
               <Footer />
-            </ThemeProvider>
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>

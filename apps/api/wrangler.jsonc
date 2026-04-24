@@ -2,10 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "api",
   "main": "src/index.ts",
-  "compatibility_date": "2026-04-20"
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
+  "compatibility_date": "2026-04-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "stem_db",
+      "database_name": "stem",
+      "database_id": "92abf0e8-12d0-4858-afd8-dcb3734acdbf",
+      "migrations_dir": "migrations"
+    }
+  ]
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },

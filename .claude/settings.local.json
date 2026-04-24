@@ -6,7 +6,11 @@
       "Bash(git mv *)",
       "Bash(bun remove *)",
       "Bash(bun install *)",
-      "Bash(grep -E \"^message-circle\\\\.js$|^globe\\\\.js$|^share-2\\\\.js$|^send\\\\.js$\")"
+      "Bash(grep -E \"^message-circle\\\\.js$|^globe\\\\.js$|^share-2\\\\.js$|^send\\\\.js$\")",
+      "WebFetch(domain:better-auth.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(bunx wrangler *)",
+      "Bash(bunx tsc *)"
     ]
   }
 }

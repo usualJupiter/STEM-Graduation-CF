@@ -4,6 +4,29 @@
     "description": "يمكنك الآن إضافة المكوّنات والبدء في البناء.",
     "buttonHint": "لقد أضفنا مكوّن الزر مسبقًا من أجلك.",
     "button": "زر",
-    "darkModeHint": "(اضغط <kbd>d</kbd> لتبديل الوضع الداكن)"
+    "darkModeHint": "(اضغط <kbd>d</kbd> لتبديل الوضع الداكن)",
+    "welcome": "مرحبًا بعودتك",
+    "overview": "نظرة عامة"
+  },
+  "Nav": {
+    "logoAlt": "إدارة ستيم",
+    "dashboard": "لوحة التحكم",
+    "capstones": "مشاريع الكابستون",
+    "events": "الأنشطة",
+    "applications": "الطلبات",
+    "website": "الموقع",
+    "settings": "الإعدادات",
+    "toggleMenu": "تبديل القائمة",
+    "changeLanguage": "تغيير اللغة",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "UserMenu": {
+    "openMenu": "فتح قائمة المستخدم",
+    "signedInAs": "تم تسجيل الدخول باسم",
+    "signOut": "تسجيل الخروج"
+  },
+  "AuthGuard": {
+    "loading": "جارٍ التحميل…"
   }
 }

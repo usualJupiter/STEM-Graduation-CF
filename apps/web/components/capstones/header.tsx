@@ -30,7 +30,7 @@ const fadeUp: Variants = {
 }
 
 export default function Header({
-  imageUrl = "/assets/hero.jpeg",
+  imageUrl = "/assets/capstone.jpeg",
 }: HeaderProps) {
   const t = useTranslations("CapstonesHeader")
 
