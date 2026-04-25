@@ -1,20 +1,93 @@
 {
+  "Auth": {
+    "title": "تسجيل دخول المسؤول",
+    "description": "استخدم حساب جوجل لتسجيل الدخول",
+    "continueWithGoogle": "المتابعة باستخدام جوجل",
+    "imageAlt": "تسجيل دخول لوحة تحكم ستيم"
+  },
+  "Events": {
+    "title": "الأنشطة",
+    "description": "إدارة الأنشطة أو إنشاء نشاط جديد.",
+    "createEvent": "إنشاء نشاط",
+    "searchPlaceholder": "ابحث عن نشاط",
+    "sort": "ترتيب",
+    "sortOptions": {
+      "dateNewest": "التاريخ (الأحدث)",
+      "dateOldest": "التاريخ (الأقدم)",
+      "titleAsc": "العنوان (أ-ي)",
+      "titleDesc": "العنوان (ي-أ)"
+    },
+    "columns": {
+      "id": "المعرّف",
+      "title": "العنوان",
+      "date": "التاريخ",
+      "author": "المؤلف"
+    },
+    "actions": "إجراءات",
+    "actionsMenu": {
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "pagination": {
+      "showing": "{shown} من {total} ظاهرة.",
+      "previous": "السابق",
+      "next": "التالي"
+    }
+  },
   "Dashboard": {
     "title": "المشروع جاهز!",
     "description": "يمكنك الآن إضافة المكوّنات والبدء في البناء.",
     "buttonHint": "لقد أضفنا مكوّن الزر مسبقًا من أجلك.",
     "button": "زر",
     "darkModeHint": "(اضغط <kbd>d</kbd> لتبديل الوضع الداكن)",
-    "welcome": "مرحبًا بعودتك",
-    "overview": "نظرة عامة"
+    "overview": "نظرة عامة",
+    "greetings": {
+      "morning": "صباح الخير",
+      "afternoon": "مساء الخير",
+      "evening": "مساء الخير"
+    },
+    "stats": {
+      "labels": {
+        "visitors": "الزوار",
+        "applications": "الطلبات",
+        "totalVisitors": "إجمالي الزوار",
+        "totalApplications": "إجمالي الطلبات"
+      },
+      "periods": {
+        "thisMonth": "هذا الشهر",
+        "allTime": "الإجمالي"
+      }
+    },
+    "quickAccess": {
+      "title": "وصول سريع",
+      "description": "وفّر وقتك وادخل إلى الإجراءات مباشرةً",
+      "items": {
+        "createEvent": {
+          "title": "إنشاء نشاط",
+          "description": "إنشاء نشاط جديد"
+        },
+        "uploadProject": {
+          "title": "رفع مشروع",
+          "description": "رفع مشروع كابستون جديد"
+        },
+        "exportApplications": {
+          "title": "تصدير الطلبات",
+          "description": "تصدير الطلبات حسب النوع"
+        },
+        "addUser": {
+          "title": "إضافة مستخدم جديد",
+          "description": "دعوة بريد إلكتروني جديد للانضمام إلى لوحة التحكم"
+        }
+      }
+    }
   },
   "Nav": {
     "logoAlt": "إدارة ستيم",
     "dashboard": "لوحة التحكم",
-    "capstones": "مشاريع الكابستون",
     "events": "الأنشطة",
     "applications": "الطلبات",
-    "website": "الموقع",
+    "resources": "المصادر",
     "settings": "الإعدادات",
     "toggleMenu": "تبديل القائمة",
     "changeLanguage": "تغيير اللغة",
@@ -23,7 +96,6 @@
   },
   "UserMenu": {
     "openMenu": "فتح قائمة المستخدم",
-    "signedInAs": "تم تسجيل الدخول باسم",
     "signOut": "تسجيل الخروج"
   },
   "AuthGuard": {

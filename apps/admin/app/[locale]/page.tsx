@@ -1,23 +1,24 @@
+"use client"
+
+import { useEffect } from "react"
 import { useTranslations } from "next-intl"
 
-import { Button } from "@workspace/ui/components/button"
+import { useRouter } from "@/i18n/navigation"
+import { authClient } from "@/lib/auth-client"
 
 export default function Page() {
-  const t = useTranslations("Dashboard")
+  const router = useRouter()
+  const t = useTranslations("AuthGuard")
+  const { data, isPending } = authClient.useSession()
+
+  useEffect(() => {
+    if (isPending) return
+    router.replace(data?.session ? "/dashboard" : "/auth")
+  }, [isPending, data, router])
 
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">{t("title")}</h1>
-          <p>{t("description")}</p>
-          <p>{t("buttonHint")}</p>
-          <Button className="mt-2">{t("button")}</Button>
-        </div>
-        <div className="text-muted-foreground font-mono text-xs">
-          {t.rich("darkModeHint", { kbd: (chunks) => <kbd>{chunks}</kbd> })}
-        </div>
-      </div>
+    <div className="flex min-h-svh items-center justify-center">
+      <p className="text-sm text-muted-foreground">{t("loading")}</p>
     </div>
   )
 }

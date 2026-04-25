@@ -10,7 +10,12 @@
       "WebFetch(domain:better-auth.com)",
       "WebFetch(domain:github.com)",
       "Bash(bunx wrangler *)",
-      "Bash(bunx tsc *)"
+      "Bash(bunx tsc *)",
+      "Bash(git show *)",
+      "Bash(git restore *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('apps/admin/messages/en.json','utf8'\\)\\); console.log\\('en OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('apps/admin/messages/ar.json','utf8'\\)\\); console.log\\('ar OK'\\)\")",
+      "Bash(node *)"
     ]
   }
 }

@@ -1,20 +1,93 @@
 {
+  "Auth": {
+    "title": "Admin login",
+    "description": "Use your Google account to sign in",
+    "continueWithGoogle": "Continue with Google",
+    "imageAlt": "STEM admin login"
+  },
+  "Events": {
+    "title": "Events",
+    "description": "Manage events or create a new one.",
+    "createEvent": "Create event",
+    "searchPlaceholder": "Search event",
+    "sort": "Sort",
+    "sortOptions": {
+      "dateNewest": "Date (newest)",
+      "dateOldest": "Date (oldest)",
+      "titleAsc": "Title (A-Z)",
+      "titleDesc": "Title (Z-A)"
+    },
+    "columns": {
+      "id": "ID",
+      "title": "Title",
+      "date": "Date",
+      "author": "Author"
+    },
+    "actions": "Actions",
+    "actionsMenu": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "pagination": {
+      "showing": "{shown} of {total} showing.",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
   "Dashboard": {
     "title": "Project ready!",
     "description": "You may now add components and start building.",
     "buttonHint": "We've already added the button component for you.",
     "button": "Button",
     "darkModeHint": "(Press <kbd>d</kbd> to toggle dark mode)",
-    "welcome": "Welcome back",
-    "overview": "Overview"
+    "overview": "Overview",
+    "greetings": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "stats": {
+      "labels": {
+        "visitors": "Visitors",
+        "applications": "Applications",
+        "totalVisitors": "Total visitors",
+        "totalApplications": "Total applications"
+      },
+      "periods": {
+        "thisMonth": "This month",
+        "allTime": "All time"
+      }
+    },
+    "quickAccess": {
+      "title": "Quick access",
+      "description": "Save time and access actions directly",
+      "items": {
+        "createEvent": {
+          "title": "Create event",
+          "description": "Create a new event"
+        },
+        "uploadProject": {
+          "title": "Upload project",
+          "description": "Upload a new capstone project"
+        },
+        "exportApplications": {
+          "title": "Export applications",
+          "description": "Export applications by type"
+        },
+        "addUser": {
+          "title": "Add new user",
+          "description": "Invite a new email to join the admin panel"
+        }
+      }
+    }
   },
   "Nav": {
     "logoAlt": "STEM Admin",
     "dashboard": "Dashboard",
-    "capstones": "Capstones",
     "events": "Events",
     "applications": "Applications",
-    "website": "Website",
+    "resources": "Resources",
     "settings": "Settings",
     "toggleMenu": "Toggle menu",
     "changeLanguage": "Change language",
@@ -23,7 +96,6 @@
   },
   "UserMenu": {
     "openMenu": "Open user menu",
-    "signedInAs": "Signed in as",
     "signOut": "Sign out"
   },
   "AuthGuard": {

@@ -14,8 +14,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import {
@@ -31,18 +29,16 @@ import { authClient } from "@/lib/auth-client"
 
 type NavKey =
   | "dashboard"
-  | "capstones"
   | "events"
   | "applications"
-  | "website"
+  | "resources"
   | "settings"
 
 const NAV_ITEMS: { key: NavKey; href: string }[] = [
   { key: "dashboard", href: "/dashboard" },
-  { key: "capstones", href: "/capstones" },
   { key: "events", href: "/events" },
   { key: "applications", href: "/applications" },
-  { key: "website", href: "/website" },
+  { key: "resources", href: "/resources" },
   { key: "settings", href: "/settings" },
 ]
 
@@ -52,7 +48,7 @@ function getInitials(name: string | undefined | null): string {
   return parts.map((p) => p[0]?.toUpperCase() ?? "").join("") || "?"
 }
 
-export default function Header({ className }: { className?: string }) {
+export default function Nav({ className }: { className?: string }) {
   const t = useTranslations("Nav")
   const tUser = useTranslations("UserMenu")
   const pathname = usePathname()
@@ -74,7 +70,7 @@ export default function Header({ className }: { className?: string }) {
   }
 
   return (
-    <header
+    <nav
       className={cn("bg-background w-full border-b px-6", className)}
     >
       <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between">
@@ -115,9 +111,7 @@ export default function Header({ className }: { className?: string }) {
 
           <UserMenu
             name={user?.name}
-            email={user?.email}
             image={user?.image}
-            signedInAs={tUser("signedInAs")}
             openLabel={tUser("openMenu")}
             signOutLabel={tUser("signOut")}
             onSignOut={handleSignOut}
@@ -129,9 +123,7 @@ export default function Header({ className }: { className?: string }) {
 
           <UserMenu
             name={user?.name}
-            email={user?.email}
             image={user?.image}
-            signedInAs={tUser("signedInAs")}
             openLabel={tUser("openMenu")}
             signOutLabel={tUser("signOut")}
             onSignOut={handleSignOut}
@@ -169,7 +161,7 @@ export default function Header({ className }: { className?: string }) {
           </Sheet>
         </div>
       </div>
-    </header>
+    </nav>
   )
 }
 
@@ -201,17 +193,13 @@ function LocaleSwitcher({
 
 function UserMenu({
   name,
-  email,
   image,
-  signedInAs,
   openLabel,
   signOutLabel,
   onSignOut,
 }: {
   name?: string
-  email?: string
   image?: string | null
-  signedInAs: string
   openLabel: string
   signOutLabel: string
   onSignOut: () => void
@@ -230,17 +218,7 @@ function UserMenu({
           </Avatar>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-56">
-        <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="text-muted-foreground text-[10px] uppercase tracking-wide">
-            {signedInAs}
-          </span>
-          {name ? (
-            <span className="text-foreground text-sm font-medium">{name}</span>
-          ) : null}
-          {email ? <span className="text-xs">{email}</span> : null}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+      <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuItem onSelect={onSignOut} variant="destructive">
           <LogOut />
           {signOutLabel}

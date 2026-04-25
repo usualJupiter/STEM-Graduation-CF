@@ -1,5 +1,5 @@
 import AuthGuard from "@/components/auth/auth-guard"
-import Header from "@/components/header"
+import Nav from "@/components/nav"
 
 export default function AppLayout({
   children,
@@ -8,8 +8,8 @@ export default function AppLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="flex min-h-svh flex-col">
-        <Header />
+      <div className="flex min-h-svh flex-col bg-muted">
+        <Nav />
         <main className="flex-1">{children}</main>
       </div>
     </AuthGuard>

@@ -1,14 +1,18 @@
 "use client"
 
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@workspace/ui/components/button"
+import { Google } from "@workspace/ui/components/svg"
 
 interface AuthProps {
   onGoogleLogin?: () => void
 }
 
 export default function Auth({ onGoogleLogin }: AuthProps) {
+  const t = useTranslations("Auth")
+
   return (
     <div className="flex min-h-screen w-full flex-row items-center">
       <div className="flex w-full flex-col bg-background p-10 lg:w-1/2">
@@ -16,10 +20,10 @@ export default function Auth({ onGoogleLogin }: AuthProps) {
           <div className="flex w-full max-w-[374px] min-w-[190px] flex-col gap-6">
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl font-semibold leading-8 text-card-foreground">
-                Admin Login
+                {t("title")}
               </h1>
               <p className="text-sm leading-5 text-muted-foreground">
-                Use your google account for login
+                {t("description")}
               </p>
             </div>
             <div className="flex flex-col gap-6">
@@ -27,7 +31,8 @@ export default function Auth({ onGoogleLogin }: AuthProps) {
                 onClick={onGoogleLogin}
                 className="h-12 w-full bg-secondry-web text-base text-white hover:bg-secondry-web/90"
               >
-                Continue with Google
+                <Google className="size-5" />
+                {t("continueWithGoogle")}
               </Button>
             </div>
           </div>
@@ -36,7 +41,7 @@ export default function Auth({ onGoogleLogin }: AuthProps) {
       <div className="relative hidden min-h-screen w-1/2 lg:block">
         <Image
           src="https://cdn.stem-program.com/assets/auth.png"
-          alt="STEM auth"
+          alt={t("imageAlt")}
           fill
           sizes="50vw"
           className="object-cover"
