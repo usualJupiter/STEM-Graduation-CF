@@ -15,7 +15,7 @@ const GALLERY_IMAGES = [
   "/assets/life.jpg",
   "/assets/event2.jpg",
   "/assets/prject2.jpg",
-  "/assets/hero.jpeg",
+  "/assets/hero.png",
   "/assets/project3.jpg",
   "/assets/event3.jpg",
   "/assets/project4.jpg",
@@ -49,7 +49,7 @@ export default function Gallery() {
   }, [])
 
   return (
-    <section className="bg-background px-4 py-16 md:px-8 md:py-24">
+    <section className="relative bg-background px-4 py-16 md:px-8 md:py-24">
       <div
         ref={gallery}
         className="relative box-border flex h-[175vh] gap-[2vw] overflow-hidden bg-white p-[2vw]"
@@ -86,6 +86,7 @@ function Column({ images, y, top }: ColumnProps) {
             fill
             sizes="(min-width: 1024px) 25vw, 50vw"
             className="pointer-events-none object-cover"
+            priority
             unoptimized
           />
         </div>

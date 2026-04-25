@@ -35,7 +35,7 @@ export default function Auth({ onGoogleLogin }: AuthProps) {
       </div>
       <div className="relative hidden min-h-screen w-1/2 lg:block">
         <Image
-          src="https://cdn.stem-program.com/assets/auth.jpg"
+          src="https://cdn.stem-program.com/assets/auth.png"
           alt="STEM auth"
           fill
           sizes="50vw"

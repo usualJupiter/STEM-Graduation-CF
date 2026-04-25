@@ -3,8 +3,8 @@
 import * as React from "react"
 import Image from "next/image"
 import Autoplay from "embla-carousel-autoplay"
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react"
-import { AnimatePresence, motion, type Variants } from "motion/react"
+import { ArrowUpRight } from "lucide-react"
+import { motion, type Variants } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 
 import {
@@ -20,14 +20,12 @@ import { Link } from "@/i18n/navigation"
 interface Slide {
   id: number
   src: string
-  title?: string
 }
 
 interface CapstoneShowProps {
   slides?: Slide[]
   autoplay?: boolean
   loop?: boolean
-  showNavigation?: boolean
   showPagination?: boolean
   seeAllHref?: string
 }
@@ -64,7 +62,6 @@ export default function CapstoneShow({
   slides = DEFAULT_SLIDES,
   autoplay = false,
   loop = true,
-  showNavigation = true,
   showPagination = true,
   seeAllHref = "/capstones",
 }: CapstoneShowProps) {
@@ -84,9 +81,6 @@ export default function CapstoneShow({
       api.off("select", handleSelect)
     }
   }, [api])
-
-  const PrevIcon = isRtl ? ChevronRight : ChevronLeft
-  const NextIcon = isRtl ? ChevronLeft : ChevronRight
 
   return (
     <motion.section
@@ -168,46 +162,9 @@ export default function CapstoneShow({
                     unoptimized
                   />
                 </motion.div>
-                <AnimatePresence mode="wait">
-                  {current === index && (
-                    <motion.div
-                      key={slide.id}
-                      initial={{ opacity: 0, filter: "blur(10px)" }}
-                      animate={{ opacity: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, filter: "blur(10px)" }}
-                      transition={{ duration: 0.5 }}
-                      className="absolute bottom-0 left-0 flex h-[14%] w-full translate-y-full items-center justify-center p-2 text-center text-sm font-medium tracking-tight text-black/60"
-                    >
-                      {slide.title ?? t("slideTitle", { n: slide.id })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </CarouselItem>
             ))}
           </CarouselContent>
-
-          {showNavigation && (
-            <div className="pointer-events-none absolute inset-x-0 -bottom-4">
-              <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 md:px-6">
-                <button
-                  type="button"
-                  aria-label={t("previous")}
-                  onClick={() => api?.scrollPrev()}
-                  className="pointer-events-auto rounded-full bg-black/20 p-2 text-white transition hover:bg-black/40"
-                >
-                  <PrevIcon className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  aria-label={t("next")}
-                  onClick={() => api?.scrollNext()}
-                  className="pointer-events-auto rounded-full bg-black/20 p-2 text-white transition hover:bg-black/40"
-                >
-                  <NextIcon className="size-5" />
-                </button>
-              </div>
-            </div>
-          )}
 
           {showPagination && (
             <div className="flex w-full items-center justify-center pt-10">

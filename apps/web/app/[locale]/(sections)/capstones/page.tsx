@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/capstones/header"
+import Levels from "@/components/capstones/levels"
 
 export async function generateMetadata({
   params,
@@ -21,6 +22,7 @@ export default function CapstonesPage() {
   return (
     <main>
       <Header />
+      <Levels />
     </main>
   )
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/about/header"
+import Contact from "@/components/about/contact"
 
 export async function generateMetadata({
   params,
@@ -21,6 +22,7 @@ export default function AboutPage() {
   return (
     <main>
       <Header />
+      <Contact />
     </main>
   )
 }

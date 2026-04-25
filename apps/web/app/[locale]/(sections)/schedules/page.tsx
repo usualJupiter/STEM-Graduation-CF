@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/schedules/header"
+import Lectures from "@/components/schedules/lectures"
 
 export async function generateMetadata({
   params,
@@ -21,6 +22,7 @@ export default function SchedulesPage() {
   return (
     <main>
       <Header />
+      <Lectures />
     </main>
   )
 }

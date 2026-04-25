@@ -10,10 +10,7 @@ import { Button } from "@workspace/ui/components/button"
 import { BrushFrame } from "@/components/brush-frame"
 import { Link } from "@/i18n/navigation"
 
-interface HeroProps {
-  ctaHref?: string
-  imageUrl?: string
-}
+const HERO_IMAGE_URL = "https://cdn.stem-program.com/assets/hero.png"
 
 const container: Variants = {
   hidden: {},
@@ -34,10 +31,7 @@ const fadeUp: Variants = {
   },
 }
 
-export default function Hero({
-  ctaHref = "/programs",
-  imageUrl = "/assets/hero.jpeg",
-}: HeroProps) {
+export default function Hero() {
   const t = useTranslations("Hero")
 
   return (
@@ -68,7 +62,7 @@ export default function Hero({
               asChild
               className="h-12 bg-defult-web px-6 text-base text-main [&_svg]:size-5 [a]:hover:bg-defult-web/90"
             >
-              <Link href={ctaHref}>
+              <Link href="/programs">
                 {t("cta")}
                 <ArrowRight />
               </Link>
@@ -79,11 +73,12 @@ export default function Hero({
           <motion.div variants={fadeUp}>
             <BrushFrame>
               <Image
-                src={imageUrl}
+                src={HERO_IMAGE_URL}
                 alt={t("imageAlt")}
                 fill
                 sizes="(min-width: 1280px) 680px, (min-width: 1024px) 560px, 100vw"
                 className="object-cover object-[center_30%]"
+                priority
                 unoptimized
               />
             </BrushFrame>

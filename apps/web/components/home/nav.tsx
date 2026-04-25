@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { Globe, Menu } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useTransition } from "react"
@@ -27,7 +26,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
+import { cn } from "@workspace/ui/lib/utils"
 
+import { BrandLogo } from "@/components/brand-logo"
 import { Link, usePathname, useRouter } from "@/i18n/navigation"
 import { routing, type Locale } from "@/i18n/routing"
 
@@ -73,11 +74,9 @@ function LanguageSwitcher({ onMain = false }: { onMain?: boolean }) {
           size="icon"
           aria-label={t("language")}
           disabled={isPending}
-          className={
-            onMain
-              ? "hover:bg-main-foreground/10 hover:text-main-foreground"
-              : undefined
-          }
+          className={cn(
+            onMain && "hover:bg-main-foreground/10 hover:text-main-foreground"
+          )}
         >
           <Globe />
         </Button>
@@ -97,17 +96,12 @@ function LanguageSwitcher({ onMain = false }: { onMain?: boolean }) {
 
 export function Nav() {
   const t = useTranslations("Nav")
-  const locale = useLocale()
-  const logoSrc = locale === "ar" ? "/assets/logoAR.png" : "/assets/logoEN.png"
 
   return (
-    <nav className="flex w-full items-center justify-between bg-main px-6 py-6 text-main-foreground md:pl-12 md:pr-20">
+    <nav className="relative z-50 flex w-full items-center justify-between bg-main px-6 py-6 text-main-foreground md:pl-12 md:pr-20">
       <Link href="/" className="shrink-0">
-        <Image
-          src={logoSrc}
+        <BrandLogo
           alt={t("logoAlt")}
-          width={231}
-          height={110}
           className="h-10 w-auto object-contain md:h-16"
           priority
         />

@@ -30,7 +30,7 @@ const fadeUp: Variants = {
 }
 
 export default function Header({
-  imageUrl = "/assets/hero.jpeg",
+  imageUrl = "/assets/lectures.png",
 }: HeaderProps) {
   const t = useTranslations("SchedulesHeader")
 
@@ -59,6 +59,7 @@ export default function Header({
                 fill
                 sizes="(min-width: 1280px) 440px, (min-width: 1024px) 380px, 320px"
                 className="object-cover"
+                priority
                 unoptimized
               />
             </BrushFrame>

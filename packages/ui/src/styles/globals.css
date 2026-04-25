@@ -155,3 +155,26 @@
     @apply bg-background text-foreground;
   }
 }
+
+/*
+ * Arabic typography needs more vertical breathing room than Latin —
+ * tight Tailwind leading-* utilities cause descenders/dots from one line
+ * to collide with the next line. Rules below sit outside any @layer so
+ * they override Tailwind utilities (which live in @layer utilities).
+ */
+:lang(ar) p,
+:lang(ar) li,
+:lang(ar) dd,
+:lang(ar) dt,
+:lang(ar) blockquote {
+  line-height: 2;
+}
+
+:lang(ar) h1,
+:lang(ar) h2,
+:lang(ar) h3,
+:lang(ar) h4,
+:lang(ar) h5,
+:lang(ar) h6 {
+  line-height: 1.5;
+}

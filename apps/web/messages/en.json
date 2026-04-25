@@ -47,7 +47,7 @@
   },
   "Hero": {
     "heading": "The Leading Community\nfor STEM Schools Educators",
-    "description": "Follow with one or two sentences that expand on your value proposition and focus on key benefits.",
+    "description": "Preparing the next generation of Egyptian educators through integrated training in science, technology, engineering, and mathematics — built on inquiry, research, and real-world impact.",
     "cta": "Learn More",
     "imageAlt": "Hero image"
   },
@@ -77,10 +77,7 @@
     "heading": "Showcase for students capstones",
     "description": "Browse a curated gallery of student capstone projects across STEM disciplines.",
     "slideAlt": "Capstone project {n}",
-    "slideTitle": "Project {n}",
-    "goToSlide": "Go to slide {n}",
-    "previous": "Previous project",
-    "next": "Next project"
+    "goToSlide": "Go to slide {n}"
   },
   "Events": {
     "tagline": "SEE ALL EVENTS",
@@ -193,13 +190,33 @@
     "title": "About Us",
     "imageAlt": "About us hero illustration"
   },
+  "About": {
+    "letter": "Welcome to the STEM Program at the Faculty of Education, Assiut University. We prepare future teachers to lead the next generation of inquiry-driven science classrooms — integrating science, technology, engineering, and mathematics through hands-on learning, research, and capstone projects that turn academic study into real-world impact.",
+    "mapTitle": "Assiut University location on Google Maps"
+  },
   "CapstonesHeader": {
     "title": "Capstones",
     "imageAlt": "Capstones hero illustration"
   },
+  "Capstones": {
+    "levels": {
+      "level1": "Level 1",
+      "level2": "Level 2",
+      "level3": "Level 3"
+    }
+  },
   "SchedulesHeader": {
     "title": "Lecture Schedules",
     "imageAlt": "Lecture schedules hero illustration"
+  },
+  "Schedules": {
+    "levels": {
+      "level1": "Level 1",
+      "level2": "Level 2",
+      "level3": "Level 3",
+      "level4": "Level 4"
+    },
+    "pdfTitle": "Lecture schedule PDF"
   },
   "Footer": {
     "logoAlt": "STEM Program",
