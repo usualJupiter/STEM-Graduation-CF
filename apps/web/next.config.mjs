@@ -10,6 +10,11 @@ const nextConfig = {
       { protocol: "https", hostname: "cdn.stem-program.com" },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/", destination: "/en", permanent: false },
+    ]
+  },
 }
 
 export default withNextIntl(nextConfig)

@@ -15,7 +15,10 @@
       "Bash(git restore *)",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('apps/admin/messages/en.json','utf8'\\)\\); console.log\\('en OK'\\)\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('apps/admin/messages/ar.json','utf8'\\)\\); console.log\\('ar OK'\\)\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(mkdir -p \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)\")",
+      "Bash(mv \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/page.tsx\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)/page.tsx\")",
+      "Bash(mv \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(sections\\)\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)/\\(sections\\)\")"
     ]
   }
 }

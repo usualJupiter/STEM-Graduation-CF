@@ -3,8 +3,6 @@ import { setRequestLocale } from "next-intl/server"
 import { Geist, JetBrains_Mono } from "next/font/google"
 import localFont from "next/font/local"
 import { notFound } from "next/navigation"
-import Footer from "@/components/home/footer"
-import { Nav } from "@/components/home/nav"
 import "@workspace/ui/globals.css"
 import { DirectionProvider } from "@workspace/ui/components/direction"
 import { routing } from "@/i18n/routing"
@@ -71,9 +69,7 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <DirectionProvider dir={dir}>
-              <Nav />
-              {children}
-              <Footer />
+            {children}
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>
