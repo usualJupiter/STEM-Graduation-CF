@@ -9,6 +9,8 @@
     "title": "Events",
     "description": "Manage events or create a new one.",
     "createEvent": "Create event",
+    "eventCount": "{count} / {max} events",
+    "atLimit": "Limit reached. Delete an old event to create a new one.",
     "searchPlaceholder": "Search event",
     "sort": "Sort",
     "sortOptions": {
@@ -33,6 +35,71 @@
       "showing": "{shown} of {total} showing.",
       "previous": "Previous",
       "next": "Next"
+    },
+    "createEventDialog": {
+      "title": "Create New Event",
+      "description": "Fill all info below.",
+      "titleEn": "Title (English)",
+      "titleAr": "Title (Arabic)",
+      "descriptionEn": "Description (English)",
+      "descriptionAr": "Description (Arabic)",
+      "date": "Date",
+      "time": "Time",
+      "cardPhoto": "Card photo",
+      "eventPhotos": "Event photos (max {max})",
+      "chooseFile": "Choose file",
+      "addFiles": "Add files",
+      "removeFile": "Remove",
+      "cancel": "Cancel",
+      "submit": "Create event",
+      "submitting": "Creating…",
+      "uploadFailed": "Upload failed",
+      "createFailed": "Failed to create event",
+      "limitReached": "Event limit reached ({limit}). Delete an old event before creating a new one.",
+      "validation": {
+        "required": "This field is required",
+        "fileType": "Only JPEG, PNG, or WebP images are allowed",
+        "fileTooLarge": "File must be {maxKb} KB or smaller",
+        "tooManyFiles": "You can upload at most {max} photos"
+      }
+    },
+    "deleteEventDialog": {
+      "title": "Delete event",
+      "description": "This will permanently remove the event and all its photos. This action cannot be undone.",
+      "deleting": "Event being deleted: {name}",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "submitting": "Deleting…",
+      "failed": "Failed to delete event"
+    },
+    "editEventDialog": {
+      "title": "Edit Event",
+      "description": "Update info or replace photos.",
+      "titleEn": "Title (English)",
+      "titleAr": "Title (Arabic)",
+      "descriptionEn": "Description (English)",
+      "descriptionAr": "Description (Arabic)",
+      "date": "Date",
+      "time": "Time",
+      "cardPhoto": "Card photo",
+      "eventPhotos": "Event photos (max {max})",
+      "chooseFile": "Choose file",
+      "addFiles": "Add files",
+      "removeFile": "Remove",
+      "savedBadge": "saved",
+      "loading": "Loading…",
+      "loadFailed": "Failed to load event",
+      "cancel": "Cancel",
+      "submit": "Save Changes",
+      "submitting": "Saving…",
+      "uploadFailed": "Upload failed",
+      "saveFailed": "Failed to save changes",
+      "validation": {
+        "required": "This field is required",
+        "fileType": "Only JPEG, PNG, or WebP images are allowed",
+        "fileTooLarge": "File must be {maxKb} KB or smaller",
+        "tooManyFiles": "You can upload at most {max} photos"
+      }
     }
   },
   "Dashboard": {

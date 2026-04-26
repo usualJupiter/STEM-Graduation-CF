@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/events/header"
 import Events from "@/components/events/events"
+import { getEvents } from "@/lib/api"
 
 export async function generateMetadata({
   params,
@@ -18,11 +19,12 @@ export async function generateMetadata({
   }
 }
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  const items = await getEvents({ sort: "dateNewest", limit: 50 })
   return (
     <main>
       <Header />
-      <Events />
+      <Events items={items} />
     </main>
   )
 }

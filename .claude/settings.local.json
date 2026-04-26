@@ -18,7 +18,8 @@
       "Bash(node *)",
       "Bash(mkdir -p \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)\")",
       "Bash(mv \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/page.tsx\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)/page.tsx\")",
-      "Bash(mv \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(sections\\)\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)/\\(sections\\)\")"
+      "Bash(mv \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(sections\\)\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)/\\(sections\\)\")",
+      "Bash(bun x *)"
     ]
   }
 }

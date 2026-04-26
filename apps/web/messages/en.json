@@ -82,25 +82,7 @@
   "Events": {
     "tagline": "SEE ALL EVENTS",
     "heading": "Join us in latest events",
-    "description": "Meet the STEM program at our latest events.",
-    "items": {
-      "sustainability": {
-        "title": "Awareness event about sustainability and recycling",
-        "description": "Presented by students of the STEM Level 4 program (Chemistry major), as part of the program's efforts to spread the culture of sustainable development and safe handling of technical waste."
-      },
-      "placeholder1": {
-        "title": "Coming soon",
-        "description": "Details about this event will be announced shortly."
-      },
-      "placeholder2": {
-        "title": "Coming soon",
-        "description": "Details about this event will be announced shortly."
-      },
-      "newcomers": {
-        "title": "Newcomers party",
-        "description": "A welcome event celebrating our newest students joining the STEM community."
-      }
-    }
+    "description": "Meet the STEM program at our latest events."
   },
   "Aword": {
     "quote": "STEM gives our students the tools, community, and vision to tackle tomorrow's biggest challenges — we're proud of every educator who makes that possible.",
@@ -185,6 +167,13 @@
   "EventsHeader": {
     "title": "Events",
     "imageAlt": "Events hero illustration"
+  },
+  "EventsList": {
+    "empty": "No events yet."
+  },
+  "EventDetail": {
+    "date": "Date",
+    "time": "Time"
   },
   "AboutHeader": {
     "title": "About Us",

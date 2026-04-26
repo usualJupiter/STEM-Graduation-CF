@@ -1,4 +1,4 @@
-import { Kysely } from "kysely"
+import { Kysely, type Generated } from "kysely"
 import { D1Dialect } from "kysely-d1"
 
 export interface Database {
@@ -7,6 +7,8 @@ export interface Database {
   account: AccountTable
   verification: VerificationTable
   allowed_emails: AllowedEmailTable
+  events: EventTable
+  event_photos: EventPhotoTable
 }
 
 interface UserTable {
@@ -59,6 +61,28 @@ interface AllowedEmailTable {
   email: string
   addedByUserId: string | null
   addedAt: string
+}
+
+interface EventTable {
+  id: Generated<number>
+  title_en: string
+  title_ar: string
+  description_en: string
+  description_ar: string
+  event_date: string
+  event_time: string
+  card_photo_key: string | null
+  author_id: string
+  created_at: string
+  updated_at: string
+}
+
+interface EventPhotoTable {
+  id: Generated<number>
+  event_id: number
+  photo_key: string
+  position: number
+  created_at: string
 }
 
 export function createDb(d1: D1Database): Kysely<Database> {

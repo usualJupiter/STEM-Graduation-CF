@@ -3,44 +3,40 @@
 import Image from "next/image"
 import { ArrowUpRight } from "lucide-react"
 import { motion, type Variants } from "motion/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 import { cn } from "@workspace/ui/lib/utils"
 
 import { BrushFrame } from "@/components/brush-frame"
 import { Link } from "@/i18n/navigation"
+import type { EventListItem } from "@/lib/api"
 
-const EVENT_KEYS = [
+const SLOTS = [
   {
-    key: "sustainability",
-    href: "/events/sustainability",
     cardClass: "md:row-span-2",
     borderClass: "border-yellow-500",
     overlayClass: "bg-yellow-500",
-    image: "/assets/event1.jpg",
     large: true,
+    brushVariant: "secondary" as const,
   },
   {
-    key: "newcomers",
-    href: "/events/newcomers",
     cardClass: "",
     borderClass: "border-defult-web",
     overlayClass: "bg-defult-web",
-    image: "/assets/event2.jpg",
     large: false,
+    brushVariant: "tertiary" as const,
   },
   {
-    key: "placeholder1",
-    href: "/events/placeholder1",
     cardClass: "",
     borderClass: "border-yellow-500",
     overlayClass: "bg-yellow-500",
-    image: "/assets/event3.jpg",
     large: false,
+    brushVariant: "tertiary" as const,
   },
 ] as const
 
 interface EventsProps {
+  items: EventListItem[]
   className?: string
   seeAllHref?: string
 }
@@ -74,10 +70,13 @@ const fadeUp: Variants = {
 }
 
 export default function Events({
+  items,
   className,
   seeAllHref = "/events",
 }: EventsProps) {
   const t = useTranslations("Events")
+  const locale = useLocale()
+  const visible = items.slice(0, 3)
 
   return (
     <motion.section
@@ -87,7 +86,7 @@ export default function Events({
       variants={container}
       className={cn(
         "flex w-full flex-col items-center bg-web-fourth py-16 md:py-24",
-        className
+        className,
       )}
     >
       <div className="w-full max-w-7xl px-6">
@@ -117,69 +116,78 @@ export default function Events({
             </motion.p>
           </div>
 
-          <motion.div
-            variants={gridContainer}
-            className="grid w-full grid-cols-1 gap-3 md:grid-cols-[2fr_1fr] md:grid-rows-2"
-          >
-            {EVENT_KEYS.map((event) => (
-              <motion.article
-                key={event.key}
-                variants={fadeUp}
-                className={cn(
-                  "group relative flex flex-col overflow-hidden border-[8px] bg-white shadow-sm focus-within:ring-2 focus-within:ring-black/40",
-                  event.cardClass,
-                  event.borderClass
-                )}
-              >
-                <Link
-                  href={event.href}
-                  aria-label={t(`items.${event.key}.title`)}
-                  className="absolute inset-0 z-20"
-                />
-                {event.large ? (
-                  <BrushFrame
-                    variant="secondary"
-                    className="z-10 md:aspect-auto md:flex-1"
+          {visible.length > 0 && (
+            <motion.div
+              variants={gridContainer}
+              className="grid w-full grid-cols-1 gap-3 md:grid-cols-[2fr_1fr] md:grid-rows-2"
+            >
+              {visible.map((event, idx) => {
+                const slot = SLOTS[idx] ?? SLOTS[SLOTS.length - 1]!
+                const title =
+                  locale === "ar"
+                    ? event.title_ar || event.title_en
+                    : event.title_en || event.title_ar
+                const description =
+                  locale === "ar"
+                    ? event.description_ar || event.description_en
+                    : event.description_en || event.description_ar
+                return (
+                  <motion.article
+                    key={event.id}
+                    variants={fadeUp}
+                    className={cn(
+                      "group relative flex flex-col overflow-hidden border-[8px] bg-white shadow-sm focus-within:ring-2 focus-within:ring-black/40",
+                      slot.cardClass,
+                      slot.borderClass,
+                    )}
                   >
-                    <Image
-                      src={event.image}
-                      alt={t(`items.${event.key}.title`)}
-                      fill
-                      className="object-cover"
-                      sizes="(min-width: 768px) 66vw, 100vw"
-                      unoptimized
+                    <Link
+                      href={`/events/${event.id}`}
+                      aria-label={title}
+                      className="absolute inset-0 z-20"
                     />
-                  </BrushFrame>
-                ) : (
-                  <BrushFrame variant="tertiary" className="z-10">
-                    <Image
-                      src={event.image}
-                      alt={t(`items.${event.key}.title`)}
-                      fill
-                      className="object-cover"
-                      sizes="(min-width: 768px) 33vw, 100vw"
-                      unoptimized
+                    <BrushFrame
+                      variant={slot.brushVariant}
+                      className={cn(
+                        "z-10",
+                        slot.large && "md:aspect-auto md:flex-1",
+                      )}
+                    >
+                      {event.card_photo_url && (
+                        <Image
+                          src={event.card_photo_url}
+                          alt={title}
+                          fill
+                          className="object-cover"
+                          sizes={
+                            slot.large
+                              ? "(min-width: 768px) 66vw, 100vw"
+                              : "(min-width: 768px) 33vw, 100vw"
+                          }
+                          unoptimized
+                        />
+                      )}
+                    </BrushFrame>
+                    <div className="relative z-10 flex flex-col gap-2 p-6">
+                      <h3 className="text-xl font-semibold tracking-tight text-black md:text-2xl md:leading-8">
+                        {title}
+                      </h3>
+                      <p className="line-clamp-3 text-sm text-black/70 md:text-base md:leading-6">
+                        {description}
+                      </p>
+                    </div>
+                    <div
+                      aria-hidden
+                      className={cn(
+                        "pointer-events-none absolute inset-0 origin-bottom scale-y-0 transition-transform duration-500 ease-out group-hover:scale-y-100 group-focus-within:scale-y-100",
+                        slot.overlayClass,
+                      )}
                     />
-                  </BrushFrame>
-                )}
-                <div className="relative z-10 flex flex-col gap-2 p-6">
-                  <h3 className="text-xl font-semibold tracking-tight text-black md:text-2xl md:leading-8">
-                    {t(`items.${event.key}.title`)}
-                  </h3>
-                  <p className="text-sm text-black/70 md:text-base md:leading-6">
-                    {t(`items.${event.key}.description`)}
-                  </p>
-                </div>
-                <div
-                  aria-hidden
-                  className={cn(
-                    "pointer-events-none absolute inset-0 origin-bottom scale-y-0 transition-transform duration-500 ease-out group-hover:scale-y-100 group-focus-within:scale-y-100",
-                    event.overlayClass
-                  )}
-                />
-              </motion.article>
-            ))}
-          </motion.div>
+                  </motion.article>
+                )
+              })}
+            </motion.div>
+          )}
         </div>
       </div>
     </motion.section>

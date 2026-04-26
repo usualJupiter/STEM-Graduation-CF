@@ -11,6 +11,12 @@
       "database_id": "92abf0e8-12d0-4858-afd8-dcb3734acdbf",
       "migrations_dir": "migrations"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PUBLIC_MEDIA",
+      "bucket_name": "cdn"
+    }
   ]
   // "vars": {
   //   "MY_VAR": "my-variable"

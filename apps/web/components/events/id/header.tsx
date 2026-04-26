@@ -3,12 +3,11 @@
 import Image from "next/image"
 
 interface HeaderProps {
-  title?: string
+  title: string
+  imageUrl?: string | null
 }
 
-export default function Header({
-  title = "Awareness event about sustainability and recycling",
-}: HeaderProps) {
+export default function Header({ title, imageUrl }: HeaderProps) {
   return (
     <section className="w-full bg-[#110A43]">
       <div className="mx-auto flex max-w-[1280px] flex-col-reverse items-center justify-between gap-6 px-6 py-8 md:flex-row md:gap-0 md:py-0">
@@ -17,15 +16,18 @@ export default function Header({
             {title}
           </h1>
         </div>
-        <div className="flex shrink-0 items-center justify-center p-2.5">
-          <Image
-            src="/assets/event1.jpg"
-            alt="Hero illustration about sustainability and recycling"
-            width={294}
-            height={270}
-            className="h-auto w-48 sm:w-56 md:w-[294px]"
-          />
-        </div>
+        {imageUrl && (
+          <div className="flex shrink-0 items-center justify-center p-2.5">
+            <Image
+              src={imageUrl}
+              alt={title}
+              width={294}
+              height={270}
+              className="h-auto w-48 sm:w-56 md:w-[294px]"
+              unoptimized
+            />
+          </div>
+        )}
       </div>
     </section>
   )

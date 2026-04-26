@@ -7,6 +7,7 @@ import CtaOne from "@/components/home/cta-one"
 import Events from "@/components/home/events"
 import Hero from "@/components/home/hero"
 import Life from "@/components/home/life"
+import { getEvents } from "@/lib/api"
 
 export async function generateMetadata({
   params,
@@ -22,14 +23,15 @@ export async function generateMetadata({
   }
 }
 
-export default function Home() {
+export default async function Home() {
+  const latestEvents = await getEvents({ sort: "dateNewest", limit: 3 })
   return (
     <main className="min-h-svh">
       <Hero />
       <CtaOne />
       <Life />
       <CapstoneShow />
-      <Events />
+      <Events items={latestEvents} />
       <Aword />
     </main>
   )

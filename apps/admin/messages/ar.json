@@ -9,6 +9,8 @@
     "title": "الأنشطة",
     "description": "إدارة الأنشطة أو إنشاء نشاط جديد.",
     "createEvent": "إنشاء نشاط",
+    "eventCount": "{count} / {max} نشاط",
+    "atLimit": "تم بلوغ الحد الأقصى. احذف نشاطًا قديمًا لإنشاء نشاط جديد.",
     "searchPlaceholder": "ابحث عن نشاط",
     "sort": "ترتيب",
     "sortOptions": {
@@ -33,6 +35,71 @@
       "showing": "{shown} من {total} ظاهرة.",
       "previous": "السابق",
       "next": "التالي"
+    },
+    "createEventDialog": {
+      "title": "إنشاء نشاط جديد",
+      "description": "املأ كل المعلومات أدناه.",
+      "titleEn": "العنوان (إنجليزي)",
+      "titleAr": "العنوان (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "cardPhoto": "صورة البطاقة",
+      "eventPhotos": "صور النشاط (بحد أقصى {max})",
+      "chooseFile": "اختر ملفًا",
+      "addFiles": "إضافة ملفات",
+      "removeFile": "إزالة",
+      "cancel": "إلغاء",
+      "submit": "إنشاء النشاط",
+      "submitting": "جارٍ الإنشاء…",
+      "uploadFailed": "فشل رفع الملف",
+      "createFailed": "فشل إنشاء النشاط",
+      "limitReached": "تم بلوغ الحد الأقصى للأنشطة ({limit}). احذف نشاطًا قديمًا قبل إنشاء نشاط جديد.",
+      "validation": {
+        "required": "هذا الحقل مطلوب",
+        "fileType": "يُسمح فقط بصور JPEG أو PNG أو WebP",
+        "fileTooLarge": "يجب أن يكون حجم الملف {maxKb} ك.ب أو أقل",
+        "tooManyFiles": "يمكنك رفع {max} صور كحد أقصى"
+      }
+    },
+    "deleteEventDialog": {
+      "title": "حذف النشاط",
+      "description": "سيؤدي هذا إلى إزالة النشاط وجميع صوره نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+      "deleting": "النشاط المراد حذفه: {name}",
+      "cancel": "إلغاء",
+      "confirm": "حذف",
+      "submitting": "جارٍ الحذف…",
+      "failed": "فشل حذف النشاط"
+    },
+    "editEventDialog": {
+      "title": "تعديل النشاط",
+      "description": "حدّث المعلومات أو استبدل الصور.",
+      "titleEn": "العنوان (إنجليزي)",
+      "titleAr": "العنوان (عربي)",
+      "descriptionEn": "الوصف (إنجليزي)",
+      "descriptionAr": "الوصف (عربي)",
+      "date": "التاريخ",
+      "time": "الوقت",
+      "cardPhoto": "صورة البطاقة",
+      "eventPhotos": "صور النشاط (بحد أقصى {max})",
+      "chooseFile": "اختر ملفًا",
+      "addFiles": "إضافة ملفات",
+      "removeFile": "إزالة",
+      "savedBadge": "محفوظة",
+      "loading": "جارٍ التحميل…",
+      "loadFailed": "فشل تحميل النشاط",
+      "cancel": "إلغاء",
+      "submit": "حفظ التغييرات",
+      "submitting": "جارٍ الحفظ…",
+      "uploadFailed": "فشل رفع الملف",
+      "saveFailed": "فشل حفظ التغييرات",
+      "validation": {
+        "required": "هذا الحقل مطلوب",
+        "fileType": "يُسمح فقط بصور JPEG أو PNG أو WebP",
+        "fileTooLarge": "يجب أن يكون حجم الملف {maxKb} ك.ب أو أقل",
+        "tooManyFiles": "يمكنك رفع {max} صور كحد أقصى"
+      }
     }
   },
   "Dashboard": {
