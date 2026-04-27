@@ -201,6 +201,39 @@
       }
     }
   },
+  "Settings": {
+    "title": "الإعدادات",
+    "description": "إدارة الصلاحيات والمزيد.",
+    "tabs": {
+      "access": "الصلاحيات"
+    },
+    "access": {
+      "addEmail": "إضافة بريد إلكتروني",
+      "searchPlaceholder": "ابحث عن عضو..",
+      "waitingLogin": "بانتظار تسجيل الدخول...",
+      "empty": "لا يوجد أعضاء بعد.",
+      "loadFailed": "فشل تحميل الأعضاء",
+      "deleteAriaLabel": "إزالة {email}",
+      "addEmailDialog": {
+        "title": "إضافة بريد مسؤول",
+        "description": "بعد الإضافة، يمكن للمستخدم تسجيل الدخول بهذا البريد عبر جوجل.",
+        "placeholder": "name@example.com",
+        "cancel": "إلغاء",
+        "confirm": "إضافة",
+        "submitting": "جارٍ الإضافة…",
+        "failed": "فشل إضافة البريد الإلكتروني"
+      },
+      "deleteDialog": {
+        "title": "إزالة الصلاحيات",
+        "description": "سيفقد هذا البريد صلاحيات المسؤول فورًا، وسيتم تسجيل خروج أي جلسة نشطة. لا يمكن التراجع عن هذا الإجراء.",
+        "removing": "جارٍ إزالة صلاحيات: {email}",
+        "cancel": "إلغاء",
+        "confirm": "إزالة",
+        "submitting": "جارٍ الإزالة…",
+        "failed": "فشل إزالة البريد الإلكتروني"
+      }
+    }
+  },
   "Nav": {
     "logoAlt": "إدارة ستيم",
     "dashboard": "لوحة التحكم",

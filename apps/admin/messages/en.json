@@ -201,6 +201,39 @@
       }
     }
   },
+  "Settings": {
+    "title": "Settings",
+    "description": "Manage access and more.",
+    "tabs": {
+      "access": "Access"
+    },
+    "access": {
+      "addEmail": "Add Email",
+      "searchPlaceholder": "Search member..",
+      "waitingLogin": "Waiting login...",
+      "empty": "No members yet.",
+      "loadFailed": "Failed to load members",
+      "deleteAriaLabel": "Remove {email}",
+      "addEmailDialog": {
+        "title": "Add admin email",
+        "description": "Once added, the user can sign in with Google using this email.",
+        "placeholder": "name@example.com",
+        "cancel": "Cancel",
+        "confirm": "Add",
+        "submitting": "Adding…",
+        "failed": "Failed to add email"
+      },
+      "deleteDialog": {
+        "title": "Remove access",
+        "description": "This email will lose admin access immediately and any active session will be signed out. This action cannot be undone.",
+        "removing": "Removing access for: {email}",
+        "cancel": "Cancel",
+        "confirm": "Remove",
+        "submitting": "Removing…",
+        "failed": "Failed to remove email"
+      }
+    }
+  },
   "Nav": {
     "logoAlt": "STEM Admin",
     "dashboard": "Dashboard",

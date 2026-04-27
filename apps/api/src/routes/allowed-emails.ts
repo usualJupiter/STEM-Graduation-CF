@@ -1,4 +1,5 @@
 import { Hono } from "hono"
+import { sql } from "kysely"
 import { z } from "zod"
 
 import type { AppEnv } from "../types"
@@ -23,10 +24,28 @@ app.get("/", async (c) => {
   const db = c.get("db")
   const rows = await db
     .selectFrom("allowed_emails")
-    .selectAll()
-    .orderBy("addedAt", "desc")
+    .leftJoin("user", (join) =>
+      join.on(sql`lower(user.email)`, "=", sql`allowed_emails.email`),
+    )
+    .select([
+      "allowed_emails.email",
+      "allowed_emails.is_default",
+      "allowed_emails.addedAt as added_at",
+      "user.name",
+      "user.image",
+    ])
+    .orderBy("allowed_emails.addedAt", "desc")
     .execute()
-  return c.json({ data: rows })
+
+  const data = rows.map((r) => ({
+    email: r.email,
+    name: r.name ?? null,
+    image: r.image ?? null,
+    added_at: r.added_at,
+    is_default: Boolean(r.is_default),
+  }))
+
+  return c.json({ data })
 })
 
 app.post("/", async (c) => {
@@ -60,7 +79,25 @@ app.post("/", async (c) => {
 
 app.delete("/:email", async (c) => {
   const email = c.req.param("email").toLowerCase()
+  const session = c.get("session")!
+
+  if (email === session.user.email.toLowerCase()) {
+    return c.json({ error: "Cannot remove yourself" }, 403)
+  }
+
   const db = c.get("db")
+  const row = await db
+    .selectFrom("allowed_emails")
+    .select("is_default")
+    .where("email", "=", email)
+    .executeTakeFirst()
+
+  if (!row) {
+    return c.json({ error: "Not found" }, 404)
+  }
+  if (row.is_default) {
+    return c.json({ error: "Cannot remove default admin" }, 403)
+  }
 
   await db.deleteFrom("allowed_emails").where("email", "=", email).execute()
 

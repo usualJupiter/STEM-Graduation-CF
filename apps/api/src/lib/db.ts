@@ -63,6 +63,7 @@ interface AllowedEmailTable {
   email: string
   addedByUserId: string | null
   addedAt: string
+  is_default: Generated<number>
 }
 
 interface EventTable {
