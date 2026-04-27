@@ -6,10 +6,6 @@ import { useTranslations } from "next-intl"
 
 import { BrushFrame } from "@/components/brush-frame"
 
-interface AwordProps {
-  imageSrc?: string
-}
-
 const container: Variants = {
   hidden: {},
   visible: {
@@ -29,9 +25,7 @@ const fadeUp: Variants = {
   },
 }
 
-export default function Aword({
-  imageSrc = "https://ui.shadcn.com/placeholder.svg",
-}: AwordProps) {
+export default function Aword() {
   const t = useTranslations("Aword")
 
   return (
@@ -50,7 +44,7 @@ export default function Aword({
           >
             <BrushFrame>
               <Image
-                src={imageSrc}
+                src="https://cdn.stem-program.com/assets/drmarien.png"
                 alt={t("name")}
                 fill
                 sizes="(min-width: 768px) 298px, 100vw"

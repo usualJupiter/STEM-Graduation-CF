@@ -17,24 +17,6 @@ const PROGRAM_KEYS = [
   "mathematics",
 ] as const
 
-type ProgramKey = (typeof PROGRAM_KEYS)[number]
-
-interface QuickLink {
-  key: ProgramKey
-  href: string
-}
-
-interface CtaOneProps {
-  applyHref?: string
-  programsHref?: string
-  quickLinks?: QuickLink[]
-}
-
-const DEFAULT_QUICK_LINKS: QuickLink[] = PROGRAM_KEYS.map((key) => ({
-  key,
-  href: "/programs",
-}))
-
 const CARD_CLASSES = [
   "bg-web-card-1 text-main [a]:hover:bg-web-card-1/90",
   "bg-web-card-2 text-main [a]:hover:bg-web-card-2/90",
@@ -61,11 +43,7 @@ const fadeUp: Variants = {
   },
 }
 
-export default function CtaOne({
-  applyHref = "/apply",
-  programsHref = "/programs",
-  quickLinks = DEFAULT_QUICK_LINKS,
-}: CtaOneProps) {
+export default function CtaOne() {
   const t = useTranslations("CtaOne")
 
   return (
@@ -98,7 +76,7 @@ export default function CtaOne({
               asChild
               className="h-12 px-6 text-base font-bold [&_svg]:size-5"
             >
-              <Link href={applyHref}>
+              <Link href="/apply">
                 {t("apply")}
                 <ArrowRight aria-hidden className="rtl:rotate-180" />
               </Link>
@@ -108,7 +86,7 @@ export default function CtaOne({
               asChild
               className="h-12 px-6 text-base font-bold [&_svg]:size-5"
             >
-              <Link href={programsHref}>
+              <Link href="/programs">
                 {t("browsePrograms")}
                 <ArrowRight aria-hidden className="rtl:rotate-180" />
               </Link>
@@ -123,8 +101,8 @@ export default function CtaOne({
             {t("quickLinks")}
           </p>
           <ul className="flex flex-col gap-2 md:flex-1">
-            {quickLinks.map((link, i) => (
-              <li key={link.key}>
+            {PROGRAM_KEYS.map((key, i) => (
+              <li key={key}>
                 <Button
                   asChild
                   className={cn(
@@ -132,9 +110,9 @@ export default function CtaOne({
                     CARD_CLASSES[i % CARD_CLASSES.length]
                   )}
                 >
-                  <Link href={link.href}>
+                  <Link href="/programs">
                     <ArrowRight aria-hidden className="rtl:rotate-180" />
-                    {t(`programs.${link.key}`)}
+                    {t(`programs.${key}`)}
                   </Link>
                 </Button>
               </li>

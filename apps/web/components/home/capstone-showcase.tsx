@@ -17,26 +17,13 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { Link } from "@/i18n/navigation"
 
-interface Slide {
-  id: number
-  src: string
-}
-
-interface CapstoneShowProps {
-  slides?: Slide[]
-  autoplay?: boolean
-  loop?: boolean
-  showPagination?: boolean
-  seeAllHref?: string
-}
-
-const DEFAULT_SLIDES: Slide[] = [
-  { id: 1, src: "/assets/project1.jpg" },
-  { id: 2, src: "/assets/prject2.jpg" },
-  { id: 3, src: "/assets/project3.jpg" },
-  { id: 4, src: "/assets/project4.jpg" },
-  { id: 5, src: "/assets/project5.jpg" },
-  { id: 6, src: "/assets/project6.jpg" },
+const SLIDES = [
+  "https://cdn.stem-program.com/assets/project1.jpg",
+  "https://cdn.stem-program.com/assets/project2.jpg",
+  "https://cdn.stem-program.com/assets/project3.jpg",
+  "https://cdn.stem-program.com/assets/project4.jpg",
+  "https://cdn.stem-program.com/assets/project5.jpg",
+  "https://cdn.stem-program.com/assets/project6.jpg",
 ]
 
 const container: Variants = {
@@ -58,13 +45,7 @@ const fadeUp: Variants = {
   },
 }
 
-export default function CapstoneShow({
-  slides = DEFAULT_SLIDES,
-  autoplay = false,
-  loop = true,
-  showPagination = true,
-  seeAllHref = "/capstones",
-}: CapstoneShowProps) {
+export default function CapstoneShow() {
   const t = useTranslations("CapstoneShow")
   const locale = useLocale()
   const isRtl = locale === "ar"
@@ -93,7 +74,7 @@ export default function CapstoneShow({
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-5 px-4 md:px-6">
         <motion.div variants={fadeUp}>
           <Link
-            href={seeAllHref}
+            href="/capstones"
             className="inline-flex items-center gap-1.5 rounded-full border border-black bg-white px-3 py-1 text-sm font-medium text-black shadow-sm transition-colors hover:bg-black/5"
           >
             <span className="size-2 shrink-0 rounded-full bg-green-500" />
@@ -120,26 +101,22 @@ export default function CapstoneShow({
           setApi={setApi}
           className="w-full"
           opts={{
-            loop,
+            loop: true,
             slidesToScroll: 1,
             direction: isRtl ? "rtl" : "ltr",
           }}
-          plugins={
-            autoplay
-              ? [
-                  Autoplay({
-                    delay: 2000,
-                    stopOnInteraction: true,
-                    stopOnMouseEnter: true,
-                  }),
-                ]
-              : []
-          }
+          plugins={[
+            Autoplay({
+              delay: 2000,
+              stopOnInteraction: true,
+              stopOnMouseEnter: true,
+            }),
+          ]}
         >
           <CarouselContent className="h-[500px]">
-            {slides.map((slide, index) => (
+            {SLIDES.map((src, index) => (
               <CarouselItem
-                key={slide.id}
+                key={src}
                 className="relative flex h-[81.5%] basis-[73%] items-center justify-center sm:basis-[50%] md:basis-[30%] lg:basis-[25%] xl:basis-[21%]"
               >
                 <motion.div
@@ -154,8 +131,8 @@ export default function CapstoneShow({
                   className="relative h-full w-full overflow-hidden rounded-3xl"
                 >
                   <Image
-                    src={slide.src}
-                    alt={t("slideAlt", { n: slide.id })}
+                    src={src}
+                    alt={t("slideAlt", { n: index + 1 })}
                     fill
                     className="scale-105 object-cover"
                     sizes="(min-width: 1280px) 300px, (min-width: 768px) 30vw, 73vw"
@@ -166,24 +143,22 @@ export default function CapstoneShow({
             ))}
           </CarouselContent>
 
-          {showPagination && (
-            <div className="flex w-full items-center justify-center pt-10">
-              <div className="flex items-center justify-center gap-2">
-                {slides.map((slide, index) => (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    onClick={() => api?.scrollTo(index)}
-                    className={cn(
-                      "size-2 cursor-pointer rounded-full transition-all",
-                      current === index ? "bg-black" : "bg-[#D9D9D9]"
-                    )}
-                    aria-label={t("goToSlide", { n: index + 1 })}
-                  />
-                ))}
-              </div>
+          <div className="flex w-full items-center justify-center pt-10">
+            <div className="flex items-center justify-center gap-2">
+              {SLIDES.map((src, index) => (
+                <button
+                  key={src}
+                  type="button"
+                  onClick={() => api?.scrollTo(index)}
+                  className={cn(
+                    "size-2 cursor-pointer rounded-full transition-all",
+                    current === index ? "bg-black" : "bg-[#D9D9D9]"
+                  )}
+                  aria-label={t("goToSlide", { n: index + 1 })}
+                />
+              ))}
             </div>
-          )}
+          </div>
         </Carousel>
       </motion.div>
     </motion.section>

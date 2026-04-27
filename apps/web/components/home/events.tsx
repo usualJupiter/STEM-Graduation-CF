@@ -16,29 +16,24 @@ const SLOTS = [
     cardClass: "md:row-span-2",
     borderClass: "border-yellow-500",
     overlayClass: "bg-yellow-500",
-    large: true,
     brushVariant: "secondary" as const,
   },
   {
     cardClass: "",
     borderClass: "border-defult-web",
     overlayClass: "bg-defult-web",
-    large: false,
     brushVariant: "tertiary" as const,
   },
   {
     cardClass: "",
-    borderClass: "border-yellow-500",
-    overlayClass: "bg-yellow-500",
-    large: false,
+    borderClass: "border-pink-500",
+    overlayClass: "bg-pink-500",
     brushVariant: "tertiary" as const,
   },
 ] as const
 
 interface EventsProps {
   items: EventListItem[]
-  className?: string
-  seeAllHref?: string
 }
 
 const container: Variants = {
@@ -69,14 +64,12 @@ const fadeUp: Variants = {
   },
 }
 
-export default function Events({
-  items,
-  className,
-  seeAllHref = "/events",
-}: EventsProps) {
+export default function Events({ items }: EventsProps) {
   const t = useTranslations("Events")
   const locale = useLocale()
   const visible = items.slice(0, 3)
+  const pick = (ar: string, en: string) =>
+    locale === "ar" ? ar || en : en || ar
 
   return (
     <motion.section
@@ -84,17 +77,14 @@ export default function Events({
       whileInView="visible"
       viewport={{ once: true, amount: 0.15 }}
       variants={container}
-      className={cn(
-        "flex w-full flex-col items-center bg-web-fourth py-16 md:py-24",
-        className,
-      )}
+      className="flex w-full flex-col items-center bg-web-fourth py-16 md:py-24"
     >
       <div className="w-full max-w-7xl px-6">
         <div className="flex flex-col items-center gap-10 md:gap-12">
           <div className="flex max-w-xl flex-col items-center gap-5 text-center">
             <motion.div variants={fadeUp}>
               <Link
-                href={seeAllHref}
+                href="/events"
                 className="inline-flex items-center gap-1.5 rounded-full border border-black bg-white px-3 py-1 text-sm font-medium text-black shadow-sm transition-colors hover:bg-black/5"
               >
                 <span className="size-2 shrink-0 rounded-full bg-green-500" />
@@ -122,15 +112,13 @@ export default function Events({
               className="grid w-full grid-cols-1 gap-3 md:grid-cols-[2fr_1fr] md:grid-rows-2"
             >
               {visible.map((event, idx) => {
-                const slot = SLOTS[idx] ?? SLOTS[SLOTS.length - 1]!
-                const title =
-                  locale === "ar"
-                    ? event.title_ar || event.title_en
-                    : event.title_en || event.title_ar
-                const description =
-                  locale === "ar"
-                    ? event.description_ar || event.description_en
-                    : event.description_en || event.description_ar
+                const slot = SLOTS[idx]!
+                const isLarge = idx === 0
+                const title = pick(event.title_ar, event.title_en)
+                const description = pick(
+                  event.description_ar,
+                  event.description_en,
+                )
                 return (
                   <motion.article
                     key={event.id}
@@ -148,10 +136,7 @@ export default function Events({
                     />
                     <BrushFrame
                       variant={slot.brushVariant}
-                      className={cn(
-                        "z-10",
-                        slot.large && "md:aspect-auto md:flex-1",
-                      )}
+                      className={cn("z-10", isLarge && "md:aspect-auto md:flex-1")}
                     >
                       {event.card_photo_url && (
                         <Image
@@ -160,7 +145,7 @@ export default function Events({
                           fill
                           className="object-cover"
                           sizes={
-                            slot.large
+                            isLarge
                               ? "(min-width: 768px) 66vw, 100vw"
                               : "(min-width: 768px) 33vw, 100vw"
                           }

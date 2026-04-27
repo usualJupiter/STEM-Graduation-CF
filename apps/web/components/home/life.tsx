@@ -10,11 +10,6 @@ import { Button } from "@workspace/ui/components/button"
 import { BrushFrame } from "@/components/brush-frame"
 import { Link } from "@/i18n/navigation"
 
-interface LifeProps {
-  ctaHref?: string
-  imageSrc?: string
-}
-
 const container: Variants = {
   hidden: {},
   visible: {
@@ -34,10 +29,7 @@ const fadeUp: Variants = {
   },
 }
 
-export default function Life({
-  ctaHref = "/gallery",
-  imageSrc = "assets/life.jpg",
-}: LifeProps) {
+export default function Life() {
   const t = useTranslations("Life")
 
   return (
@@ -76,7 +68,7 @@ export default function Life({
               asChild
               className="h-12 border-black px-6 text-base font-bold text-black [&_svg]:size-5 hover:bg-black/10 hover:text-black"
             >
-              <Link href={ctaHref}>
+              <Link href="/gallery">
                 {t("cta")}
                 <ArrowRight aria-hidden className="rtl:rotate-180" />
               </Link>
@@ -89,7 +81,7 @@ export default function Life({
         >
           <BrushFrame>
             <Image
-              src={imageSrc}
+              src="https://cdn.stem-program.com/assets/life.jpg"
               alt={t("imageAlt")}
               fill
               className="object-cover"
