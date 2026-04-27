@@ -32,7 +32,7 @@ export default function Header({
     <section className="relative w-full overflow-hidden bg-secondry-web">
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 select-none bg-[url('/assets/capstone-header-bg.svg')] bg-[length:100%_100%] bg-no-repeat"
+        className="pointer-events-none absolute inset-0 select-none bg-[url('https://cdn.stem-program.com/assets/capstone-header-bg.svg')] bg-[length:100%_100%] bg-no-repeat"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
