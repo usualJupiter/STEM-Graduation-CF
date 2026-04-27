@@ -4,8 +4,6 @@ import { useState } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "motion/react"
 
-import { cn } from "@workspace/ui/lib/utils"
-
 export type HoverExpandItem = {
   src: string
   alt: string
@@ -13,29 +11,23 @@ export type HoverExpandItem = {
 
 interface HoverExpandProps {
   items: HoverExpandItem[]
-  className?: string
-  defaultActive?: number
 }
 
-export function HoverExpand({
-  items,
-  className,
-  defaultActive = 0,
-}: HoverExpandProps) {
-  const [active, setActive] = useState(defaultActive)
+export function HoverExpand({ items }: HoverExpandProps) {
+  const [active, setActive] = useState(0)
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.2 }}
-      className={cn("flex w-full flex-col items-stretch gap-1", className)}
+      className="flex w-full flex-col items-stretch gap-1"
     >
       {items.map((item, index) => {
         const isActive = active === index
         return (
           <motion.div
-            key={index}
+            key={item.src}
             initial={false}
             animate={{ height: isActive ? "24rem" : "2.5rem" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}

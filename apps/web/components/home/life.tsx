@@ -81,7 +81,7 @@ export default function Life() {
         >
           <BrushFrame>
             <Image
-              src="https://cdn.stem-program.com/assets/life.jpg"
+              src="https://cdn.stem-program.com/assets/assets_life.avif"
               alt={t("imageAlt")}
               fill
               className="object-cover"

@@ -9,6 +9,8 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
+import type { ScheduleLevel } from "@/lib/api"
+
 const container: Variants = {
   hidden: {},
   visible: {
@@ -32,28 +34,20 @@ const LEVEL_KEYS = ["level1", "level2", "level3", "level4"] as const
 
 type LevelKey = (typeof LEVEL_KEYS)[number]
 
-const PLACEHOLDER_DRIVE_ID = "1jTnhBA7CO2Hx1DsLhVKeO7Z7D08TfhmE"
-const PLACEHOLDER_URL = `https://drive.google.com/file/d/${PLACEHOLDER_DRIVE_ID}/preview`
+const PLACEHOLDER_URL =
+  "https://drive.google.com/file/d/1jTnhBA7CO2Hx1DsLhVKeO7Z7D08TfhmE/preview"
 
 interface LecturesProps {
-  levels?: { level: number; drive_url: string }[]
-  defaultLevel?: LevelKey
+  levels: ScheduleLevel[]
 }
 
-export default function Lectures({
-  levels = [],
-  defaultLevel = "level1",
-}: LecturesProps) {
+export default function Lectures({ levels }: LecturesProps) {
   const t = useTranslations("Schedules")
-  const [level, setLevel] = useState<LevelKey>(defaultLevel)
+  const [level, setLevel] = useState<LevelKey>("level1")
 
-  const urlByLevel = new Map(levels.map((l) => [l.level, l.drive_url]))
-  const LEVEL_PDFS: Record<LevelKey, string> = {
-    level1: urlByLevel.get(1) ?? PLACEHOLDER_URL,
-    level2: urlByLevel.get(2) ?? PLACEHOLDER_URL,
-    level3: urlByLevel.get(3) ?? PLACEHOLDER_URL,
-    level4: urlByLevel.get(4) ?? PLACEHOLDER_URL,
-  }
+  const num = Number(level.slice(5))
+  const pdfUrl =
+    levels.find((l) => l.level === num)?.drive_url ?? PLACEHOLDER_URL
 
   return (
     <section className="bg-background px-6 py-12 md:px-8 md:py-16 lg:py-20">
@@ -92,7 +86,7 @@ export default function Lectures({
         >
           <iframe
             key={level}
-            src={LEVEL_PDFS[level]}
+            src={pdfUrl}
             title={t("pdfTitle")}
             className="h-[70vh] min-h-[480px] w-full"
             allow="autoplay"

@@ -18,12 +18,12 @@ import { cn } from "@workspace/ui/lib/utils"
 import { Link } from "@/i18n/navigation"
 
 const SLIDES = [
-  "https://cdn.stem-program.com/assets/project1.jpg",
-  "https://cdn.stem-program.com/assets/project2.jpg",
-  "https://cdn.stem-program.com/assets/project3.jpg",
-  "https://cdn.stem-program.com/assets/project4.jpg",
-  "https://cdn.stem-program.com/assets/project5.jpg",
-  "https://cdn.stem-program.com/assets/project6.jpg",
+  "https://cdn.stem-program.com/assets/assets_project1.avif",
+  "https://cdn.stem-program.com/assets/assets_project2.avif",
+  "https://cdn.stem-program.com/assets/assets_project3.avif",
+  "https://cdn.stem-program.com/assets/assets_project4.avif",
+  "https://cdn.stem-program.com/assets/assets_project5.avif",
+  "https://cdn.stem-program.com/assets/assets_project6.avif",
 ]
 
 const container: Variants = {

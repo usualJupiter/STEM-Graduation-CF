@@ -6,10 +6,6 @@ import { useTranslations } from "next-intl"
 
 import { BrushFrame } from "@/components/brush-frame"
 
-interface HeaderProps {
-  imageUrl?: string
-}
-
 const container: Variants = {
   hidden: {},
   visible: {
@@ -29,9 +25,7 @@ const fadeUp: Variants = {
   },
 }
 
-export default function Header({
-  imageUrl = "/assets/lectures.png",
-}: HeaderProps) {
+export default function Header() {
   const t = useTranslations("SchedulesHeader")
 
   return (
@@ -54,7 +48,7 @@ export default function Header({
           <motion.div variants={fadeUp}>
             <BrushFrame>
               <Image
-                src={imageUrl}
+                src="https://cdn.stem-program.com/assets/assets_lectures.avif"
                 alt={t("imageAlt")}
                 fill
                 sizes="(min-width: 1280px) 440px, (min-width: 1024px) 380px, 320px"

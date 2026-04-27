@@ -44,7 +44,7 @@ export default function Aword() {
           >
             <BrushFrame>
               <Image
-                src="https://cdn.stem-program.com/assets/drmarien.png"
+                src="https://cdn.stem-program.com/assets/assets_drmarien.avif"
                 alt={t("name")}
                 fill
                 sizes="(min-width: 768px) 298px, 100vw"

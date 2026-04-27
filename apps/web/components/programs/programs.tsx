@@ -41,17 +41,19 @@ const SUBJECT_KEYS = [
 
 type SubjectKey = (typeof SUBJECT_KEYS)[number]
 
-interface ProgramsProps {
-  defaultSubject?: SubjectKey
+const SUBJECT_IMAGES: Record<SubjectKey, string> = {
+  physics: "https://cdn.stem-program.com/assets/assets_pyhics.avif",
+  chemistry: "https://cdn.stem-program.com/assets/assets_chemistry.avif",
+  biology: "https://cdn.stem-program.com/assets/assets_bio.avif",
+  geology: "https://cdn.stem-program.com/assets/assets_geo.avif",
+  mathematics: "https://cdn.stem-program.com/assets/assets_math.avif",
 }
 
 const DETAIL_KEYS = ["course", "duration", "credit", "degree"] as const
 
-export default function Programs({
-  defaultSubject = "physics",
-}: ProgramsProps) {
+export default function Programs() {
   const t = useTranslations("Programs")
-  const [subject, setSubject] = useState<SubjectKey>(defaultSubject)
+  const [subject, setSubject] = useState<SubjectKey>("physics")
 
   return (
     <section className="bg-background px-6 py-12 md:px-8 md:py-16 lg:py-20">
@@ -63,25 +65,25 @@ export default function Programs({
         className="mx-auto flex max-w-7xl flex-col gap-6"
       >
         <motion.div variants={fadeUp}>
-        <ToggleGroup
-          type="single"
-          value={subject}
-          onValueChange={(val) => {
-            if (val) setSubject(val as SubjectKey)
-          }}
-          variant="outline"
-          className="w-full max-w-full flex-wrap md:w-fit md:flex-nowrap"
-        >
-          {SUBJECT_KEYS.map((key) => (
-            <ToggleGroupItem
-              key={key}
-              value={key}
-              className="h-10 min-w-[84px] max-w-[160px] flex-1 border-transparent bg-secondry-web px-3 text-sm font-medium text-white hover:bg-secondry-web/90 hover:text-white data-[state=on]:bg-main data-[state=on]:text-main-foreground md:h-14 md:min-w-12 md:max-w-none md:flex-none md:px-8 md:text-lg"
-            >
-              {t(`subjects.${key}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          <ToggleGroup
+            type="single"
+            value={subject}
+            onValueChange={(val) => {
+              if (val) setSubject(val as SubjectKey)
+            }}
+            variant="outline"
+            className="w-full max-w-full flex-wrap md:w-fit md:flex-nowrap"
+          >
+            {SUBJECT_KEYS.map((key) => (
+              <ToggleGroupItem
+                key={key}
+                value={key}
+                className="h-10 min-w-[84px] max-w-[160px] flex-1 border-transparent bg-secondry-web px-3 text-sm font-medium text-white hover:bg-secondry-web/90 hover:text-white data-[state=on]:bg-main data-[state=on]:text-main-foreground md:h-14 md:min-w-12 md:max-w-none md:flex-none md:px-8 md:text-lg"
+              >
+                {t(`subjects.${key}`)}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
         </motion.div>
 
         <motion.div
@@ -133,7 +135,7 @@ export default function Programs({
           >
             <BrushFrame variant="secondary">
               <Image
-                src="https://ui.shadcn.com/placeholder.svg"
+                src={SUBJECT_IMAGES[subject]}
                 alt={t("imageAlt")}
                 fill
                 sizes="(max-width: 1024px) 100vw, 420px"

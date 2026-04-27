@@ -10,7 +10,7 @@ import { Button } from "@workspace/ui/components/button"
 import { BrushFrame } from "@/components/brush-frame"
 import { Link } from "@/i18n/navigation"
 
-const HERO_IMAGE_URL = "https://cdn.stem-program.com/assets/hero.png"
+const HERO_IMAGE_URL = "https://cdn.stem-program.com/assets/assets_hero.avif"
 
 const container: Variants = {
   hidden: {},

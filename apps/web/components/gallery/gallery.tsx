@@ -9,45 +9,28 @@ import {
   type MotionValue,
 } from "motion/react"
 
-const PLACEHOLDER_IMAGES = [
-  "/assets/event1.jpg",
-  "/assets/project1.jpg",
-  "/assets/life.jpg",
-  "/assets/event2.jpg",
-  "/assets/prject2.jpg",
-  "/assets/hero.png",
-  "/assets/project3.jpg",
-  "/assets/event3.jpg",
-  "/assets/project4.jpg",
-  "/assets/project5.jpg",
-  "/assets/project6.jpg",
-  "/assets/project1.jpg",
-]
-
 interface GalleryProps {
-  images?: string[]
+  images: string[]
 }
 
 export default function Gallery({ images }: GalleryProps) {
-  const realImages = images ?? []
-  const all = realImages.length > 0 ? realImages : PLACEHOLDER_IMAGES
-
   const container = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ["start start", "end end"],
   })
 
+  const scaleStep = 0.5 / Math.max(1, images.length - 1)
+
   return (
     <section
       ref={container}
       className="relative flex w-full flex-col items-center justify-center bg-background pb-[30vh] pt-[10vh]"
     >
-      {all.map((src, i) => {
-        const scaleStep = 0.5 / Math.max(1, all.length - 1)
+      {images.map((src, i) => {
         const targetScale = Math.max(
           0.5,
-          1 - (all.length - i - 1) * scaleStep,
+          1 - (images.length - i - 1) * scaleStep,
         )
         return (
           <StickyCard
@@ -55,7 +38,7 @@ export default function Gallery({ images }: GalleryProps) {
             i={i}
             src={src}
             progress={scrollYProgress}
-            range={[(i / all.length) * 0.9, 1]}
+            range={[(i / images.length) * 0.9, 1]}
             targetScale={targetScale}
           />
         )

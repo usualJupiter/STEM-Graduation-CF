@@ -49,7 +49,7 @@ export default function Auth({ onGoogleLogin, hasError }: AuthProps) {
       </div>
       <div className="relative hidden min-h-screen w-1/2 lg:block">
         <Image
-          src="https://cdn.stem-program.com/assets/auth.png"
+          src="https://cdn.stem-program.com/assets/assets_auth.avif"
           alt={t("imageAlt")}
           fill
           sizes="50vw"

@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import { Globe, LogOut, Menu } from "lucide-react"
 import { useTranslations } from "next-intl"
 
@@ -23,6 +22,7 @@ import {
 } from "@workspace/ui/components/sheet"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { BrandLogo } from "@/components/brand-logo"
 import { Link, usePathname, useRouter } from "@/i18n/navigation"
 import { routing } from "@/i18n/routing"
 import { authClient } from "@/lib/auth-client"
@@ -76,13 +76,9 @@ export default function Nav({ className }: { className?: string }) {
       <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/dashboard" className="shrink-0">
-            <Image
-              src="https://cdn.stem-program.com/assets/logo-admin.png"
+            <BrandLogo
               alt={t("logoAlt")}
-              width={120}
-              height={120}
-              className="dark:invert"
-              unoptimized
+              className="h-10 w-auto object-contain"
               priority
             />
           </Link>
