@@ -1,12 +1,14 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 
 import Auth from "@/components/auth/auth"
 import { authClient } from "@/lib/auth-client"
 
 export default function AuthPage() {
   const { locale } = useParams<{ locale: string }>()
+  const searchParams = useSearchParams()
+  const hasError = searchParams.get("error") != null
 
   const handleGoogleLogin = async () => {
     const origin = window.location.origin
@@ -17,5 +19,5 @@ export default function AuthPage() {
     })
   }
 
-  return <Auth onGoogleLogin={handleGoogleLogin} />
+  return <Auth onGoogleLogin={handleGoogleLogin} hasError={hasError} />
 }

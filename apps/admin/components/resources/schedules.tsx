@@ -58,6 +58,7 @@ export default function Schedules() {
   const [submitSuccess, setSubmitSuccess] = useState(false)
 
   const form = useForm<FormValues>({
+    // @ts-expect-error zod@4 schema types don't satisfy @hookform/resolvers@5 overloads (runtime is fine)
     resolver: zodResolver(schema),
     defaultValues: { level1: "", level2: "", level3: "", level4: "" },
   })

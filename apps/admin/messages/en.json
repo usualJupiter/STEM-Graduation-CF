@@ -3,7 +3,8 @@
     "title": "Admin login",
     "description": "Use your Google account to sign in",
     "continueWithGoogle": "Continue with Google",
-    "imageAlt": "STEM admin login"
+    "imageAlt": "STEM admin login",
+    "loginFailed": "Login failed. Please try again."
   },
   "Events": {
     "title": "Events",

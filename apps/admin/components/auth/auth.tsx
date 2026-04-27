@@ -8,9 +8,10 @@ import { Google } from "@workspace/ui/components/svg"
 
 interface AuthProps {
   onGoogleLogin?: () => void
+  hasError?: boolean
 }
 
-export default function Auth({ onGoogleLogin }: AuthProps) {
+export default function Auth({ onGoogleLogin, hasError }: AuthProps) {
   const t = useTranslations("Auth")
 
   return (
@@ -26,6 +27,14 @@ export default function Auth({ onGoogleLogin }: AuthProps) {
                 {t("description")}
               </p>
             </div>
+            {hasError && (
+              <p
+                role="alert"
+                className="rounded-none border border-destructive bg-destructive/5 p-3 text-sm text-destructive"
+              >
+                {t("loginFailed")}
+              </p>
+            )}
             <div className="flex flex-col gap-6">
               <Button
                 onClick={onGoogleLogin}
