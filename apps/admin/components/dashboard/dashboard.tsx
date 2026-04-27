@@ -1,12 +1,14 @@
 "use client"
 
-import { Fragment } from "react"
+import { Fragment, useState } from "react"
 import { Star, Upload, ClipboardList, UserPlus, ArrowRight } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { Button } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
 import Link from "next/link"
 import { type LucideIcon } from "lucide-react"
+
+import CreateEvent from "@/components/events/createEvent"
 
 interface DashboardProps {
   className?: string
@@ -52,6 +54,7 @@ const quickAccessItems: {
 
 export default function Dashboard({ className }: DashboardProps) {
   const t = useTranslations("Dashboard")
+  const [createOpen, setCreateOpen] = useState(false)
 
   return (
     <div className="flex w-full flex-col items-center pb-6">
@@ -105,37 +108,60 @@ export default function Dashboard({ className }: DashboardProps) {
               </div>
 
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {quickAccessItems.map((item) => (
-                  <Link
-                    key={item.key}
-                    href={item.href}
-                    className="flex items-start gap-2 rounded-none border px-3 py-2.5"
-                  >
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-none border bg-muted">
-                      <item.icon className="size-4 text-foreground" />
-                    </div>
-                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                      <span className="text-sm font-medium leading-4 text-foreground">
-                        {t(`quickAccess.items.${item.key}.title`)}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {t(`quickAccess.items.${item.key}.description`)}
-                      </span>
-                    </div>
-                    <div className="flex h-10 items-center">
-                      <Button variant="ghost" size="icon" asChild>
-                        <span>
-                          <ArrowRight />
+                {quickAccessItems.map((item) => {
+                  const inner = (
+                    <>
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-none border bg-muted">
+                        <item.icon className="size-4 text-foreground" />
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+                        <span className="text-sm font-medium leading-4 text-foreground">
+                          {t(`quickAccess.items.${item.key}.title`)}
                         </span>
-                      </Button>
-                    </div>
-                  </Link>
-                ))}
+                        <span className="text-sm text-muted-foreground">
+                          {t(`quickAccess.items.${item.key}.description`)}
+                        </span>
+                      </div>
+                      <div className="flex h-10 items-center">
+                        <Button variant="ghost" size="icon" asChild>
+                          <span>
+                            <ArrowRight />
+                          </span>
+                        </Button>
+                      </div>
+                    </>
+                  )
+
+                  if (item.key === "createEvent") {
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setCreateOpen(true)}
+                        className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
+                      >
+                        {inner}
+                      </button>
+                    )
+                  }
+
+                  return (
+                    <Link
+                      key={item.key}
+                      href={item.href}
+                      className="flex items-start gap-2 rounded-none border px-3 py-2.5"
+                    >
+                      {inner}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <CreateEvent open={createOpen} onOpenChange={setCreateOpen} />
     </div>
   )
 }

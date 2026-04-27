@@ -50,3 +50,46 @@ export async function getEvent(id: number): Promise<EventDetail | null> {
   const json = (await res.json()) as DetailResponse
   return json.data
 }
+
+export interface GalleryPhoto {
+  id: number
+  url: string
+  created_at: string
+}
+
+interface GalleryListResponse {
+  data: GalleryPhoto[]
+  meta: { total: number; page: number; limit: number }
+}
+
+export async function getGalleryPhotos(opts?: {
+  limit?: number
+}): Promise<GalleryPhoto[]> {
+  const params = new URLSearchParams({
+    limit: String(opts?.limit ?? 50),
+  })
+  const res = await fetch(`${API_URL}/api/gallery?${params.toString()}`, {
+    next: { revalidate: 60 },
+  })
+  if (!res.ok) throw new Error(`Failed to fetch gallery (${res.status})`)
+  const json = (await res.json()) as GalleryListResponse
+  return json.data
+}
+
+export interface ScheduleLevel {
+  level: number
+  drive_url: string
+}
+
+interface ScheduleListResponse {
+  data: ScheduleLevel[]
+}
+
+export async function getSchedules(): Promise<ScheduleLevel[]> {
+  const res = await fetch(`${API_URL}/api/schedules`, {
+    next: { revalidate: 60 },
+  })
+  if (!res.ok) throw new Error(`Failed to fetch schedules (${res.status})`)
+  const json = (await res.json()) as ScheduleListResponse
+  return json.data
+}

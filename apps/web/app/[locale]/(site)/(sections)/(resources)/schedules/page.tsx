@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/schedules/header"
 import Lectures from "@/components/schedules/lectures"
+import { getSchedules } from "@/lib/api"
 
 export async function generateMetadata({
   params,
@@ -18,11 +19,13 @@ export async function generateMetadata({
   }
 }
 
-export default function SchedulesPage() {
+export default async function SchedulesPage() {
+  const levels = await getSchedules().catch(() => [])
+
   return (
     <main>
       <Header />
-      <Lectures />
+      <Lectures levels={levels} />
     </main>
   )
 }

@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/gallery/header"
 import Gallery from "@/components/gallery/gallery"
+import { getGalleryPhotos } from "@/lib/api"
 
 export async function generateMetadata({
   params,
@@ -18,11 +19,14 @@ export async function generateMetadata({
   }
 }
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const photos = await getGalleryPhotos({ limit: 500 }).catch(() => [])
+  const images = photos.map((p) => p.url)
+
   return (
     <main>
       <Header />
-      <Gallery />
+      <Gallery images={images} />
     </main>
   )
 }

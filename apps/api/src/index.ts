@@ -4,9 +4,13 @@ import { cors } from "hono/cors"
 import { createAuth } from "./lib/auth"
 import { createDb } from "./lib/db"
 import adminEvents from "./routes/admin/events"
+import adminGallery from "./routes/admin/gallery"
+import adminSchedules from "./routes/admin/schedules"
 import adminUploads from "./routes/admin/uploads"
 import allowedEmails from "./routes/allowed-emails"
 import events from "./routes/events"
+import gallery from "./routes/gallery"
+import schedules from "./routes/schedules"
 import type { AppEnv } from "./types"
 
 const app = new Hono<AppEnv>()
@@ -38,8 +42,12 @@ app.on(["POST", "GET"], "/api/auth/*", (c) =>
 
 app.route("/api/allowed-emails", allowedEmails)
 app.route("/api/events", events)
+app.route("/api/gallery", gallery)
+app.route("/api/schedules", schedules)
 app.route("/api/admin/events", adminEvents)
 app.route("/api/admin/uploads", adminUploads)
+app.route("/api/admin/gallery", adminGallery)
+app.route("/api/admin/schedules", adminSchedules)
 
 app.get("/", (c) => c.text("STEM API"))
 

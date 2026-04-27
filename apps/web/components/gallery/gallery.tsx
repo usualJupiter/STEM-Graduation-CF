@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useRef } from "react"
 import Image from "next/image"
 import {
   motion,
@@ -9,7 +9,7 @@ import {
   type MotionValue,
 } from "motion/react"
 
-const GALLERY_IMAGES = [
+const PLACEHOLDER_IMAGES = [
   "/assets/event1.jpg",
   "/assets/project1.jpg",
   "/assets/life.jpg",
@@ -24,73 +24,78 @@ const GALLERY_IMAGES = [
   "/assets/project1.jpg",
 ]
 
-export default function Gallery() {
-  const gallery = useRef<HTMLDivElement>(null)
-  const [dimension, setDimension] = useState({ width: 0, height: 0 })
+interface GalleryProps {
+  images?: string[]
+}
 
+export default function Gallery({ images }: GalleryProps) {
+  const realImages = images ?? []
+  const all = realImages.length > 0 ? realImages : PLACEHOLDER_IMAGES
+
+  const container = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
-    target: gallery,
-    offset: ["start end", "end start"],
+    target: container,
+    offset: ["start start", "end end"],
   })
 
-  const { height } = dimension
-  const y = useTransform(scrollYProgress, [0, 1], [0, height * 2])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, height * 3.3])
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, height * 1.25])
-  const y4 = useTransform(scrollYProgress, [0, 1], [0, height * 3])
-
-  useEffect(() => {
-    const resize = () => {
-      setDimension({ width: window.innerWidth, height: window.innerHeight })
-    }
-    window.addEventListener("resize", resize)
-    resize()
-    return () => window.removeEventListener("resize", resize)
-  }, [])
-
   return (
-    <section className="relative bg-background px-4 py-16 md:px-8 md:py-24">
-      <div
-        ref={gallery}
-        className="relative box-border flex h-[175vh] gap-[2vw] overflow-hidden bg-white p-[2vw]"
-      >
-        <Column images={GALLERY_IMAGES.slice(0, 3)} y={y} top="-45%" />
-        <Column images={GALLERY_IMAGES.slice(3, 6)} y={y2} top="-95%" />
-        <Column images={GALLERY_IMAGES.slice(6, 9)} y={y3} top="-45%" />
-        <Column images={GALLERY_IMAGES.slice(9, 12)} y={y4} top="-75%" />
-      </div>
+    <section
+      ref={container}
+      className="relative flex w-full flex-col items-center justify-center bg-background pb-[30vh] pt-[10vh]"
+    >
+      {all.map((src, i) => {
+        const scaleStep = 0.5 / Math.max(1, all.length - 1)
+        const targetScale = Math.max(
+          0.5,
+          1 - (all.length - i - 1) * scaleStep,
+        )
+        return (
+          <StickyCard
+            key={`${src}-${i}`}
+            i={i}
+            src={src}
+            progress={scrollYProgress}
+            range={[(i / all.length) * 0.9, 1]}
+            targetScale={targetScale}
+          />
+        )
+      })}
     </section>
   )
 }
 
-type ColumnProps = {
-  images: string[]
-  y: MotionValue<number>
-  top: string
+interface StickyCardProps {
+  i: number
+  src: string
+  progress: MotionValue<number>
+  range: [number, number]
+  targetScale: number
 }
 
-function Column({ images, y, top }: ColumnProps) {
+function StickyCard({ i, src, progress, range, targetScale }: StickyCardProps) {
+  const scale = useTransform(progress, range, [1, targetScale])
+  const stackOffset = Math.min(i * 12, 240) + 80
+
   return (
-    <motion.div
-      className="relative flex h-full w-1/4 min-w-[250px] flex-col gap-[2vw]"
-      style={{ y, top }}
-    >
-      {images.map((src, i) => (
-        <div
-          key={i}
-          className="relative aspect-[3/4] w-full overflow-hidden"
-        >
-          <Image
-            src={src}
-            alt=""
-            fill
-            sizes="(min-width: 1024px) 25vw, 50vw"
-            className="pointer-events-none object-cover"
-            priority
-            unoptimized
-          />
-        </div>
-      ))}
-    </motion.div>
+    <div className="sticky top-0 flex items-center justify-center">
+      <motion.div
+        style={{
+          scale,
+          top: `calc(-5vh + ${stackOffset}px)`,
+        }}
+        className="relative -top-1/4 flex aspect-[4/3] w-[92vw] max-w-[1200px] origin-top flex-col overflow-hidden rounded-3xl shadow-2xl"
+      >
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes="(min-width: 768px) 1200px, 92vw"
+          className="object-cover"
+          priority={i < 2}
+          loading={i < 2 ? "eager" : "lazy"}
+          unoptimized
+        />
+      </motion.div>
+    </div>
   )
 }

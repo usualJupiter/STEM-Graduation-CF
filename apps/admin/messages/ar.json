@@ -102,6 +102,57 @@
       }
     }
   },
+  "Resources": {
+    "title": "المصادر",
+    "description": "إدارة مصادر الموقع، رفع الصور إلى المعرض والمزيد.",
+    "tabs": {
+      "gallery": "المعرض",
+      "lectureSchedules": "جداول المحاضرات"
+    },
+    "gallery": {
+      "spaceUsage": "المساحة المستخدمة: {used} من {total}",
+      "upload": "رفع",
+      "uploading": "جارٍ الرفع…",
+      "actionsFor": "إجراءات {name}",
+      "columns": {
+        "id": "المعرّف",
+        "fileName": "اسم الملف",
+        "size": "الحجم",
+        "date": "التاريخ",
+        "author": "المؤلف"
+      },
+      "previous": "السابق",
+      "next": "التالي",
+      "empty": "لا توجد صور بعد.",
+      "limitReached": "المعرض ممتلئ. احذف صورًا لتحرير مساحة.",
+      "fileTooLarge": "يجب أن يكون حجم الملف {maxKb} ك.ب أو أقل.",
+      "fileType": "يُسمح فقط بصور JPEG أو PNG أو WebP أو GIF.",
+      "tooManyFiles": "يمكنك رفع {max} صور كحد أقصى في المرة الواحدة.",
+      "actionsMenu": {
+        "view": "عرض",
+        "delete": "حذف"
+      },
+      "deleteDialog": {
+        "title": "حذف الصورة",
+        "description": "سيؤدي هذا إلى إزالة الصورة نهائيًا من المعرض و CDN. لا يمكن التراجع عن هذا الإجراء.",
+        "deleting": "الصورة المراد حذفها: {name}",
+        "cancel": "إلغاء",
+        "confirm": "حذف",
+        "submitting": "جارٍ الحذف…",
+        "failed": "فشل حذف الصورة"
+      }
+    },
+    "schedules": {
+      "title": "جداول المحاضرات",
+      "description": "أدخل رابط معاينة Google Drive لكل مستوى.",
+      "level": "المستوى {number}",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ…",
+      "saved": "تم الحفظ.",
+      "saveFailed": "فشل حفظ التغييرات.",
+      "invalidUrl": "يجب أن يكون رابط معاينة من Google Drive."
+    }
+  },
   "Dashboard": {
     "title": "المشروع جاهز!",
     "description": "يمكنك الآن إضافة المكوّنات والبدء في البناء.",

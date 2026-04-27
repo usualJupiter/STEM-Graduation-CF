@@ -9,6 +9,8 @@ export interface Database {
   allowed_emails: AllowedEmailTable
   events: EventTable
   event_photos: EventPhotoTable
+  gallery_photos: GalleryPhotoTable
+  schedule_levels: ScheduleLevelTable
 }
 
 interface UserTable {
@@ -83,6 +85,22 @@ interface EventPhotoTable {
   photo_key: string
   position: number
   created_at: string
+}
+
+interface GalleryPhotoTable {
+  id: Generated<number>
+  photo_key: string
+  file_size: number
+  original_name: string | null
+  author_id: string
+  created_at: string
+}
+
+interface ScheduleLevelTable {
+  level: number
+  drive_url: string
+  updated_at: string
+  updated_by: string | null
 }
 
 export function createDb(d1: D1Database): Kysely<Database> {

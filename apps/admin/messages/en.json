@@ -102,6 +102,57 @@
       }
     }
   },
+  "Resources": {
+    "title": "Resources",
+    "description": "Manage website resources, upload images to gallery and more.",
+    "tabs": {
+      "gallery": "Gallery",
+      "lectureSchedules": "Lecture Schedules"
+    },
+    "gallery": {
+      "spaceUsage": "Space Usage: {used} of {total}",
+      "upload": "Upload",
+      "uploading": "Uploading…",
+      "actionsFor": "Actions for {name}",
+      "columns": {
+        "id": "ID",
+        "fileName": "File Name",
+        "size": "Size",
+        "date": "Date",
+        "author": "Author"
+      },
+      "previous": "Previous",
+      "next": "Next",
+      "empty": "No images yet.",
+      "limitReached": "Gallery is full. Delete images to free up space.",
+      "fileTooLarge": "Files must be {maxKb} KB or smaller.",
+      "fileType": "Only JPEG, PNG, WebP, or GIF images are allowed.",
+      "tooManyFiles": "You can upload at most {max} photos at once.",
+      "actionsMenu": {
+        "view": "View",
+        "delete": "Delete"
+      },
+      "deleteDialog": {
+        "title": "Delete photo",
+        "description": "This will permanently remove the photo from the gallery and the CDN. This action cannot be undone.",
+        "deleting": "Photo being deleted: {name}",
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "submitting": "Deleting…",
+        "failed": "Failed to delete photo"
+      }
+    },
+    "schedules": {
+      "title": "Lecture Schedules",
+      "description": "Insert Google Drive Preview link direct to each level.",
+      "level": "Level {number}",
+      "save": "Save Changes",
+      "saving": "Saving…",
+      "saved": "Saved.",
+      "saveFailed": "Failed to save changes.",
+      "invalidUrl": "Must be a Google Drive preview URL."
+    }
+  },
   "Dashboard": {
     "title": "Project ready!",
     "description": "You may now add components and start building.",
