@@ -2,13 +2,14 @@
 
 import Image from "next/image"
 import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 
 import { cn } from "@workspace/ui/lib/utils"
 
 import { BrushFrame } from "@/components/brush-frame"
 import { Link } from "@/i18n/navigation"
+import { fadeUpVariants, sectionContainer } from "@/lib/animations"
 import type { EventListItem } from "@/lib/api"
 
 const SLOTS = [
@@ -36,34 +37,6 @@ interface EventsProps {
   items: EventListItem[]
 }
 
-const container: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-}
-
-const gridContainer: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-}
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-}
-
 export default function Events({ items }: EventsProps) {
   const t = useTranslations("Events")
   const locale = useLocale()
@@ -76,13 +49,13 @@ export default function Events({ items }: EventsProps) {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.15 }}
-      variants={container}
+      variants={sectionContainer}
       className="flex w-full flex-col items-center bg-web-fourth py-16 md:py-24"
     >
       <div className="w-full max-w-7xl px-6">
         <div className="flex flex-col items-center gap-10 md:gap-12">
           <div className="flex max-w-xl flex-col items-center gap-5 text-center">
-            <motion.div variants={fadeUp}>
+            <motion.div variants={fadeUpVariants}>
               <Link
                 href="/events"
                 className="inline-flex items-center gap-1.5 rounded-full border border-black bg-white px-3 py-1 text-sm font-medium text-black shadow-sm transition-colors hover:bg-black/5"
@@ -93,13 +66,13 @@ export default function Events({ items }: EventsProps) {
               </Link>
             </motion.div>
             <motion.h2
-              variants={fadeUp}
+              variants={fadeUpVariants}
               className="text-3xl font-semibold tracking-tight text-black md:text-5xl md:leading-[48px]"
             >
               {t("heading")}
             </motion.h2>
             <motion.p
-              variants={fadeUp}
+              variants={fadeUpVariants}
               className="text-base text-black/70 md:text-lg md:leading-8"
             >
               {t("description")}
@@ -108,7 +81,7 @@ export default function Events({ items }: EventsProps) {
 
           {visible.length > 0 && (
             <motion.div
-              variants={gridContainer}
+              variants={sectionContainer}
               className="grid w-full grid-cols-1 gap-3 md:grid-cols-[2fr_1fr] md:grid-rows-2"
             >
               {visible.map((event, idx) => {
@@ -122,7 +95,7 @@ export default function Events({ items }: EventsProps) {
                 return (
                   <motion.article
                     key={event.id}
-                    variants={fadeUp}
+                    variants={fadeUpVariants}
                     className={cn(
                       "group relative flex flex-col overflow-hidden border-[8px] bg-white shadow-sm focus-within:ring-2 focus-within:ring-black/40",
                       slot.cardClass,

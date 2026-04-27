@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { motion, type Variants } from "motion/react"
+import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 
 import {
@@ -11,25 +11,7 @@ import {
 } from "@workspace/ui/components/toggle-group"
 
 import { BrushFrame } from "@/components/brush-frame"
-
-const container: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-}
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-}
+import { fadeUpVariants, sectionContainer } from "@/lib/animations"
 
 const SUBJECT_KEYS = [
   "physics",
@@ -61,10 +43,10 @@ export default function Programs() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.15 }}
-        variants={container}
+        variants={sectionContainer}
         className="mx-auto flex max-w-7xl flex-col gap-6"
       >
-        <motion.div variants={fadeUp}>
+        <motion.div variants={fadeUpVariants}>
           <ToggleGroup
             type="single"
             value={subject}
@@ -91,12 +73,12 @@ export default function Programs() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
-          variants={container}
+          variants={sectionContainer}
           className="flex flex-col gap-6 lg:flex-row"
         >
           <div className="flex min-w-0 flex-1 flex-col gap-6">
             <motion.article
-              variants={fadeUp}
+              variants={fadeUpVariants}
               className="rounded-xl border border-secondry-web bg-card shadow-sm"
             >
               <header className="flex flex-col gap-1 p-4">
@@ -122,7 +104,7 @@ export default function Programs() {
             </motion.article>
 
             <motion.p
-              variants={fadeUp}
+              variants={fadeUpVariants}
               className="whitespace-pre-line break-words text-base leading-7 text-foreground"
             >
               {t(`details.${subject}.description`)}
@@ -130,7 +112,7 @@ export default function Programs() {
           </div>
 
           <motion.div
-            variants={fadeUp}
+            variants={fadeUpVariants}
             className="w-full shrink-0 lg:w-[420px]"
           >
             <BrushFrame variant="secondary">

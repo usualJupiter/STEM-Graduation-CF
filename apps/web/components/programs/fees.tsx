@@ -1,28 +1,11 @@
 "use client"
 
-import { motion, type Variants } from "motion/react"
+import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 
+import { fadeUpVariants, sectionContainer } from "@/lib/animations"
+
 const FEE_SECTIONS = ["tuition", "graduation"] as const
-
-const container: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-}
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-}
 
 export default function Fees() {
   const t = useTranslations("Fees")
@@ -33,14 +16,14 @@ export default function Fees() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.15 }}
-        variants={container}
+        variants={sectionContainer}
         className="mx-auto max-w-7xl px-6"
       >
         <div className="flex max-w-3xl flex-col gap-10 text-start">
           {FEE_SECTIONS.map((key) => (
             <motion.article
               key={key}
-              variants={fadeUp}
+              variants={fadeUpVariants}
               className="flex flex-col gap-5 text-start"
             >
               <h2 className="text-2xl font-bold leading-none text-black md:text-4xl">

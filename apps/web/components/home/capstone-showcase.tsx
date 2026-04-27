@@ -4,7 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import Autoplay from "embla-carousel-autoplay"
 import { ArrowUpRight } from "lucide-react"
-import { motion, type Variants } from "motion/react"
+import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 
 import {
@@ -16,6 +16,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { Link } from "@/i18n/navigation"
+import { fadeUpVariants, sectionContainer } from "@/lib/animations"
 
 const SLIDES = [
   "https://cdn.stem-program.com/assets/assets_project1.avif",
@@ -25,25 +26,6 @@ const SLIDES = [
   "https://cdn.stem-program.com/assets/assets_project5.avif",
   "https://cdn.stem-program.com/assets/assets_project6.avif",
 ]
-
-const container: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-}
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-}
 
 export default function CapstoneShow() {
   const t = useTranslations("CapstoneShow")
@@ -68,11 +50,11 @@ export default function CapstoneShow() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      variants={container}
+      variants={sectionContainer}
       className="w-full bg-white py-16 md:py-24"
     >
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-5 px-4 md:px-6">
-        <motion.div variants={fadeUp}>
+        <motion.div variants={fadeUpVariants}>
           <Link
             href="/capstones"
             className="inline-flex items-center gap-1.5 rounded-full border border-black bg-white px-3 py-1 text-sm font-medium text-black shadow-sm transition-colors hover:bg-black/5"
@@ -83,20 +65,20 @@ export default function CapstoneShow() {
           </Link>
         </motion.div>
         <motion.h2
-          variants={fadeUp}
+          variants={fadeUpVariants}
           className="max-w-[576px] text-center text-2xl font-semibold tracking-tight text-black md:text-4xl md:leading-10"
         >
           {t("heading")}
         </motion.h2>
         <motion.p
-          variants={fadeUp}
+          variants={fadeUpVariants}
           className="max-w-[576px] text-center text-base text-black/70 md:text-lg md:leading-8"
         >
           {t("description")}
         </motion.p>
       </div>
 
-      <motion.div variants={fadeUp} className="mt-8 w-full md:mt-12">
+      <motion.div variants={fadeUpVariants} className="mt-8 w-full md:mt-12">
         <Carousel
           setApi={setApi}
           className="w-full"
