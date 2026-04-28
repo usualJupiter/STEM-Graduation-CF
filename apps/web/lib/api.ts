@@ -1,5 +1,12 @@
 const API_URL = process.env.API_URL ?? "http://localhost:8787"
 
+async function fetchJson<T>(path: string, label: string): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`, { next: { revalidate: 60 } })
+  if (!res.ok) throw new Error(`Failed to fetch ${label} (${res.status})`)
+  const json = (await res.json()) as { data: T }
+  return json.data
+}
+
 export interface EventListItem {
   id: number
   title_en: string
@@ -16,15 +23,6 @@ export interface EventDetail extends EventListItem {
   photos: Array<{ id: number; position: number; url: string }>
 }
 
-interface ListResponse {
-  data: EventListItem[]
-  meta: { total: number; page: number; limit: number }
-}
-
-interface DetailResponse {
-  data: EventDetail
-}
-
 export async function getEvents(opts?: {
   sort?: "dateNewest" | "dateOldest" | "titleAsc" | "titleDesc"
   limit?: number
@@ -33,12 +31,7 @@ export async function getEvents(opts?: {
     sort: opts?.sort ?? "dateNewest",
     limit: String(opts?.limit ?? 50),
   })
-  const res = await fetch(`${API_URL}/api/events?${params.toString()}`, {
-    next: { revalidate: 60 },
-  })
-  if (!res.ok) throw new Error(`Failed to fetch events (${res.status})`)
-  const json = (await res.json()) as ListResponse
-  return json.data
+  return fetchJson<EventListItem[]>(`/api/events?${params}`, "events")
 }
 
 export async function getEvent(id: number): Promise<EventDetail | null> {
@@ -47,8 +40,7 @@ export async function getEvent(id: number): Promise<EventDetail | null> {
   })
   if (res.status === 404) return null
   if (!res.ok) throw new Error(`Failed to fetch event (${res.status})`)
-  const json = (await res.json()) as DetailResponse
-  return json.data
+  return ((await res.json()) as { data: EventDetail }).data
 }
 
 export interface GalleryPhoto {
@@ -57,23 +49,13 @@ export interface GalleryPhoto {
   created_at: string
 }
 
-interface GalleryListResponse {
-  data: GalleryPhoto[]
-  meta: { total: number; page: number; limit: number }
-}
-
 export async function getGalleryPhotos(opts?: {
   limit?: number
 }): Promise<GalleryPhoto[]> {
   const params = new URLSearchParams({
     limit: String(opts?.limit ?? 50),
   })
-  const res = await fetch(`${API_URL}/api/gallery?${params.toString()}`, {
-    next: { revalidate: 60 },
-  })
-  if (!res.ok) throw new Error(`Failed to fetch gallery (${res.status})`)
-  const json = (await res.json()) as GalleryListResponse
-  return json.data
+  return fetchJson<GalleryPhoto[]>(`/api/gallery?${params}`, "gallery")
 }
 
 export interface ScheduleLevel {
@@ -81,15 +63,6 @@ export interface ScheduleLevel {
   drive_url: string
 }
 
-interface ScheduleListResponse {
-  data: ScheduleLevel[]
-}
-
 export async function getSchedules(): Promise<ScheduleLevel[]> {
-  const res = await fetch(`${API_URL}/api/schedules`, {
-    next: { revalidate: 60 },
-  })
-  if (!res.ok) throw new Error(`Failed to fetch schedules (${res.status})`)
-  const json = (await res.json()) as ScheduleListResponse
-  return json.data
+  return fetchJson<ScheduleLevel[]>(`/api/schedules`, "schedules")
 }
