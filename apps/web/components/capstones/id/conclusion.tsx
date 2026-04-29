@@ -9,14 +9,11 @@ import {
 } from "./animations"
 
 interface ConclusionProps {
-  title?: string
-  description?: string
+  title: string
+  description: string
 }
 
-export default function Conclusion({
-  title = "Conclusion",
-  description = "This project turns plastic waste into opportunity—transforming bottles into 3D printing filament that supports innovation, sustainability, and health. It's a small step toward a cleaner planet and a brighter future—one bottle at a time.",
-}: ConclusionProps) {
+export default function Conclusion({ title, description }: ConclusionProps) {
   return (
     <motion.section
       initial="hidden"
@@ -34,7 +31,7 @@ export default function Conclusion({
         </motion.h2>
         <motion.p
           variants={fadeUpVariants}
-          className="text-base leading-8 text-primary/80 md:text-lg"
+          className="whitespace-pre-line text-base leading-8 text-primary/80 md:text-lg"
         >
           {description}
         </motion.p>

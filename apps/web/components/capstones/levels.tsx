@@ -1,12 +1,13 @@
 "use client"
 
 import { motion, type Variants } from "motion/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 
 import {
   CapstoneCarousel,
   type CapstoneCarouselItem,
 } from "./capstone-carousel"
+import type { CapstoneListItem } from "@/lib/api"
 
 const containerVariants: Variants = {
   hidden: {},
@@ -26,70 +27,85 @@ const fadeUpVariants: Variants = {
 
 const inViewport = { once: true, amount: 0.2 } as const
 
-const PROJECT_IMAGES = [
-  "/assets/project1.jpg",
-  "/assets/prject2.jpg",
-  "/assets/project3.jpg",
-  "/assets/project4.jpg",
-  "/assets/project5.jpg",
-  "/assets/project6.jpg",
-]
+const FALLBACK_IMAGE = "/assets/project1.jpg"
 
 const LEVELS = [
   {
+    level: 1,
     key: "level1",
     sectionClass: "bg-secondry-web",
     headingClass: "text-main-foreground",
+    emptyClass: "text-main-foreground/70",
   },
   {
+    level: 2,
     key: "level2",
     sectionClass: "bg-web-third",
     headingClass: "text-primary",
+    emptyClass: "text-primary/70",
   },
   {
+    level: 3,
     key: "level3",
     sectionClass: "bg-white",
     headingClass: "text-primary",
+    emptyClass: "text-primary/70",
   },
 ] as const
 
-type LevelKey = (typeof LEVELS)[number]["key"]
-
-function buildItems(level: LevelKey): CapstoneCarouselItem[] {
-  return PROJECT_IMAGES.map((src, i) => ({
-    id: `${level}-${i + 1}`,
-    src,
-    alt: `${level} capstone ${i + 1}`,
-  }))
+interface LevelsProps {
+  items: CapstoneListItem[]
 }
 
-export default function Levels() {
-  const t = useTranslations("Capstones.levels")
+export default function Levels({ items }: LevelsProps) {
+  const t = useTranslations("Capstones")
+  const locale = useLocale()
 
   return (
     <div className="flex flex-col">
-      {LEVELS.map(({ key, sectionClass, headingClass }) => (
-        <motion.section
-          key={key}
-          initial="hidden"
-          whileInView="visible"
-          viewport={inViewport}
-          variants={containerVariants}
-          className={`relative w-full overflow-hidden py-16 ${sectionClass}`}
-        >
-          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 md:gap-10">
-            <motion.h2
-              variants={fadeUpVariants}
-              className={`text-2xl font-bold md:text-4xl ${headingClass}`}
-            >
-              {t(key)}
-            </motion.h2>
-            <motion.div variants={fadeUpVariants}>
-              <CapstoneCarousel items={buildItems(key)} />
-            </motion.div>
-          </div>
-        </motion.section>
-      ))}
+      {LEVELS.map(({ level, key, sectionClass, headingClass, emptyClass }) => {
+        const filtered = items.filter((c) => c.level === level)
+        const carouselItems: CapstoneCarouselItem[] = filtered.map((c) => ({
+          slug: c.slug,
+          src: c.card_photo_url ?? FALLBACK_IMAGE,
+          alt:
+            locale === "ar"
+              ? c.title_ar || c.title_en
+              : c.title_en || c.title_ar,
+        }))
+
+        return (
+          <motion.section
+            key={key}
+            initial="hidden"
+            whileInView="visible"
+            viewport={inViewport}
+            variants={containerVariants}
+            className={`relative w-full overflow-hidden py-16 ${sectionClass}`}
+          >
+            <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 md:gap-10">
+              <motion.h2
+                variants={fadeUpVariants}
+                className={`text-2xl font-bold md:text-4xl ${headingClass}`}
+              >
+                {t(`levels.${key}`)}
+              </motion.h2>
+              {carouselItems.length > 0 ? (
+                <motion.div variants={fadeUpVariants}>
+                  <CapstoneCarousel items={carouselItems} />
+                </motion.div>
+              ) : (
+                <motion.p
+                  variants={fadeUpVariants}
+                  className={`text-base ${emptyClass}`}
+                >
+                  {t("empty")}
+                </motion.p>
+              )}
+            </div>
+          </motion.section>
+        )
+      })}
     </div>
   )
 }

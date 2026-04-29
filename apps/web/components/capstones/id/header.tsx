@@ -5,28 +5,23 @@ import { motion } from "motion/react"
 import { containerVariants, fadeUpVariants } from "./animations"
 
 interface HeaderProps {
-  tagline?: string
-  title?: string
-  description?: string
-  supervisorLabel?: string
-  supervisorNames?: string
-  studentsLabel?: string
-  studentsNames?: string[]
+  tagline: string
+  title: string
+  description: string
+  supervisorLabel: string
+  supervisorNames: string
+  studentsLabel: string
+  studentsLines: string[]
 }
 
-const defaultStudentsNames = [
-  "Ahmed Salama & Amr Khaled & Aisha Gamal & Bassem Nabil& Merna Osama",
-  "Mira Mekhaeel & Rabab Sayed & Shereen Salah & Yasmine Fawzy",
-]
-
 export default function Header({
-  tagline = "Level 3 - Second Semester - 2025",
-  title = "Bottle To Fiber",
-  description = '(Producing filaments from recycled bottles "PET" for 3D printer)',
-  supervisorLabel = "Supervisor",
-  supervisorNames = "Dr. Omar Abdel- Japer & Dr. Zainab Mahmoud",
-  studentsLabel = "Students",
-  studentsNames = defaultStudentsNames,
+  tagline,
+  title,
+  description,
+  supervisorLabel,
+  supervisorNames,
+  studentsLabel,
+  studentsLines,
 }: HeaderProps) {
   return (
     <section className="relative w-full overflow-hidden bg-secondry-web">
@@ -67,35 +62,43 @@ export default function Header({
               {description}
             </motion.p>
 
-            <motion.h2
-              variants={fadeUpVariants}
-              className="text-xl font-semibold tracking-tight text-primary-foreground sm:text-2xl sm:leading-8"
-            >
-              {supervisorLabel}
-            </motion.h2>
+            {supervisorNames && (
+              <>
+                <motion.h2
+                  variants={fadeUpVariants}
+                  className="text-xl font-semibold tracking-tight text-primary-foreground sm:text-2xl sm:leading-8"
+                >
+                  {supervisorLabel}
+                </motion.h2>
 
-            <motion.p
-              variants={fadeUpVariants}
-              className="text-center text-base text-primary-foreground/80 sm:text-lg sm:leading-8"
-            >
-              {supervisorNames}
-            </motion.p>
+                <motion.p
+                  variants={fadeUpVariants}
+                  className="text-center text-base text-primary-foreground/80 sm:text-lg sm:leading-8"
+                >
+                  {supervisorNames}
+                </motion.p>
+              </>
+            )}
 
-            <motion.h2
-              variants={fadeUpVariants}
-              className="text-xl font-semibold tracking-tight text-primary-foreground sm:text-2xl sm:leading-8"
-            >
-              {studentsLabel}
-            </motion.h2>
+            {studentsLines.length > 0 && (
+              <>
+                <motion.h2
+                  variants={fadeUpVariants}
+                  className="text-xl font-semibold tracking-tight text-primary-foreground sm:text-2xl sm:leading-8"
+                >
+                  {studentsLabel}
+                </motion.h2>
 
-            <motion.div
-              variants={fadeUpVariants}
-              className="text-center text-base leading-6 text-primary-foreground/80 sm:text-lg"
-            >
-              {studentsNames.map((line, index) => (
-                <p key={index}>{line}</p>
-              ))}
-            </motion.div>
+                <motion.div
+                  variants={fadeUpVariants}
+                  className="text-center text-base leading-6 text-primary-foreground/80 sm:text-lg"
+                >
+                  {studentsLines.map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+                </motion.div>
+              </>
+            )}
           </div>
         </motion.div>
       </div>

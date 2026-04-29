@@ -31,6 +31,7 @@ type NavKey =
   | "dashboard"
   | "events"
   | "applications"
+  | "capstones"
   | "resources"
   | "settings"
 
@@ -38,6 +39,7 @@ const NAV_ITEMS: { key: NavKey; href: string }[] = [
   { key: "dashboard", href: "/dashboard" },
   { key: "events", href: "/events" },
   { key: "applications", href: "/applications" },
+  { key: "capstones", href: "/capstones" },
   { key: "resources", href: "/resources" },
   { key: "settings", href: "/settings" },
 ]

@@ -11,6 +11,10 @@ export interface Database {
   event_photos: EventPhotoTable
   gallery_photos: GalleryPhotoTable
   schedule_levels: ScheduleLevelTable
+  capstones: CapstoneTable
+  capstone_people: CapstonePersonTable
+  capstone_materials: CapstoneMaterialTable
+  capstone_photos: CapstonePhotoTable
 }
 
 interface UserTable {
@@ -102,6 +106,65 @@ interface ScheduleLevelTable {
   drive_url: string
   updated_at: string
   updated_by: string | null
+}
+
+interface CapstoneTable {
+  id: Generated<number>
+  slug: string
+  title_en: string
+  title_ar: string
+  full_name_en: string
+  full_name_ar: string
+  level: number
+  semester: "first" | "second"
+  abstract_en: string
+  abstract_ar: string
+  introduction_en: string
+  introduction_ar: string
+  methodology_en: string
+  methodology_ar: string
+  analysis_en: string
+  analysis_ar: string
+  conclusion_en: string
+  conclusion_ar: string
+  recommendations_en: string
+  recommendations_ar: string
+  card_photo_key: string | null
+  producers_photo_key: string | null
+  poster_link: string | null
+  portfolio_link: string | null
+  presentation_link: string | null
+  author_id: string
+  created_at: string
+  updated_at: string
+}
+
+interface CapstonePersonTable {
+  id: Generated<number>
+  capstone_id: number
+  role: "student" | "supervisor"
+  name_en: string
+  name_ar: string
+  position: number
+  created_at: string
+}
+
+interface CapstoneMaterialTable {
+  id: Generated<number>
+  capstone_id: number
+  name_en: string
+  name_ar: string
+  photo_key: string | null
+  position: number
+  created_at: string
+}
+
+interface CapstonePhotoTable {
+  id: Generated<number>
+  capstone_id: number
+  photo_key: string
+  position: number
+  created_at: string
 }
 
 export function createDb(d1: D1Database): Kysely<Database> {

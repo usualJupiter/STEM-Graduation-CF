@@ -103,6 +103,38 @@
       }
     }
   },
+  "Capstones": {
+    "title": "Capstone Projects",
+    "description": "Upload and manage projects and more",
+    "createProject": "Create Project",
+    "searchPlaceholder": "Search Projects",
+    "sort": "Sort",
+    "sortOptions": {
+      "dateNewest": "Date (newest)",
+      "dateOldest": "Date (oldest)",
+      "nameAsc": "Name (A-Z)",
+      "nameDesc": "Name (Z-A)"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "level": "Level",
+      "date": "Date",
+      "author": "Author"
+    },
+    "level": "Level {number}",
+    "actions": "Actions",
+    "actionsMenu": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "pagination": {
+      "selected": "{selected} of {total} row(s) selected.",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
   "Resources": {
     "title": "Resources",
     "description": "Manage website resources, upload images to gallery and more.",
@@ -239,6 +271,7 @@
     "dashboard": "Dashboard",
     "events": "Events",
     "applications": "Applications",
+    "capstones": "Capstones",
     "resources": "Resources",
     "settings": "Settings",
     "toggleMenu": "Toggle menu",

@@ -10,23 +10,13 @@ import {
 import { StickyCards } from "./sticky-cards"
 
 interface PicturesProps {
-  title?: string
-  images?: { id: number | string; image: string; alt?: string }[]
+  title: string
+  images: { id: number | string; image: string; alt?: string }[]
 }
 
-const DEFAULT_IMAGES = [
-  { id: 1, image: "/assets/project1.jpg" },
-  { id: 2, image: "/assets/prject2.jpg" },
-  { id: 3, image: "/assets/project3.jpg" },
-  { id: 4, image: "/assets/project4.jpg" },
-  { id: 5, image: "/assets/project5.jpg" },
-  { id: 6, image: "/assets/project6.jpg" },
-]
+export default function Pictures({ title, images }: PicturesProps) {
+  if (images.length === 0) return null
 
-export default function Pictures({
-  title = "Project Pictures",
-  images = DEFAULT_IMAGES,
-}: PicturesProps) {
   return (
     <section className="w-full bg-background">
       <motion.div

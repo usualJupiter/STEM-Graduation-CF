@@ -9,14 +9,11 @@ import {
 } from "./animations"
 
 interface IntroductionProps {
-  title?: string
-  description?: string
+  title: string
+  description: string
 }
 
-export default function Introduction({
-  title = "Introduction",
-  description = "Plastic pollution poses a serious threat to our environment. Our solution repurposes used plastic bottles into 3D printer filament, providing an eco-friendly and low-cost alternative. This process encourages recycling, supports innovation, and opens new possibilities in healthcare",
-}: IntroductionProps) {
+export default function Introduction({ title, description }: IntroductionProps) {
   return (
     <motion.section
       initial="hidden"
@@ -34,7 +31,7 @@ export default function Introduction({
         </motion.h2>
         <motion.p
           variants={fadeUpVariants}
-          className="text-base leading-8 text-primary/80 md:text-lg"
+          className="whitespace-pre-line text-base leading-8 text-primary/80 md:text-lg"
         >
           {description}
         </motion.p>

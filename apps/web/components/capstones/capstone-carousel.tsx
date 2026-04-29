@@ -10,10 +10,10 @@ import "swiper/css"
 import "swiper/css/effect-coverflow"
 import "swiper/css/pagination"
 
-import { Link } from "@/i18n/navigation"
+import { useRouter } from "@/i18n/navigation"
 
 export type CapstoneCarouselItem = {
-  id: string
+  slug: string
   src: string
   alt: string
 }
@@ -28,6 +28,12 @@ const css = `
 .capstone-carousel {
   padding-bottom: 50px !important;
 }
+.capstone-carousel .swiper-slide {
+  pointer-events: auto;
+}
+.capstone-carousel .swiper-slide-active {
+  z-index: 2;
+}
 .capstone-carousel .swiper-pagination-bullet-active {
   background: var(--color-primary, #000);
 }
@@ -40,6 +46,7 @@ export function CapstoneCarousel({
 }: CapstoneCarouselProps) {
   const locale = useLocale()
   const isRtl = locale === "ar"
+  const router = useRouter()
 
   return (
     <motion.div
@@ -82,12 +89,24 @@ export function CapstoneCarousel({
       >
         {items.map((item) => (
           <SwiperSlide
-            key={item.id}
+            key={item.slug}
             className="!h-[320px] w-full overflow-hidden rounded-2xl border border-primary/10"
           >
-            <Link
-              href={`/capstones/${item.id}`}
-              className="relative block h-full w-full"
+            <div
+              role="link"
+              tabIndex={0}
+              aria-label={item.alt}
+              onClick={(e) => {
+                e.stopPropagation()
+                router.push(`/capstones/${item.slug}`)
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault()
+                  router.push(`/capstones/${item.slug}`)
+                }
+              }}
+              className="relative block h-full w-full cursor-pointer"
             >
               <Image
                 src={item.src}
@@ -97,7 +116,7 @@ export function CapstoneCarousel({
                 className="object-cover transition-transform duration-300 hover:scale-105"
                 unoptimized
               />
-            </Link>
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>

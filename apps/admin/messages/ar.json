@@ -103,6 +103,38 @@
       }
     }
   },
+  "Capstones": {
+    "title": "مشاريع الكابستون",
+    "description": "ارفع وأدر المشاريع والمزيد",
+    "createProject": "إنشاء مشروع",
+    "searchPlaceholder": "ابحث عن مشروع",
+    "sort": "ترتيب",
+    "sortOptions": {
+      "dateNewest": "التاريخ (الأحدث)",
+      "dateOldest": "التاريخ (الأقدم)",
+      "nameAsc": "الاسم (أ-ي)",
+      "nameDesc": "الاسم (ي-أ)"
+    },
+    "columns": {
+      "id": "المعرّف",
+      "name": "الاسم",
+      "level": "المستوى",
+      "date": "التاريخ",
+      "author": "المؤلف"
+    },
+    "level": "المستوى {number}",
+    "actions": "إجراءات",
+    "actionsMenu": {
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "pagination": {
+      "selected": "{selected} من {total} صفوف محددة.",
+      "previous": "السابق",
+      "next": "التالي"
+    }
+  },
   "Resources": {
     "title": "المصادر",
     "description": "إدارة مصادر الموقع، رفع الصور إلى المعرض والمزيد.",
@@ -239,6 +271,7 @@
     "dashboard": "لوحة التحكم",
     "events": "الأنشطة",
     "applications": "الطلبات",
+    "capstones": "الكابستون",
     "resources": "المصادر",
     "settings": "الإعدادات",
     "toggleMenu": "تبديل القائمة",

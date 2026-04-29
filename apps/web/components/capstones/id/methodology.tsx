@@ -9,41 +9,11 @@ import {
 } from "./animations"
 
 interface MethodologyProps {
-  title?: string
-  intro?: string
-  steps?: { label: string; description: string }[]
+  title: string
+  description: string
 }
 
-const defaultSteps = [
-  {
-    label: "Feeding",
-    description: "Insert cut plastic strips into the heating tube.",
-  },
-  {
-    label: "Melting",
-    description:
-      "Heat the strips carefully until fully melted, avoiding overheating.",
-  },
-  {
-    label: "Extruding",
-    description:
-      "Push the molten plastic through a fine nozzle to form a 1.5 mm filament.",
-  },
-  {
-    label: "Winding",
-    description:
-      "Collect and wind the filament smoothly onto a spool, ready for 3D printing.",
-  },
-]
-
-const defaultIntro =
-  "The transformation starts by feeding plastic strips into the heating system, where precision and timing are key to creating perfect filament. The process follows these steps:"
-
-export default function Methodology({
-  title = "Methodology",
-  intro = defaultIntro,
-  steps = defaultSteps,
-}: MethodologyProps) {
+export default function Methodology({ title, description }: MethodologyProps) {
   return (
     <motion.section
       initial="hidden"
@@ -59,23 +29,12 @@ export default function Methodology({
         >
           {title}
         </motion.h2>
-        <motion.div
+        <motion.p
           variants={fadeUpVariants}
-          className="text-base leading-8 text-main-foreground/80 md:text-lg"
+          className="whitespace-pre-line text-base leading-8 text-main-foreground/80 md:text-lg"
         >
-          <p className="mb-4">{intro}</p>
-          <motion.ul
-            variants={containerVariants}
-            className="list-disc space-y-2 ps-5"
-          >
-            {steps.map((step) => (
-              <motion.li key={step.label} variants={fadeUpVariants}>
-                <span className="font-semibold">{step.label}:</span>{" "}
-                {step.description}
-              </motion.li>
-            ))}
-          </motion.ul>
-        </motion.div>
+          {description}
+        </motion.p>
       </div>
     </motion.section>
   )

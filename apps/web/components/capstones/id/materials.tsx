@@ -10,44 +10,20 @@ import {
   inViewport,
 } from "./animations"
 
-interface MaterialsProps {
-  title?: string
+interface MaterialItem {
+  id: number | string
+  title: string
+  image: string
 }
 
-const materials = [
-  {
-    id: 1,
-    title: "Title Text",
-    description: "This is a card description.",
-    image: "https://ui.shadcn.com/placeholder.svg",
-  },
-  {
-    id: 2,
-    title: "Title Text",
-    description: "This is a card description.",
-    image: "https://ui.shadcn.com/placeholder.svg",
-  },
-  {
-    id: 3,
-    title: "Title Text",
-    description: "This is a card description.",
-    image: "https://ui.shadcn.com/placeholder.svg",
-  },
-  {
-    id: 4,
-    title: "Title Text",
-    description: "This is a card description.",
-    image: "https://ui.shadcn.com/placeholder.svg",
-  },
-  {
-    id: 5,
-    title: "Title Text",
-    description: "This is a card description.",
-    image: "https://ui.shadcn.com/placeholder.svg",
-  },
-]
+interface MaterialsProps {
+  title: string
+  items: MaterialItem[]
+}
 
-export default function Materials({ title = "Materials" }: MaterialsProps) {
+export default function Materials({ title, items }: MaterialsProps) {
+  if (items.length === 0) return null
+
   return (
     <motion.section
       initial="hidden"
@@ -70,7 +46,7 @@ export default function Materials({ title = "Materials" }: MaterialsProps) {
           variants={containerVariants}
           className="grid grid-cols-1 gap-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
         >
-          {materials.map((material) => (
+          {items.map((material) => (
             <motion.div
               key={material.id}
               variants={fadeUpVariants}
@@ -80,12 +56,10 @@ export default function Materials({ title = "Materials" }: MaterialsProps) {
                 <p className="text-sm font-medium text-card-foreground">
                   {material.title}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  {material.description}
-                </p>
               </div>
               <div className="px-3 pb-3">
                 <AspectRatio ratio={3 / 2}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={material.image}
                     alt={material.title}

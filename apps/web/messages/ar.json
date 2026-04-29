@@ -192,6 +192,39 @@
       "level1": "المستوى الأول",
       "level2": "المستوى الثاني",
       "level3": "المستوى الثالث"
+    },
+    "empty": "لا توجد مشاريع بعد"
+  },
+  "Capstone": {
+    "notFound": "المشروع غير موجود",
+    "header": {
+      "tagline": "المستوى {level} · الفصل {semester} · {year}",
+      "supervisor": "المشرف",
+      "students": "الطلاب",
+      "semester": {
+        "first": "الأول",
+        "second": "الثاني"
+      }
+    },
+    "sections": {
+      "abstract": "المُلخّص",
+      "introduction": "المقدمة",
+      "methodology": "المنهجية",
+      "analysis": "التحليل والنتائج",
+      "conclusion": "الخاتمة",
+      "recommendations": "التوصيات",
+      "materials": "الخامات",
+      "producers": "المنفّذون",
+      "pictures": "صور المشروع"
+    },
+    "resources": {
+      "title": "الموارد",
+      "tagline": "روابط",
+      "presentation": "عرض المشروع",
+      "portfolio": "بورتفوليو المشروع",
+      "poster": "ملصق المشروع",
+      "browse": "تصفّح المشاريع",
+      "imageAlt": "صورة قسم الموارد"
     }
   },
   "SchedulesHeader": {

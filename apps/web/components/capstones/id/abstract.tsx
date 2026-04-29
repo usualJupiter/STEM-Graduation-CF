@@ -9,14 +9,11 @@ import {
 } from "./animations"
 
 interface AbstractProps {
-  title?: string
-  description?: string
+  title: string
+  description: string
 }
 
-export default function Abstract({
-  title = "Abstract",
-  description = "This project transforms plastic waste into 3D printing filament through a simple three-stage process: cutting, heating, and winding. By recycling plastic bottles, we reduce pollution and produce affordable filament for printing essential items like prosthetic limbs—supporting sustainability and social impact",
-}: AbstractProps) {
+export default function Abstract({ title, description }: AbstractProps) {
   return (
     <motion.section
       initial="hidden"
@@ -34,7 +31,7 @@ export default function Abstract({
         </motion.h2>
         <motion.p
           variants={fadeUpVariants}
-          className="text-base leading-8 text-primary/80 md:text-lg"
+          className="whitespace-pre-line text-base leading-8 text-primary/80 md:text-lg"
         >
           {description}
         </motion.p>

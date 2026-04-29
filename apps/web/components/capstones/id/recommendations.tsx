@@ -9,25 +9,13 @@ import {
 } from "./animations"
 
 interface RecommendationsProps {
-  title?: string
-  intro?: string
-  items?: string[]
+  title: string
+  description: string
 }
 
-const defaultItems = [
-  "Add precise temperature sensors for better heating control.",
-  "Integrate a real-time filament diameter monitoring system.",
-  "Upgrade to a smarter, energy-efficient power supply.",
-  "Implement an automated cooling system for improved filament quality.",
-]
-
-const defaultIntro =
-  "To further enhance the system's performance and reliability, the following improvements are suggested:"
-
 export default function Recommendations({
-  title = "Recommendations",
-  intro = defaultIntro,
-  items = defaultItems,
+  title,
+  description,
 }: RecommendationsProps) {
   return (
     <motion.section
@@ -44,27 +32,12 @@ export default function Recommendations({
         >
           {title}
         </motion.h2>
-        <motion.div
+        <motion.p
           variants={fadeUpVariants}
-          className="text-base leading-8 text-primary/80 md:text-lg"
+          className="whitespace-pre-line text-base leading-8 text-primary/80 md:text-lg"
         >
-          <p className="mb-4">{intro}</p>
-          <motion.ul
-            variants={containerVariants}
-            className="list-none space-y-2"
-          >
-            {items.map((item, index) => (
-              <motion.li
-                key={index}
-                variants={fadeUpVariants}
-                className="flex gap-2"
-              >
-                <span className="shrink-0">•</span>
-                <span>{item}</span>
-              </motion.li>
-            ))}
-          </motion.ul>
-        </motion.div>
+          {description}
+        </motion.p>
       </div>
     </motion.section>
   )

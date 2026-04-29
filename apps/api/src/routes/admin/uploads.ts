@@ -12,6 +12,12 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/webp": "webp",
 }
 
+const CAPSTONE_TYPES: Record<string, string> = {
+  "image/webp": "webp",
+}
+
+const CAPSTONE_MAX_FILE_SIZE = 1024 * 1024
+
 const GALLERY_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
@@ -27,6 +33,14 @@ const signSchema = z.object({
     .string()
     .refine((t) => t in ALLOWED_TYPES, "Unsupported content type"),
   kind: z.enum(["card", "gallery"]),
+})
+
+const capstoneSignSchema = z.object({
+  contentType: z
+    .string()
+    .refine((t) => t in CAPSTONE_TYPES, "Unsupported content type"),
+  kind: z.enum(["card", "gallery", "material", "producers"]),
+  fileSize: z.number().int().positive().max(CAPSTONE_MAX_FILE_SIZE).optional(),
 })
 
 const gallerySignSchema = z.object({
@@ -65,6 +79,33 @@ app.post("/event-photos/sign", async (c) => {
 
   const ext = ALLOWED_TYPES[parsed.data.contentType]
   const key = `events/${crypto.randomUUID()}.${ext}`
+
+  const s3 = createS3Client(c.env)
+  const uploadUrl = await getSignedUrl(
+    s3,
+    new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      ContentType: parsed.data.contentType,
+    }),
+    { expiresIn: 600 },
+  )
+
+  return c.json({ data: { uploadUrl, key } })
+})
+
+app.post("/capstones/sign", async (c) => {
+  const body = await c.req.json().catch(() => null)
+  const parsed = capstoneSignSchema.safeParse(body)
+  if (!parsed.success) {
+    return c.json(
+      { error: "Invalid payload", issues: parsed.error.issues },
+      400,
+    )
+  }
+
+  const ext = CAPSTONE_TYPES[parsed.data.contentType]
+  const key = `capstones/${crypto.randomUUID()}.${ext}`
 
   const s3 = createS3Client(c.env)
   const uploadUrl = await getSignedUrl(

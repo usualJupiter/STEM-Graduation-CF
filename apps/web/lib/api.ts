@@ -1,8 +1,14 @@
 const API_URL = process.env.API_URL ?? "http://localhost:8787"
 
 async function fetchJson<T>(path: string, label: string): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, { next: { revalidate: 60 } })
-  if (!res.ok) throw new Error(`Failed to fetch ${label} (${res.status})`)
+  const url = `${API_URL}${path}`
+  const res = await fetch(url, { next: { revalidate: 60 } })
+  if (!res.ok) {
+    const body = await res.text().catch(() => "")
+    throw new Error(
+      `Failed to fetch ${label} (${res.status}) ${url}${body ? ` :: ${body.slice(0, 200)}` : ""}`,
+    )
+  }
   const json = (await res.json()) as { data: T }
   return json.data
 }
@@ -65,4 +71,95 @@ export interface ScheduleLevel {
 
 export async function getSchedules(): Promise<ScheduleLevel[]> {
   return fetchJson<ScheduleLevel[]>(`/api/schedules`, "schedules")
+}
+
+export interface CapstoneListItem {
+  id: number
+  slug: string
+  title_en: string
+  title_ar: string
+  level: number
+  semester: "first" | "second"
+  card_photo_url: string | null
+  created_at: string
+}
+
+export interface CapstonePerson {
+  id: number
+  name_en: string
+  name_ar: string
+  position: number
+}
+
+export interface CapstoneMaterial {
+  id: number
+  name_en: string
+  name_ar: string
+  photo_url: string | null
+  position: number
+}
+
+export interface CapstonePhoto {
+  id: number
+  url: string
+  position: number
+}
+
+export interface CapstoneDetail {
+  id: number
+  slug: string
+  title_en: string
+  title_ar: string
+  full_name_en: string
+  full_name_ar: string
+  level: number
+  semester: "first" | "second"
+  abstract_en: string
+  abstract_ar: string
+  introduction_en: string
+  introduction_ar: string
+  methodology_en: string
+  methodology_ar: string
+  analysis_en: string
+  analysis_ar: string
+  conclusion_en: string
+  conclusion_ar: string
+  recommendations_en: string
+  recommendations_ar: string
+  card_photo_url: string | null
+  producers_photo_url: string | null
+  poster_link: string | null
+  portfolio_link: string | null
+  presentation_link: string | null
+  students: CapstonePerson[]
+  supervisors: CapstonePerson[]
+  materials: CapstoneMaterial[]
+  photos: CapstonePhoto[]
+  created_at: string
+  updated_at: string
+}
+
+export async function getCapstones(opts?: {
+  level?: number
+  sort?: "dateNewest" | "dateOldest" | "nameAsc" | "nameDesc"
+  limit?: number
+}): Promise<CapstoneListItem[]> {
+  const params = new URLSearchParams({
+    sort: opts?.sort ?? "dateNewest",
+    limit: String(opts?.limit ?? 50),
+  })
+  if (opts?.level) params.set("level", String(opts.level))
+  return fetchJson<CapstoneListItem[]>(
+    `/api/capstones?${params}`,
+    "capstones",
+  )
+}
+
+export async function getCapstone(slug: string): Promise<CapstoneDetail | null> {
+  const res = await fetch(`${API_URL}/api/capstones/${slug}`, {
+    next: { revalidate: 60 },
+  })
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error(`Failed to fetch capstone (${res.status})`)
+  return ((await res.json()) as { data: CapstoneDetail }).data
 }

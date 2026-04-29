@@ -192,6 +192,39 @@
       "level1": "Level 1",
       "level2": "Level 2",
       "level3": "Level 3"
+    },
+    "empty": "No projects yet"
+  },
+  "Capstone": {
+    "notFound": "Capstone not found",
+    "header": {
+      "tagline": "Level {level} · {semester} Semester · {year}",
+      "supervisor": "Supervisor",
+      "students": "Students",
+      "semester": {
+        "first": "First",
+        "second": "Second"
+      }
+    },
+    "sections": {
+      "abstract": "Abstract",
+      "introduction": "Introduction",
+      "methodology": "Methodology",
+      "analysis": "Analysis & Results",
+      "conclusion": "Conclusion",
+      "recommendations": "Recommendations",
+      "materials": "Materials",
+      "producers": "Producers",
+      "pictures": "Project Pictures"
+    },
+    "resources": {
+      "title": "Resources",
+      "tagline": "Links",
+      "presentation": "Project Presentation",
+      "portfolio": "Project Portfolio",
+      "poster": "Project Poster",
+      "browse": "Browse Projects",
+      "imageAlt": "Resources illustration"
     }
   },
   "SchedulesHeader": {
