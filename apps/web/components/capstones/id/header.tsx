@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react"
 
-import { containerVariants, fadeUpVariants } from "./animations"
+import { fadeUpVariants, sectionContainer } from "@/lib/animations"
 
 interface HeaderProps {
   tagline: string
@@ -37,7 +37,7 @@ export default function Header({
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={containerVariants}
+          variants={sectionContainer}
           className="flex w-full max-w-[700px] flex-col items-center gap-10"
         >
           <div className="flex w-full flex-col items-center gap-4">

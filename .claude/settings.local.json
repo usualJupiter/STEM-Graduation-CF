@@ -21,7 +21,8 @@
       "Bash(mv \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(sections\\)\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/app/[locale]/\\(site\\)/\\(sections\\)\")",
       "Bash(bun x *)",
       "Bash(echo \"exit=$?\")",
-      "Bash(echo \"api=$?\")"
+      "Bash(echo \"api=$?\")",
+      "Bash(xargs cat *)"
     ]
   }
 }

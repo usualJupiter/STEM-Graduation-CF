@@ -85,8 +85,6 @@ export function StickyCards({
 
       return () => {
         resizeObserver.disconnect()
-        scrollTimeline.kill()
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
       }
     },
     { scope: container },

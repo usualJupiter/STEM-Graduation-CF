@@ -13,6 +13,23 @@ async function fetchJson<T>(path: string, label: string): Promise<T> {
   return json.data
 }
 
+async function fetchJsonOrNull<T>(
+  path: string,
+  label: string,
+): Promise<T | null> {
+  const url = `${API_URL}${path}`
+  const res = await fetch(url, { next: { revalidate: 60 } })
+  if (res.status === 404) return null
+  if (!res.ok) {
+    const body = await res.text().catch(() => "")
+    throw new Error(
+      `Failed to fetch ${label} (${res.status}) ${url}${body ? ` :: ${body.slice(0, 200)}` : ""}`,
+    )
+  }
+  const json = (await res.json()) as { data: T }
+  return json.data
+}
+
 export interface EventListItem {
   id: number
   title_en: string
@@ -40,13 +57,8 @@ export async function getEvents(opts?: {
   return fetchJson<EventListItem[]>(`/api/events?${params}`, "events")
 }
 
-export async function getEvent(id: number): Promise<EventDetail | null> {
-  const res = await fetch(`${API_URL}/api/events/${id}`, {
-    next: { revalidate: 60 },
-  })
-  if (res.status === 404) return null
-  if (!res.ok) throw new Error(`Failed to fetch event (${res.status})`)
-  return ((await res.json()) as { data: EventDetail }).data
+export function getEvent(id: number): Promise<EventDetail | null> {
+  return fetchJsonOrNull<EventDetail>(`/api/events/${id}`, "event")
 }
 
 export interface GalleryPhoto {
@@ -78,6 +90,8 @@ export interface CapstoneListItem {
   slug: string
   title_en: string
   title_ar: string
+  full_name_en: string
+  full_name_ar: string
   level: number
   semester: "first" | "second"
   card_photo_url: string | null
@@ -155,11 +169,6 @@ export async function getCapstones(opts?: {
   )
 }
 
-export async function getCapstone(slug: string): Promise<CapstoneDetail | null> {
-  const res = await fetch(`${API_URL}/api/capstones/${slug}`, {
-    next: { revalidate: 60 },
-  })
-  if (res.status === 404) return null
-  if (!res.ok) throw new Error(`Failed to fetch capstone (${res.status})`)
-  return ((await res.json()) as { data: CapstoneDetail }).data
+export function getCapstone(slug: string): Promise<CapstoneDetail | null> {
+  return fetchJsonOrNull<CapstoneDetail>(`/api/capstones/${slug}`, "capstone")
 }

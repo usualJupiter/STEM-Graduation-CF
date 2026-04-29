@@ -7,13 +7,9 @@ import { useTranslations } from "next-intl"
 import { BrushFrame } from "@/components/brush-frame"
 import { fadeUpVariants, headerContainer } from "@/lib/animations"
 
-interface HeaderProps {
-  imageUrl?: string
-}
+const IMAGE_URL = "https://cdn.stem-program.com/assets/assets_capstone.avif"
 
-export default function Header({
-  imageUrl = "/assets/capstone.png",
-}: HeaderProps) {
+export default function Header() {
   const t = useTranslations("CapstonesHeader")
 
   return (
@@ -24,29 +20,28 @@ export default function Header({
         variants={headerContainer}
         className="mx-auto flex w-full max-w-7xl flex-col items-center gap-8 px-6 py-3 lg:flex-row lg:items-center lg:gap-12"
       >
-        <div className="flex flex-1 flex-col items-start gap-8">
-          <motion.h1
-            variants={fadeUpVariants}
-            className="whitespace-pre-line text-3xl font-bold leading-tight sm:text-5xl xl:text-7xl xl:leading-none"
-          >
-            {t("title")}
-          </motion.h1>
-        </div>
-        <div className="w-full max-w-[320px] flex-shrink-0 lg:w-[380px] lg:max-w-none xl:w-[440px]">
-          <motion.div variants={fadeUpVariants}>
-            <BrushFrame>
-              <Image
-                src={imageUrl}
-                alt={t("imageAlt")}
-                fill
-                sizes="(min-width: 1280px) 440px, (min-width: 1024px) 380px, 320px"
-                className="object-cover"
-                priority
-                unoptimized
-              />
-            </BrushFrame>
-          </motion.div>
-        </div>
+        <motion.h1
+          variants={fadeUpVariants}
+          className="flex-1 whitespace-pre-line text-3xl font-bold leading-tight sm:text-5xl xl:text-7xl xl:leading-none"
+        >
+          {t("title")}
+        </motion.h1>
+        <motion.div
+          variants={fadeUpVariants}
+          className="w-full max-w-[320px] flex-shrink-0 lg:w-[380px] lg:max-w-none xl:w-[440px]"
+        >
+          <BrushFrame>
+            <Image
+              src={IMAGE_URL}
+              alt={t("imageAlt")}
+              fill
+              sizes="(min-width: 1280px) 440px, (min-width: 1024px) 380px, 320px"
+              className="object-cover"
+              priority
+              unoptimized
+            />
+          </BrushFrame>
+        </motion.div>
       </motion.div>
     </section>
   )

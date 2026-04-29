@@ -5,10 +5,10 @@ import { motion } from "motion/react"
 import { AspectRatio } from "@workspace/ui/components/aspect-ratio"
 
 import {
-  containerVariants,
   fadeUpVariants,
   inViewport,
-} from "./animations"
+  sectionContainer,
+} from "@/lib/animations"
 
 interface MaterialItem {
   id: number | string
@@ -29,7 +29,7 @@ export default function Materials({ title, items }: MaterialsProps) {
       initial="hidden"
       whileInView="visible"
       viewport={inViewport}
-      variants={containerVariants}
+      variants={sectionContainer}
       className="w-full bg-background"
     >
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 py-10 md:px-6 lg:px-8">
@@ -43,7 +43,7 @@ export default function Materials({ title, items }: MaterialsProps) {
         </motion.div>
 
         <motion.div
-          variants={containerVariants}
+          variants={sectionContainer}
           className="grid grid-cols-1 gap-9 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
         >
           {items.map((material) => (

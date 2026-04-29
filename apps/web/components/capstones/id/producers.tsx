@@ -3,10 +3,10 @@
 import { motion } from "motion/react"
 
 import {
-  containerVariants,
   fadeUpVariants,
   inViewport,
-} from "./animations"
+  sectionContainer,
+} from "@/lib/animations"
 
 interface ProducersProps {
   title: string
@@ -24,7 +24,7 @@ export default function Producers({
       initial="hidden"
       whileInView="visible"
       viewport={inViewport}
-      variants={containerVariants}
+      variants={sectionContainer}
       className="w-full bg-background"
     >
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-16">

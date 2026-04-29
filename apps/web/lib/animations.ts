@@ -28,3 +28,5 @@ export const headerContainer: Variants = {
     },
   },
 }
+
+export const inViewport = { once: true, amount: 0.2 } as const

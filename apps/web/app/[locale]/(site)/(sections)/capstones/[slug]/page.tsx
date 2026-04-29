@@ -3,16 +3,11 @@ import { notFound } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 
 import Header from "@/components/capstones/id/header"
-import Abstract from "@/components/capstones/id/abstract"
-import Introduction from "@/components/capstones/id/introduction"
 import Pictures from "@/components/capstones/id/pictures"
-import Methodology from "@/components/capstones/id/methodology"
-import Analysis from "@/components/capstones/id/analysis"
-import Conclusion from "@/components/capstones/id/conclusion"
-import Recommendations from "@/components/capstones/id/recommendations"
 import Materials from "@/components/capstones/id/materials"
 import Producers from "@/components/capstones/id/producers"
 import Resources from "@/components/capstones/id/resources"
+import { TextSection } from "@/components/capstones/id/text-section"
 import {
   type CapstoneDetail,
   type CapstonePerson,
@@ -99,21 +94,27 @@ export default async function CapstoneDetailPage({ params }: PageProps) {
         studentsLabel={t("header.students")}
         studentsLines={studentsLines}
       />
-      <Abstract
+      <TextSection
         title={t("sections.abstract")}
         description={pickLocalized(
           locale,
           capstone.abstract_en,
           capstone.abstract_ar,
         )}
+        bgClass="bg-web-third"
+        headingClass="text-primary"
+        bodyClass="text-primary/80"
       />
-      <Introduction
+      <TextSection
         title={t("sections.introduction")}
         description={pickLocalized(
           locale,
           capstone.introduction_en,
           capstone.introduction_ar,
         )}
+        bgClass="bg-web-card-3"
+        headingClass="text-primary"
+        bodyClass="text-primary/80"
       />
       <Pictures
         title={t("sections.pictures")}
@@ -123,37 +124,49 @@ export default async function CapstoneDetailPage({ params }: PageProps) {
           alt: title,
         }))}
       />
-      <Methodology
+      <TextSection
         title={t("sections.methodology")}
         description={pickLocalized(
           locale,
           capstone.methodology_en,
           capstone.methodology_ar,
         )}
+        bgClass="bg-main"
+        headingClass="text-main-foreground"
+        bodyClass="text-main-foreground/80"
       />
-      <Analysis
+      <TextSection
         title={t("sections.analysis")}
         description={pickLocalized(
           locale,
           capstone.analysis_en,
           capstone.analysis_ar,
         )}
+        bgClass="bg-secondry-web"
+        headingClass="text-primary-foreground"
+        bodyClass="text-primary-foreground/80"
       />
-      <Conclusion
+      <TextSection
         title={t("sections.conclusion")}
         description={pickLocalized(
           locale,
           capstone.conclusion_en,
           capstone.conclusion_ar,
         )}
+        bgClass="bg-web-third"
+        headingClass="text-primary"
+        bodyClass="text-primary/80"
       />
-      <Recommendations
+      <TextSection
         title={t("sections.recommendations")}
         description={pickLocalized(
           locale,
           capstone.recommendations_en,
           capstone.recommendations_ar,
         )}
+        bgClass="bg-web-card-3"
+        headingClass="text-primary"
+        bodyClass="text-primary/80"
       />
       <Materials
         title={t("sections.materials")}
@@ -175,7 +188,6 @@ export default async function CapstoneDetailPage({ params }: PageProps) {
       <Resources
         title={t("resources.title")}
         tagline={t("resources.tagline")}
-        imageAlt={t("resources.imageAlt")}
         presentation={
           capstone.presentation_link
             ? {

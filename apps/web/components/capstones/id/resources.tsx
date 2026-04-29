@@ -2,13 +2,19 @@
 
 import Link from "next/link"
 import { ArrowRight, CloudDownload } from "lucide-react"
+import { motion } from "motion/react"
 
 import { Button } from "@workspace/ui/components/button"
+
+import {
+  fadeUpVariants,
+  inViewport,
+  sectionContainer,
+} from "@/lib/animations"
 
 interface ResourcesProps {
   title: string
   tagline: string
-  imageAlt: string
   presentation: { label: string; href: string } | null
   portfolio: { label: string; href: string } | null
   poster: { label: string; href: string } | null
@@ -18,7 +24,6 @@ interface ResourcesProps {
 export default function Resources({
   title,
   tagline,
-  imageAlt,
   presentation,
   portfolio,
   poster,
@@ -29,22 +34,30 @@ export default function Resources({
   )
 
   return (
-    <section className="w-full bg-web-card-1">
-      <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-10 px-6 py-24 lg:flex-row lg:gap-16">
-        <div className="flex w-full flex-col gap-10 lg:w-auto">
-          <h2 className="text-4xl font-bold text-primary">{title}</h2>
-          <div className="aspect-square w-60">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://ui.shadcn.com/placeholder.svg"
-              alt={imageAlt}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="flex w-full max-w-[576px] flex-col gap-2">
-          <p className="mb-1 text-sm font-bold text-primary/80">{tagline}</p>
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={inViewport}
+      variants={sectionContainer}
+      className="w-full bg-web-card-1"
+    >
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-24 md:gap-10">
+        <motion.h2
+          variants={fadeUpVariants}
+          className="text-4xl font-bold text-primary"
+        >
+          {title}
+        </motion.h2>
+        <motion.p
+          variants={fadeUpVariants}
+          className="text-sm font-bold text-primary/80"
+        >
+          {tagline}
+        </motion.p>
+        <motion.div
+          variants={fadeUpVariants}
+          className="flex w-full max-w-[576px] flex-col gap-2"
+        >
           {downloads.map((link) => (
             <Button
               key={link.href}
@@ -68,8 +81,8 @@ export default function Resources({
               <ArrowRight />
             </Link>
           </Button>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }

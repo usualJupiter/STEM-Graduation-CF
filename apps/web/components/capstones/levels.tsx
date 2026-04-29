@@ -1,31 +1,14 @@
 "use client"
 
-import { motion, type Variants } from "motion/react"
+import { motion } from "motion/react"
 import { useLocale, useTranslations } from "next-intl"
 
 import {
-  CapstoneCarousel,
-  type CapstoneCarouselItem,
-} from "./capstone-carousel"
+  HoverExpand,
+  type HoverExpandItem,
+} from "@/components/hover-expand"
 import type { CapstoneListItem } from "@/lib/api"
-
-const containerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
-  },
-}
-
-const fadeUpVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: "easeOut" },
-  },
-}
-
-const inViewport = { once: true, amount: 0.2 } as const
+import { fadeUpVariants, sectionContainer } from "@/lib/animations"
 
 const FALLBACK_IMAGE = "/assets/project1.jpg"
 
@@ -64,23 +47,35 @@ export default function Levels({ items }: LevelsProps) {
   return (
     <div className="flex flex-col">
       {LEVELS.map(({ level, key, sectionClass, headingClass, emptyClass }) => {
-        const filtered = items.filter((c) => c.level === level)
-        const carouselItems: CapstoneCarouselItem[] = filtered.map((c) => ({
-          slug: c.slug,
-          src: c.card_photo_url ?? FALLBACK_IMAGE,
-          alt:
-            locale === "ar"
-              ? c.title_ar || c.title_en
-              : c.title_en || c.title_ar,
-        }))
+        const expandItems: HoverExpandItem[] = items
+          .filter((c) => c.level === level)
+          .map((c) => {
+            const title =
+              locale === "ar"
+                ? c.title_ar || c.title_en
+                : c.title_en || c.title_ar
+            const fullName =
+              locale === "ar"
+                ? c.full_name_ar || c.full_name_en
+                : c.full_name_en || c.full_name_ar
+            const year = new Date(c.created_at).getFullYear()
+            return {
+              label: title,
+              sublabel: Number.isFinite(year) ? String(year) : undefined,
+              description: fullName,
+              image: c.card_photo_url ?? FALLBACK_IMAGE,
+              imageAlt: title,
+              href: `/capstones/${c.slug}`,
+            }
+          })
 
         return (
           <motion.section
             key={key}
             initial="hidden"
             whileInView="visible"
-            viewport={inViewport}
-            variants={containerVariants}
+            viewport={{ once: true, amount: 0.2 }}
+            variants={sectionContainer}
             className={`relative w-full overflow-hidden py-16 ${sectionClass}`}
           >
             <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 md:gap-10">
@@ -90,9 +85,9 @@ export default function Levels({ items }: LevelsProps) {
               >
                 {t(`levels.${key}`)}
               </motion.h2>
-              {carouselItems.length > 0 ? (
+              {expandItems.length > 0 ? (
                 <motion.div variants={fadeUpVariants}>
-                  <CapstoneCarousel items={carouselItems} />
+                  <HoverExpand items={expandItems} />
                 </motion.div>
               ) : (
                 <motion.p

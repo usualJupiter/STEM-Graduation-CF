@@ -3,10 +3,10 @@
 import { motion } from "motion/react"
 
 import {
-  containerVariants,
   fadeUpVariants,
   inViewport,
-} from "./animations"
+  sectionContainer,
+} from "@/lib/animations"
 import { StickyCards } from "./sticky-cards"
 
 interface PicturesProps {
@@ -23,7 +23,7 @@ export default function Pictures({ title, images }: PicturesProps) {
         initial="hidden"
         whileInView="visible"
         viewport={inViewport}
-        variants={containerVariants}
+        variants={sectionContainer}
         className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-6 pt-16"
       >
         <motion.h2
