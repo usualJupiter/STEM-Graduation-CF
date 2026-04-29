@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useTranslations } from "next-intl"
 
 import {
   Dialog,
@@ -27,10 +28,8 @@ import {
 } from "@/components/capstones/types"
 import {
   type FieldErrors,
-  dataSchema,
-  infoSchema,
+  buildSchemas,
   issuesToErrors,
-  mediaSchema,
 } from "@/components/capstones/schemas"
 
 export const CAPSTONES_INVALIDATE_EVENT = "admin:capstones:invalidate"
@@ -156,6 +155,10 @@ export default function CreateProject({
   editingId,
 }: CreateProjectProps) {
   const isEdit = editingId != null
+  const t = useTranslations("Capstones")
+  const schemas = useMemo(() => buildSchemas(t), [t])
+  const dialogTitle = isEdit ? t("editTitle") : t("createTitle")
+  const dialogDescription = t("dialogDescription")
   const [step, setStep] = useState<Step>("info")
   const [form, setForm] = useState<CapstoneFormState>(initialCapstoneForm)
   const [loading, setLoading] = useState(false)
@@ -221,7 +224,7 @@ export default function CreateProject({
 
   const validateStep = (s: Step): FieldErrors => {
     if (s === "info") {
-      const r = infoSchema.safeParse({
+      const r = schemas.infoSchema.safeParse({
         title_en: form.title_en,
         title_ar: form.title_ar,
         full_name_en: form.full_name_en,
@@ -236,11 +239,11 @@ export default function CreateProject({
       return r.success ? {} : issuesToErrors(r.error.issues)
     }
     if (s === "data") {
-      const r = dataSchema.safeParse(form)
+      const r = schemas.dataSchema.safeParse(form)
       return r.success ? {} : issuesToErrors(r.error.issues)
     }
     if (s === "media") {
-      const r = mediaSchema.safeParse({ materials: form.materials })
+      const r = schemas.mediaSchema.safeParse({ materials: form.materials })
       return r.success ? {} : issuesToErrors(r.error.issues)
     }
     return {}
@@ -344,8 +347,8 @@ export default function CreateProject({
         err instanceof Error
           ? err.message
           : isEdit
-            ? "Failed to save changes"
-            : "Failed to create capstone"
+            ? t("submitErrors.saveFailed")
+            : t("submitErrors.createFailed")
       setError(msg)
     } finally {
       setSubmitting(false)
@@ -364,13 +367,11 @@ export default function CreateProject({
         {loading ? (
           <>
             <DialogHeader className="p-4">
-              <DialogTitle>
-                {isEdit ? "Edit Capstone" : "Create New Capstone"}
-              </DialogTitle>
-              <DialogDescription>Loading…</DialogDescription>
+              <DialogTitle>{dialogTitle}</DialogTitle>
+              <DialogDescription>{t("loading")}</DialogDescription>
             </DialogHeader>
             <div className="p-8 text-center text-sm text-muted-foreground">
-              Loading…
+              {t("loading")}
             </div>
           </>
         ) : (
@@ -381,6 +382,8 @@ export default function CreateProject({
                 onChange={onChange}
                 errors={errors}
                 onNext={() => goNext("data")}
+                title={dialogTitle}
+                description={dialogDescription}
               />
             )}
             {step === "data" && (
@@ -390,6 +393,8 @@ export default function CreateProject({
                 errors={errors}
                 onBack={() => goBack("info")}
                 onNext={() => goNext("media")}
+                title={dialogTitle}
+                description={dialogDescription}
               />
             )}
             {step === "media" && (
@@ -399,6 +404,8 @@ export default function CreateProject({
                 errors={errors}
                 onBack={() => goBack("data")}
                 onNext={() => goNext("resources")}
+                title={dialogTitle}
+                description={dialogDescription}
               />
             )}
             {step === "resources" && (
@@ -409,8 +416,12 @@ export default function CreateProject({
                 onSubmit={handleSubmit}
                 submitting={submitting}
                 error={error}
-                submitLabel={isEdit ? "Save Changes" : "Create Project"}
-                submittingLabel={isEdit ? "Saving…" : "Creating…"}
+                submitLabel={isEdit ? t("submit.save") : t("submit.create")}
+                submittingLabel={
+                  isEdit ? t("submit.saving") : t("submit.creating")
+                }
+                title={dialogTitle}
+                description={dialogDescription}
               />
             )}
           </>

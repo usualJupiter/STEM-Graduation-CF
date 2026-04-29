@@ -9,6 +9,8 @@ import Link from "next/link"
 import { type LucideIcon } from "lucide-react"
 
 import CreateEvent from "@/components/events/createEvent"
+import CreateProject from "@/components/capstones/createProject"
+import AddEmailDialog from "@/components/settings/addEmailDialog"
 
 interface DashboardProps {
   className?: string
@@ -55,6 +57,8 @@ const quickAccessItems: {
 export default function Dashboard({ className }: DashboardProps) {
   const t = useTranslations("Dashboard")
   const [createOpen, setCreateOpen] = useState(false)
+  const [createProjectOpen, setCreateProjectOpen] = useState(false)
+  const [addUserOpen, setAddUserOpen] = useState(false)
 
   return (
     <div className="flex w-full flex-col items-center pb-6">
@@ -145,6 +149,32 @@ export default function Dashboard({ className }: DashboardProps) {
                     )
                   }
 
+                  if (item.key === "uploadProject") {
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setCreateProjectOpen(true)}
+                        className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
+                      >
+                        {inner}
+                      </button>
+                    )
+                  }
+
+                  if (item.key === "addUser") {
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setAddUserOpen(true)}
+                        className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
+                      >
+                        {inner}
+                      </button>
+                    )
+                  }
+
                   return (
                     <Link
                       key={item.key}
@@ -162,6 +192,11 @@ export default function Dashboard({ className }: DashboardProps) {
       </div>
 
       <CreateEvent open={createOpen} onOpenChange={setCreateOpen} />
+      <CreateProject
+        open={createProjectOpen}
+        onOpenChange={setCreateProjectOpen}
+      />
+      <AddEmailDialog open={addUserOpen} onOpenChange={setAddUserOpen} />
     </div>
   )
 }

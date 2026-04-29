@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import { Plus, Trash2, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -28,6 +29,8 @@ interface CreateProjectMediaProps {
   errors?: FieldErrors
   onBack?: () => void
   onNext?: () => void
+  title: string
+  description: string
 }
 
 export default function CreateProjectMedia({
@@ -36,7 +39,12 @@ export default function CreateProjectMedia({
   errors = {},
   onBack,
   onNext,
+  title,
+  description,
 }: CreateProjectMediaProps) {
+  const tMedia = useTranslations("Capstones.media")
+  const tSubmit = useTranslations("Capstones.submit")
+
   const addMaterial = () => {
     onChange({
       materials: [
@@ -75,31 +83,31 @@ export default function CreateProjectMedia({
   return (
     <>
       <DialogHeader className="p-4">
-        <DialogTitle>Create New Capstone</DialogTitle>
-        <DialogDescription>Fill all info below.</DialogDescription>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
 
       <div className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto px-4 pb-4">
         <SingleImageField
           id="producers"
-          label="Upload Producers"
+          label={tMedia("producers")}
           slot={value.producers}
-          onPick={(file) =>
-            onChange({ producers: { kind: "new", file } })
-          }
+          onPick={(file) => onChange({ producers: { kind: "new", file } })}
           onClear={() => onChange({ producers: null })}
+          removeAria={tMedia("removeAria")}
         />
         <SingleImageField
           id="project-card"
-          label="Upload Project Card Photo"
+          label={tMedia("card")}
           slot={value.card}
           onPick={(file) => onChange({ card: { kind: "new", file } })}
           onClear={() => onChange({ card: null })}
+          removeAria={tMedia("removeAria")}
         />
 
         <Field>
           <FieldLabel htmlFor="project-photos">
-            Upload Project Photos (Max {MAX_PHOTOS})
+            {tMedia("photos", { max: MAX_PHOTOS })}
           </FieldLabel>
           <Input
             id="project-photos"
@@ -119,6 +127,7 @@ export default function CreateProjectMedia({
                   key={slot.kind === "existing" ? slot.key : `new-${idx}`}
                   slot={slot}
                   onRemove={() => removePhotoAt(idx)}
+                  removeAria={tMedia("removePhotoAria")}
                 />
               ))}
             </ul>
@@ -127,7 +136,9 @@ export default function CreateProjectMedia({
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-foreground">Materials</p>
+            <p className="text-sm font-medium text-foreground">
+              {tMedia("materials")}
+            </p>
             <Button
               type="button"
               variant="outline"
@@ -135,7 +146,7 @@ export default function CreateProjectMedia({
               onClick={addMaterial}
             >
               <Plus />
-              Add New
+              {tMedia("addNew")}
             </Button>
           </div>
           {value.materials.length > 0 && (
@@ -146,6 +157,9 @@ export default function CreateProjectMedia({
                   material={material}
                   nameEnError={errors[`materials.${idx}.name_en`]}
                   nameArError={errors[`materials.${idx}.name_ar`]}
+                  uploadHint={tMedia("uploadHint")}
+                  uploadAria={tMedia("uploadMaterialAria")}
+                  removeAria={tMedia("removeMaterialAria")}
                   onChange={(patch) => updateMaterial(material.id, patch)}
                   onRemove={() => removeMaterial(material.id)}
                 />
@@ -157,13 +171,13 @@ export default function CreateProjectMedia({
 
       <DialogFooter className="border-t border-border bg-muted p-4">
         <Button variant="outline" onClick={onBack}>
-          Back
+          {tSubmit("back")}
         </Button>
         <Button
           onClick={onNext}
           className="min-w-32 bg-secondry-web text-white hover:bg-secondry-web/90"
         >
-          Next
+          {tSubmit("next")}
         </Button>
       </DialogFooter>
     </>
@@ -176,12 +190,14 @@ function SingleImageField({
   slot,
   onPick,
   onClear,
+  removeAria,
 }: {
   id: string
   label: string
   slot: ImageSlot | null
   onPick: (file: File) => void
   onClear: () => void
+  removeAria: string
 }) {
   return (
     <Field>
@@ -197,7 +213,9 @@ function SingleImageField({
           if (file) onPick(file)
         }}
       />
-      {slot && <FilePreviewRow slot={slot} onRemove={onClear} />}
+      {slot && (
+        <FilePreviewRow slot={slot} onRemove={onClear} removeAria={removeAria} />
+      )}
     </Field>
   )
 }
@@ -205,9 +223,11 @@ function SingleImageField({
 function FilePreviewRow({
   slot,
   onRemove,
+  removeAria,
 }: {
   slot: ImageSlot
   onRemove: () => void
+  removeAria: string
 }) {
   const url = useMemo(() => {
     if (slot.kind === "existing") return slot.url
@@ -220,7 +240,7 @@ function FilePreviewRow({
     }
   }, [slot, url])
 
-  const label = slot.kind === "existing" ? "Current image" : slot.file.name
+  const label = slot.kind === "existing" ? removeAria : slot.file.name
 
   return (
     <li className="flex items-center gap-2 border border-border bg-background px-3 py-2 text-xs">
@@ -233,7 +253,7 @@ function FilePreviewRow({
         type="button"
         variant="ghost"
         size="icon-sm"
-        aria-label="Remove"
+        aria-label={removeAria}
         onClick={onRemove}
       >
         <X />
@@ -246,12 +266,18 @@ function MaterialRow({
   material,
   nameEnError,
   nameArError,
+  uploadHint,
+  uploadAria,
+  removeAria,
   onChange,
   onRemove,
 }: {
   material: MaterialDraft
   nameEnError?: string
   nameArError?: string
+  uploadHint: string
+  uploadAria: string
+  removeAria: string
   onChange: (patch: Partial<MaterialDraft>) => void
   onRemove: () => void
 }) {
@@ -273,7 +299,7 @@ function MaterialRow({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        aria-label="Upload material image"
+        aria-label={uploadAria}
         className="size-10 shrink-0 overflow-hidden rounded-sm bg-muted"
       >
         {photoUrl && (
@@ -314,9 +340,7 @@ function MaterialRow({
             className="h-auto border-0 bg-transparent p-0 text-sm font-medium shadow-none focus-visible:ring-0"
           />
         </div>
-        <p className="text-sm text-muted-foreground">
-          click on picture to upload material image.
-        </p>
+        <p className="text-sm text-muted-foreground">{uploadHint}</p>
         {nameEnError && (
           <p className="text-xs text-destructive">{nameEnError}</p>
         )}
@@ -328,7 +352,7 @@ function MaterialRow({
         type="button"
         variant="ghost"
         size="icon"
-        aria-label="Remove material"
+        aria-label={removeAria}
         className="shrink-0"
         onClick={onRemove}
       >

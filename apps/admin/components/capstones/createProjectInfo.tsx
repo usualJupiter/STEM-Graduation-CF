@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 import {
   DialogDescription,
   DialogFooter,
@@ -35,6 +37,8 @@ interface CreateProjectInfoProps {
   onChange: (patch: Partial<CapstoneFormState>) => void
   errors?: FieldErrors
   onNext?: () => void
+  title: string
+  description: string
 }
 
 function ErrorText({ message }: { message?: string }) {
@@ -81,17 +85,24 @@ export default function CreateProjectInfo({
   onChange,
   errors = {},
   onNext,
+  title,
+  description,
 }: CreateProjectInfoProps) {
+  const tInfo = useTranslations("Capstones.info")
+  const tSubmit = useTranslations("Capstones.submit")
+
   return (
     <>
       <DialogHeader className="p-4">
-        <DialogTitle>Create New Capstone</DialogTitle>
-        <DialogDescription>Fill all info below.</DialogDescription>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <div className="flex flex-col md:flex-row">
         <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
           <Field>
-            <FieldLabel htmlFor="title-en">Project Title</FieldLabel>
+            <FieldLabel htmlFor="title-en">
+              {tInfo("projectTitle")}
+            </FieldLabel>
             <Input
               id="title-en"
               value={value.title_en}
@@ -101,7 +112,9 @@ export default function CreateProjectInfo({
             <ErrorText message={errors.title_en} />
           </Field>
           <Field>
-            <FieldLabel htmlFor="full-name-en">Project Full Name</FieldLabel>
+            <FieldLabel htmlFor="full-name-en">
+              {tInfo("projectFullName")}
+            </FieldLabel>
             <Input
               id="full-name-en"
               value={value.full_name_en}
@@ -111,7 +124,7 @@ export default function CreateProjectInfo({
             <ErrorText message={errors.full_name_en} />
           </Field>
           <Field>
-            <FieldLabel htmlFor="level">Level</FieldLabel>
+            <FieldLabel htmlFor="level">{tInfo("levelLabel")}</FieldLabel>
             <Select
               value={value.level}
               onValueChange={(v) => onChange({ level: v })}
@@ -120,25 +133,25 @@ export default function CreateProjectInfo({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Level 1</SelectItem>
-                <SelectItem value="2">Level 2</SelectItem>
-                <SelectItem value="3">Level 3</SelectItem>
+                <SelectItem value="1">{tInfo("levels.1")}</SelectItem>
+                <SelectItem value="2">{tInfo("levels.2")}</SelectItem>
+                <SelectItem value="3">{tInfo("levels.3")}</SelectItem>
               </SelectContent>
             </Select>
             <ErrorText message={errors.level} />
           </Field>
           <TagsField
             id="students-en"
-            label="Students"
-            description="Press enter after each name"
+            label={tInfo("students")}
+            description={tInfo("pressEnterHelp")}
             value={value.students_en}
             onChange={(v) => onChange({ students_en: v })}
             error={errors.students_en}
           />
           <TagsField
             id="supervisors-en"
-            label="Supervisors"
-            description="Press enter after each name"
+            label={tInfo("supervisors")}
+            description={tInfo("pressEnterHelp")}
             value={value.supervisors_en}
             onChange={(v) => onChange({ supervisors_en: v })}
             error={errors.supervisors_en}
@@ -146,7 +159,9 @@ export default function CreateProjectInfo({
         </div>
         <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
           <Field>
-            <FieldLabel htmlFor="title-ar">Project Title AR</FieldLabel>
+            <FieldLabel htmlFor="title-ar">
+              {tInfo("projectTitleAr")}
+            </FieldLabel>
             <Input
               id="title-ar"
               value={value.title_ar}
@@ -156,7 +171,9 @@ export default function CreateProjectInfo({
             <ErrorText message={errors.title_ar} />
           </Field>
           <Field>
-            <FieldLabel htmlFor="full-name-ar">Project Full Name AR</FieldLabel>
+            <FieldLabel htmlFor="full-name-ar">
+              {tInfo("projectFullNameAr")}
+            </FieldLabel>
             <Input
               id="full-name-ar"
               value={value.full_name_ar}
@@ -166,7 +183,9 @@ export default function CreateProjectInfo({
             <ErrorText message={errors.full_name_ar} />
           </Field>
           <Field>
-            <FieldLabel htmlFor="semester">Semester</FieldLabel>
+            <FieldLabel htmlFor="semester">
+              {tInfo("semesterLabel")}
+            </FieldLabel>
             <Select
               value={value.semester}
               onValueChange={(v) => onChange({ semester: v })}
@@ -175,24 +194,28 @@ export default function CreateProjectInfo({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="first">First</SelectItem>
-                <SelectItem value="second">Second</SelectItem>
+                <SelectItem value="first">
+                  {tInfo("semesterOptions.first")}
+                </SelectItem>
+                <SelectItem value="second">
+                  {tInfo("semesterOptions.second")}
+                </SelectItem>
               </SelectContent>
             </Select>
             <ErrorText message={errors.semester} />
           </Field>
           <TagsField
             id="students-ar"
-            label="Students AR"
-            description="Press enter after each name"
+            label={tInfo("studentsAr")}
+            description={tInfo("pressEnterHelp")}
             value={value.students_ar}
             onChange={(v) => onChange({ students_ar: v })}
             error={errors.students_ar}
           />
           <TagsField
             id="supervisors-ar"
-            label="Supervisors AR"
-            description="Press enter after each name"
+            label={tInfo("supervisorsAr")}
+            description={tInfo("pressEnterHelp")}
             value={value.supervisors_ar}
             onChange={(v) => onChange({ supervisors_ar: v })}
             error={errors.supervisors_ar}
@@ -204,7 +227,7 @@ export default function CreateProjectInfo({
           onClick={onNext}
           className="min-w-32 bg-secondry-web text-white hover:bg-secondry-web/90"
         >
-          Next
+          {tSubmit("next")}
         </Button>
       </DialogFooter>
     </>

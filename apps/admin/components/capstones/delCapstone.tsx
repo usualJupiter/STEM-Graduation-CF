@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 
 import {
   Dialog,
@@ -26,6 +27,7 @@ export default function DelCapstone({
   capstoneName,
   onOpenChange,
 }: DelCapstoneProps) {
+  const t = useTranslations("Capstones.delete")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -42,7 +44,7 @@ export default function DelCapstone({
       window.dispatchEvent(new Event(CAPSTONES_INVALIDATE_EVENT))
       onOpenChange(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete")
+      setError(err instanceof Error ? err.message : t("failed"))
     } finally {
       setSubmitting(false)
     }
@@ -59,16 +61,12 @@ export default function DelCapstone({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete capstone</DialogTitle>
-          <DialogDescription>
-            This will permanently remove the capstone, its people, materials,
-            and all associated images from storage. This action cannot be
-            undone.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         {capstoneName && (
           <p className="text-sm text-muted-foreground">
-            Deleting: <span className="font-medium">{capstoneName}</span>
+            {t("deleting", { name: capstoneName })}
           </p>
         )}
         {error && <p className="text-sm text-destructive">{error}</p>}
@@ -78,14 +76,14 @@ export default function DelCapstone({
             onClick={() => onOpenChange(false)}
             disabled={submitting}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={submitting}
           >
-            {submitting ? "Deleting…" : "Delete"}
+            {submitting ? t("deletingButton") : t("confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

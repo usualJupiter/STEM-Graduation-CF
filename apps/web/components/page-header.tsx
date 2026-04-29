@@ -7,10 +7,14 @@ import { useTranslations } from "next-intl"
 import { BrushFrame } from "@/components/brush-frame"
 import { fadeUpVariants, headerContainer } from "@/lib/animations"
 
-const IMAGE_URL = "https://cdn.stem-program.com/assets/assets_capstone.avif"
+interface PageHeaderProps {
+  /** Translation namespace exposing `title` and `imageAlt` keys. */
+  namespace: string
+  imageSrc: string
+}
 
-export default function Header() {
-  const t = useTranslations("CapstonesHeader")
+export function PageHeader({ namespace, imageSrc }: PageHeaderProps) {
+  const t = useTranslations(namespace)
 
   return (
     <section className="bg-main text-main-foreground">
@@ -32,7 +36,7 @@ export default function Header() {
         >
           <BrushFrame>
             <Image
-              src={IMAGE_URL}
+              src={imageSrc}
               alt={t("imageAlt")}
               fill
               sizes="(min-width: 1280px) 440px, (min-width: 1024px) 380px, 320px"

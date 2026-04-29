@@ -133,6 +133,105 @@
       "selected": "{selected} من {total} صفوف محددة.",
       "previous": "السابق",
       "next": "التالي"
+    },
+    "createTitle": "إنشاء كابستون جديد",
+    "editTitle": "تعديل الكابستون",
+    "dialogDescription": "املأ كل المعلومات أدناه.",
+    "loading": "جارٍ التحميل…",
+    "submit": {
+      "create": "إنشاء المشروع",
+      "creating": "جارٍ الإنشاء…",
+      "save": "حفظ التغييرات",
+      "saving": "جارٍ الحفظ…",
+      "back": "رجوع",
+      "next": "التالي"
+    },
+    "info": {
+      "projectTitle": "اسم المشروع",
+      "projectTitleAr": "اسم المشروع (عربي)",
+      "projectFullName": "الاسم الكامل للمشروع",
+      "projectFullNameAr": "الاسم الكامل للمشروع (عربي)",
+      "levelLabel": "المستوى",
+      "levels": {
+        "1": "المستوى الأول",
+        "2": "المستوى الثاني",
+        "3": "المستوى الثالث"
+      },
+      "semesterLabel": "الفصل الدراسي",
+      "semesterOptions": {
+        "first": "الأول",
+        "second": "الثاني"
+      },
+      "students": "الطلاب",
+      "studentsAr": "الطلاب (عربي)",
+      "supervisors": "المشرفون",
+      "supervisorsAr": "المشرفون (عربي)",
+      "pressEnterHelp": "اضغط Enter بعد كل اسم"
+    },
+    "data": {
+      "characters": "{count}/{max} حرف",
+      "labels": {
+        "abstract": "المُلخّص",
+        "abstractAr": "المُلخّص (عربي)",
+        "introduction": "المقدمة",
+        "introductionAr": "المقدمة (عربي)",
+        "methodology": "المنهجية",
+        "methodologyAr": "المنهجية (عربي)",
+        "analysis": "التحليل والنتائج",
+        "analysisAr": "التحليل والنتائج (عربي)",
+        "conclusion": "الخاتمة",
+        "conclusionAr": "الخاتمة (عربي)",
+        "recommendations": "التوصيات",
+        "recommendationsAr": "التوصيات (عربي)"
+      }
+    },
+    "media": {
+      "producers": "رفع صورة المنفّذين",
+      "card": "رفع صورة بطاقة المشروع",
+      "photos": "رفع صور المشروع (بحد أقصى {max})",
+      "materials": "الخامات",
+      "addNew": "إضافة جديد",
+      "uploadHint": "اضغط على الصورة لرفع صورة الخامة.",
+      "removeAria": "إزالة",
+      "removeMaterialAria": "إزالة الخامة",
+      "removePhotoAria": "إزالة الصورة",
+      "uploadMaterialAria": "رفع صورة الخامة"
+    },
+    "resourcesStep": {
+      "posterLink": "رابط الملصق",
+      "portfolioLink": "رابط البورتفوليو",
+      "presentationLink": "رابط العرض"
+    },
+    "validation": {
+      "titleRequired": "اسم المشروع مطلوب",
+      "titleArRequired": "اسم المشروع (عربي) مطلوب",
+      "fullNameRequired": "الاسم الكامل للمشروع مطلوب",
+      "fullNameArRequired": "الاسم الكامل للمشروع (عربي) مطلوب",
+      "levelRequired": "اختر المستوى",
+      "semesterRequired": "اختر الفصل الدراسي",
+      "studentsRequired": "أضف طالبًا واحدًا على الأقل",
+      "studentsArRequired": "أضف طالبًا واحدًا على الأقل (عربي)",
+      "supervisorsRequired": "أضف مشرفًا واحدًا على الأقل",
+      "supervisorsArRequired": "أضف مشرفًا واحدًا على الأقل (عربي)",
+      "studentsMismatch": "يجب أن يتطابق العدد مع الطلاب",
+      "supervisorsMismatch": "يجب أن يتطابق العدد مع المشرفين",
+      "sectionRequired": "{label} مطلوب",
+      "sectionTooLong": "يجب أن يكون {label} بحد أقصى {max} حرف",
+      "materialNameRequired": "اسم الخامة مطلوب",
+      "materialNameArRequired": "اسم الخامة (عربي) مطلوب"
+    },
+    "submitErrors": {
+      "createFailed": "فشل إنشاء الكابستون",
+      "saveFailed": "فشل حفظ التغييرات"
+    },
+    "delete": {
+      "title": "حذف الكابستون",
+      "description": "سيؤدي هذا إلى إزالة الكابستون وكل بياناته (الأشخاص والخامات والصور) نهائيًا من التخزين. لا يمكن التراجع عن هذا الإجراء.",
+      "deleting": "جارٍ الحذف: {name}",
+      "cancel": "إلغاء",
+      "confirm": "حذف",
+      "deletingButton": "جارٍ الحذف…",
+      "failed": "فشل الحذف"
     }
   },
   "Resources": {

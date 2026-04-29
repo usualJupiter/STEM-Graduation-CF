@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
-import Header from "@/components/gallery/header"
 import Gallery from "@/components/gallery/gallery"
+import { PageHeader } from "@/components/page-header"
 import { getGalleryPhotos } from "@/lib/api"
 
 export async function generateMetadata({
@@ -25,7 +25,10 @@ export default async function GalleryPage() {
 
   return (
     <main>
-      <Header />
+      <PageHeader
+        namespace="GalleryHeader"
+        imageSrc="https://cdn.stem-program.com/assets/assets_life.avif"
+      />
       <Gallery images={images} />
     </main>
   )

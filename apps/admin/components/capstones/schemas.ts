@@ -2,71 +2,83 @@ import { z } from "zod"
 
 const MAX_SECTION = 1024
 
-const required = (msg = "Required") => z.string().trim().min(1, msg)
-const tagsRequired = (msg: string) =>
-  z.array(z.string().trim().min(1)).min(1, msg)
-const sectionField = (label: string) =>
-  z
-    .string()
-    .trim()
-    .min(1, `${label} is required`)
-    .max(MAX_SECTION, `${label} must be ${MAX_SECTION} characters or fewer`)
+type Translator = (key: string, values?: Record<string, unknown>) => string
 
-export const infoSchema = z
-  .object({
-    title_en: required("Project title is required"),
-    title_ar: required("Project title (AR) is required"),
-    full_name_en: required("Project full name is required"),
-    full_name_ar: required("Project full name (AR) is required"),
-    level: required("Select a level"),
-    semester: required("Select a semester"),
-    students_en: tagsRequired("Add at least one student"),
-    students_ar: tagsRequired("Add at least one student (AR)"),
-    supervisors_en: tagsRequired("Add at least one supervisor"),
-    supervisors_ar: tagsRequired("Add at least one supervisor (AR)"),
+export function buildSchemas(t: Translator) {
+  const required = (key: string) =>
+    z.string().trim().min(1, t(`validation.${key}`))
+
+  const tagsRequired = (key: string) =>
+    z.array(z.string().trim().min(1)).min(1, t(`validation.${key}`))
+
+  const sectionField = (label: string) =>
+    z
+      .string()
+      .trim()
+      .min(1, t("validation.sectionRequired", { label }))
+      .max(
+        MAX_SECTION,
+        t("validation.sectionTooLong", { label, max: MAX_SECTION }),
+      )
+
+  const infoSchema = z
+    .object({
+      title_en: required("titleRequired"),
+      title_ar: required("titleArRequired"),
+      full_name_en: required("fullNameRequired"),
+      full_name_ar: required("fullNameArRequired"),
+      level: required("levelRequired"),
+      semester: required("semesterRequired"),
+      students_en: tagsRequired("studentsRequired"),
+      students_ar: tagsRequired("studentsArRequired"),
+      supervisors_en: tagsRequired("supervisorsRequired"),
+      supervisors_ar: tagsRequired("supervisorsArRequired"),
+    })
+    .superRefine((d, ctx) => {
+      if (d.students_en.length !== d.students_ar.length) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["students_ar"],
+          message: t("validation.studentsMismatch"),
+        })
+      }
+      if (d.supervisors_en.length !== d.supervisors_ar.length) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["supervisors_ar"],
+          message: t("validation.supervisorsMismatch"),
+        })
+      }
+    })
+
+  const dataSchema = z.object({
+    abstract_en: sectionField(t("data.labels.abstract")),
+    abstract_ar: sectionField(t("data.labels.abstractAr")),
+    introduction_en: sectionField(t("data.labels.introduction")),
+    introduction_ar: sectionField(t("data.labels.introductionAr")),
+    methodology_en: sectionField(t("data.labels.methodology")),
+    methodology_ar: sectionField(t("data.labels.methodologyAr")),
+    analysis_en: sectionField(t("data.labels.analysis")),
+    analysis_ar: sectionField(t("data.labels.analysisAr")),
+    conclusion_en: sectionField(t("data.labels.conclusion")),
+    conclusion_ar: sectionField(t("data.labels.conclusionAr")),
+    recommendations_en: sectionField(t("data.labels.recommendations")),
+    recommendations_ar: sectionField(t("data.labels.recommendationsAr")),
   })
-  .superRefine((d, ctx) => {
-    if (d.students_en.length !== d.students_ar.length) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["students_ar"],
-        message: "Must match Students count",
-      })
-    }
-    if (d.supervisors_en.length !== d.supervisors_ar.length) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["supervisors_ar"],
-        message: "Must match Supervisors count",
-      })
-    }
+
+  const mediaSchema = z.object({
+    materials: z.array(
+      z.object({
+        id: z.number(),
+        name_en: required("materialNameRequired"),
+        name_ar: required("materialNameArRequired"),
+        photo: z.any().nullable().optional(),
+      }),
+    ),
   })
 
-export const dataSchema = z.object({
-  abstract_en: sectionField("Abstract"),
-  abstract_ar: sectionField("Abstract (AR)"),
-  introduction_en: sectionField("Introduction"),
-  introduction_ar: sectionField("Introduction (AR)"),
-  methodology_en: sectionField("Methodology"),
-  methodology_ar: sectionField("Methodology (AR)"),
-  analysis_en: sectionField("Analysis"),
-  analysis_ar: sectionField("Analysis (AR)"),
-  conclusion_en: sectionField("Conclusion"),
-  conclusion_ar: sectionField("Conclusion (AR)"),
-  recommendations_en: sectionField("Recommendations"),
-  recommendations_ar: sectionField("Recommendations (AR)"),
-})
-
-export const mediaSchema = z.object({
-  materials: z.array(
-    z.object({
-      id: z.number(),
-      name_en: required("Material name is required"),
-      name_ar: required("Material name (AR) is required"),
-      photo: z.any().nullable().optional(),
-    }),
-  ),
-})
+  return { infoSchema, dataSchema, mediaSchema }
+}
 
 export type FieldErrors = Record<string, string>
 

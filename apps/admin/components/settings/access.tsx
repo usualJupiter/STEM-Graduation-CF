@@ -22,6 +22,7 @@ import { Input } from "@workspace/ui/components/input"
 
 import { fetchJson } from "@/lib/api"
 import { authClient } from "@/lib/auth-client"
+import AddEmailDialog from "@/components/settings/addEmailDialog"
 
 interface AllowedEmailRow {
   email: string
@@ -47,9 +48,6 @@ export default function Access() {
   const [search, setSearch] = useState("")
 
   const [addOpen, setAddOpen] = useState(false)
-  const [newEmail, setNewEmail] = useState("")
-  const [adding, setAdding] = useState(false)
-  const [addError, setAddError] = useState<string | null>(null)
 
   const [deletingTarget, setDeletingTarget] = useState<{
     email: string
@@ -89,35 +87,6 @@ export default function Access() {
         (r.name?.toLowerCase().includes(q) ?? false),
     )
   }, [rows, search])
-
-  const handleAddOpenChange = (next: boolean) => {
-    if (adding) return
-    if (!next) {
-      setAddError(null)
-      setNewEmail("")
-    }
-    setAddOpen(next)
-  }
-
-  const handleAdd = async () => {
-    setAddError(null)
-    setAdding(true)
-    try {
-      await fetchJson("/api/allowed-emails", {
-        method: "POST",
-        body: JSON.stringify({ email: newEmail.trim() }),
-      })
-      setAddOpen(false)
-      setNewEmail("")
-      setRefreshKey((k) => k + 1)
-    } catch (err) {
-      setAddError(
-        err instanceof Error ? err.message : t("addEmailDialog.failed"),
-      )
-    } finally {
-      setAdding(false)
-    }
-  }
 
   const handleDeleteOpenChange = (next: boolean) => {
     if (deleting) return
@@ -233,51 +202,11 @@ export default function Access() {
         </div>
       </div>
 
-      <Dialog open={addOpen} onOpenChange={handleAddOpenChange}>
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle>{t("addEmailDialog.title")}</DialogTitle>
-            <DialogDescription>
-              {t("addEmailDialog.description")}
-            </DialogDescription>
-          </DialogHeader>
-          <Input
-            type="email"
-            dir="ltr"
-            placeholder={t("addEmailDialog.placeholder")}
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            disabled={adding}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && newEmail.trim() && !adding) {
-                e.preventDefault()
-                void handleAdd()
-              }
-            }}
-          />
-          {addError && <p className="text-sm text-destructive">{addError}</p>}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleAddOpenChange(false)}
-              disabled={adding}
-            >
-              {t("addEmailDialog.cancel")}
-            </Button>
-            <Button
-              type="button"
-              onClick={handleAdd}
-              disabled={adding || !newEmail.trim()}
-              className="bg-secondry-web text-white hover:bg-secondry-web/90"
-            >
-              {adding
-                ? t("addEmailDialog.submitting")
-                : t("addEmailDialog.confirm")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddEmailDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSuccess={() => setRefreshKey((k) => k + 1)}
+      />
 
       <Dialog
         open={deletingTarget != null}

@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 import { Button } from "@workspace/ui/components/button"
 import {
   DialogDescription,
@@ -19,8 +21,10 @@ interface CreateProjectResourcesProps {
   onSubmit?: () => void
   submitting?: boolean
   error?: string | null
-  submitLabel?: string
-  submittingLabel?: string
+  submitLabel: string
+  submittingLabel: string
+  title: string
+  description: string
 }
 
 export default function CreateProjectResources({
@@ -30,18 +34,25 @@ export default function CreateProjectResources({
   onSubmit,
   submitting,
   error,
-  submitLabel = "Create Project",
-  submittingLabel = "Creating…",
+  submitLabel,
+  submittingLabel,
+  title,
+  description,
 }: CreateProjectResourcesProps) {
+  const tStep = useTranslations("Capstones.resourcesStep")
+  const tSubmit = useTranslations("Capstones.submit")
+
   return (
     <>
       <DialogHeader className="p-4">
-        <DialogTitle>Create New Capstone</DialogTitle>
-        <DialogDescription>Fill all info below.</DialogDescription>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <div className="flex flex-col gap-2 px-4 pb-4">
         <Field>
-          <FieldLabel htmlFor="poster-link">Poster Link</FieldLabel>
+          <FieldLabel htmlFor="poster-link">
+            {tStep("posterLink")}
+          </FieldLabel>
           <Input
             id="poster-link"
             value={value.poster_link}
@@ -50,7 +61,9 @@ export default function CreateProjectResources({
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="portfolio-link">Portfolio Link</FieldLabel>
+          <FieldLabel htmlFor="portfolio-link">
+            {tStep("portfolioLink")}
+          </FieldLabel>
           <Input
             id="portfolio-link"
             value={value.portfolio_link}
@@ -59,7 +72,9 @@ export default function CreateProjectResources({
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="presentation-link">Presentation Link</FieldLabel>
+          <FieldLabel htmlFor="presentation-link">
+            {tStep("presentationLink")}
+          </FieldLabel>
           <Input
             id="presentation-link"
             value={value.presentation_link}
@@ -71,7 +86,7 @@ export default function CreateProjectResources({
       </div>
       <DialogFooter className="border-t border-border bg-muted p-4">
         <Button variant="outline" onClick={onBack} disabled={submitting}>
-          Back
+          {tSubmit("back")}
         </Button>
         <Button
           onClick={onSubmit}

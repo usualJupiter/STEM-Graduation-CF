@@ -133,6 +133,105 @@
       "selected": "{selected} of {total} row(s) selected.",
       "previous": "Previous",
       "next": "Next"
+    },
+    "createTitle": "Create New Capstone",
+    "editTitle": "Edit Capstone",
+    "dialogDescription": "Fill all info below.",
+    "loading": "Loading…",
+    "submit": {
+      "create": "Create Project",
+      "creating": "Creating…",
+      "save": "Save Changes",
+      "saving": "Saving…",
+      "back": "Back",
+      "next": "Next"
+    },
+    "info": {
+      "projectTitle": "Project Title",
+      "projectTitleAr": "Project Title AR",
+      "projectFullName": "Project Full Name",
+      "projectFullNameAr": "Project Full Name AR",
+      "levelLabel": "Level",
+      "levels": {
+        "1": "Level 1",
+        "2": "Level 2",
+        "3": "Level 3"
+      },
+      "semesterLabel": "Semester",
+      "semesterOptions": {
+        "first": "First",
+        "second": "Second"
+      },
+      "students": "Students",
+      "studentsAr": "Students AR",
+      "supervisors": "Supervisors",
+      "supervisorsAr": "Supervisors AR",
+      "pressEnterHelp": "Press enter after each name"
+    },
+    "data": {
+      "characters": "{count}/{max} characters",
+      "labels": {
+        "abstract": "Abstract",
+        "abstractAr": "Abstract AR",
+        "introduction": "Introduction",
+        "introductionAr": "Introduction AR",
+        "methodology": "Methodology",
+        "methodologyAr": "Methodology AR",
+        "analysis": "Analysis & Results",
+        "analysisAr": "Analysis & Results AR",
+        "conclusion": "Conclusion",
+        "conclusionAr": "Conclusion AR",
+        "recommendations": "Recommendations",
+        "recommendationsAr": "Recommendations AR"
+      }
+    },
+    "media": {
+      "producers": "Upload Producers",
+      "card": "Upload Project Card Photo",
+      "photos": "Upload Project Photos (Max {max})",
+      "materials": "Materials",
+      "addNew": "Add New",
+      "uploadHint": "click on picture to upload material image.",
+      "removeAria": "Remove",
+      "removeMaterialAria": "Remove material",
+      "removePhotoAria": "Remove photo",
+      "uploadMaterialAria": "Upload material image"
+    },
+    "resourcesStep": {
+      "posterLink": "Poster Link",
+      "portfolioLink": "Portfolio Link",
+      "presentationLink": "Presentation Link"
+    },
+    "validation": {
+      "titleRequired": "Project title is required",
+      "titleArRequired": "Project title (AR) is required",
+      "fullNameRequired": "Project full name is required",
+      "fullNameArRequired": "Project full name (AR) is required",
+      "levelRequired": "Select a level",
+      "semesterRequired": "Select a semester",
+      "studentsRequired": "Add at least one student",
+      "studentsArRequired": "Add at least one student (AR)",
+      "supervisorsRequired": "Add at least one supervisor",
+      "supervisorsArRequired": "Add at least one supervisor (AR)",
+      "studentsMismatch": "Must match Students count",
+      "supervisorsMismatch": "Must match Supervisors count",
+      "sectionRequired": "{label} is required",
+      "sectionTooLong": "{label} must be {max} characters or fewer",
+      "materialNameRequired": "Material name is required",
+      "materialNameArRequired": "Material name (AR) is required"
+    },
+    "submitErrors": {
+      "createFailed": "Failed to create capstone",
+      "saveFailed": "Failed to save changes"
+    },
+    "delete": {
+      "title": "Delete capstone",
+      "description": "This will permanently remove the capstone, its people, materials, and all associated images from storage. This action cannot be undone.",
+      "deleting": "Deleting: {name}",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deletingButton": "Deleting…",
+      "failed": "Failed to delete"
     }
   },
   "Resources": {

@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 import { Button } from "@workspace/ui/components/button"
 import {
   DialogDescription,
@@ -24,15 +26,15 @@ import type { FieldErrors } from "@/components/capstones/schemas"
 const MAX_CHARS = 1024
 
 const SECTIONS = [
-  { id: "abstract", label: "Abstract" },
-  { id: "introduction", label: "Introduction" },
-  { id: "methodology", label: "Methodology" },
-  { id: "analysis", label: "Analysis & Results" },
-  { id: "conclusion", label: "Conclusion" },
-  { id: "recommendations", label: "Recommendations" },
+  "abstract",
+  "introduction",
+  "methodology",
+  "analysis",
+  "conclusion",
+  "recommendations",
 ] as const
 
-type SectionId = (typeof SECTIONS)[number]["id"]
+type SectionId = (typeof SECTIONS)[number]
 type SectionFieldKey = `${SectionId}_en` | `${SectionId}_ar`
 
 interface CreateProjectDataProps {
@@ -41,6 +43,8 @@ interface CreateProjectDataProps {
   errors?: FieldErrors
   onBack?: () => void
   onNext?: () => void
+  title: string
+  description: string
 }
 
 export default function CreateProjectData({
@@ -49,7 +53,12 @@ export default function CreateProjectData({
   errors = {},
   onBack,
   onNext,
+  title,
+  description,
 }: CreateProjectDataProps) {
+  const tData = useTranslations("Capstones.data")
+  const tSubmit = useTranslations("Capstones.submit")
+
   const setField = (key: SectionFieldKey, val: string) => {
     if (val.length > MAX_CHARS) return
     onChange({ [key]: val } as Partial<CapstoneFormState>)
@@ -57,15 +66,14 @@ export default function CreateProjectData({
 
   const renderColumn = (lang: "en" | "ar") => (
     <div className="flex flex-col gap-2 px-4 pb-4">
-      {SECTIONS.map((section) => {
-        const fieldId = `${section.id}-${lang}`
-        const key = `${section.id}_${lang}` as SectionFieldKey
+      {SECTIONS.map((id) => {
+        const fieldId = `${id}-${lang}`
+        const key = `${id}_${lang}` as SectionFieldKey
         const v = value[key] as string
-        const labelText =
-          lang === "ar" ? `${section.label} AR` : section.label
+        const labelKey = lang === "ar" ? `labels.${id}Ar` : `labels.${id}`
         return (
           <Field key={fieldId}>
-            <FieldLabel htmlFor={fieldId}>{labelText}</FieldLabel>
+            <FieldLabel htmlFor={fieldId}>{tData(labelKey)}</FieldLabel>
             <InputGroup className="rounded-none">
               <InputGroupTextarea
                 id={fieldId}
@@ -75,7 +83,7 @@ export default function CreateProjectData({
               />
               <InputGroupAddon align="block-end">
                 <InputGroupText className="text-xs text-muted-foreground">
-                  {v.length}/{MAX_CHARS} characters
+                  {tData("characters", { count: v.length, max: MAX_CHARS })}
                 </InputGroupText>
               </InputGroupAddon>
             </InputGroup>
@@ -91,8 +99,8 @@ export default function CreateProjectData({
   return (
     <>
       <DialogHeader className="p-4">
-        <DialogTitle>Create New Capstone</DialogTitle>
-        <DialogDescription>Fill all info below.</DialogDescription>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <div className="grid max-h-[60vh] grid-cols-1 overflow-y-auto md:grid-cols-2">
         {renderColumn("en")}
@@ -100,13 +108,13 @@ export default function CreateProjectData({
       </div>
       <DialogFooter className="border-t bg-muted/50 p-4">
         <Button variant="outline" onClick={onBack}>
-          Back
+          {tSubmit("back")}
         </Button>
         <Button
           onClick={onNext}
           className="min-w-32 bg-secondry-web text-white hover:bg-secondry-web/90"
         >
-          Next
+          {tSubmit("next")}
         </Button>
       </DialogFooter>
     </>

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
-import Header from "@/components/schedules/header"
 import Lectures from "@/components/schedules/lectures"
+import { PageHeader } from "@/components/page-header"
 import { getSchedules } from "@/lib/api"
 
 export async function generateMetadata({
@@ -24,7 +24,10 @@ export default async function SchedulesPage() {
 
   return (
     <main>
-      <Header />
+      <PageHeader
+        namespace="SchedulesHeader"
+        imageSrc="https://cdn.stem-program.com/assets/assets_lectures.avif"
+      />
       <Lectures levels={levels} />
     </main>
   )

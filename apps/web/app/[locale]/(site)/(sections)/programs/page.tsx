@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 
 import Fees from "@/components/programs/fees"
-import Header from "@/components/programs/header"
+import { PageHeader } from "@/components/page-header"
 import Programs from "@/components/programs/programs"
 
 export async function generateMetadata({
@@ -22,7 +22,10 @@ export async function generateMetadata({
 export default function ProgramsPage() {
   return (
     <main className="min-h-svh">
-      <Header />
+      <PageHeader
+        namespace="ProgramsHeader"
+        imageSrc="https://cdn.stem-program.com/assets/assets_programs.avif"
+      />
       <Programs />
       <Fees />
     </main>
