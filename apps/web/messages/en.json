@@ -240,6 +240,12 @@
     },
     "pdfTitle": "Lecture schedule PDF"
   },
+  "NotFound": {
+    "tagline": "Page not found",
+    "heading": "404",
+    "description": "Sorry, we couldn't find the page you're looking for.",
+    "buttonLabel": "Home Page"
+  },
   "Footer": {
     "logoAlt": "STEM Program",
     "orgName": "STEM Program Faculty of Education",
