@@ -103,6 +103,36 @@
       }
     }
   },
+  "Applications": {
+    "title": "الطلبات",
+    "description": "إدارة الطلبات والتصدير والمزيد.",
+    "manage": "إدارة",
+    "exportApplications": "تصدير الطلبات",
+    "searchPlaceholder": "ابحث عن طلب",
+    "sort": "ترتيب",
+    "sortOptions": {
+      "dateNewest": "التاريخ (الأحدث)",
+      "dateOldest": "التاريخ (الأقدم)",
+      "nameAsc": "الاسم (أ-ي)",
+      "nameDesc": "الاسم (ي-أ)"
+    },
+    "columns": {
+      "id": "المعرّف",
+      "name": "الاسم",
+      "group": "المجموعة",
+      "date": "التاريخ"
+    },
+    "actions": "إجراءات",
+    "actionsMenu": {
+      "export": "تصدير",
+      "delete": "حذف"
+    },
+    "pagination": {
+      "selected": "{selected} من {total} صفوف محددة.",
+      "previous": "السابق",
+      "next": "التالي"
+    }
+  },
   "Capstones": {
     "title": "مشاريع الكابستون",
     "description": "ارفع وأدر المشاريع والمزيد",

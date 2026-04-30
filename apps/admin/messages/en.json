@@ -103,6 +103,36 @@
       }
     }
   },
+  "Applications": {
+    "title": "Applications",
+    "description": "Manage applications, export and more.",
+    "manage": "Manage",
+    "exportApplications": "Export Applications",
+    "searchPlaceholder": "Search Application",
+    "sort": "Sort",
+    "sortOptions": {
+      "dateNewest": "Date (newest)",
+      "dateOldest": "Date (oldest)",
+      "nameAsc": "Name (A-Z)",
+      "nameDesc": "Name (Z-A)"
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "group": "Group",
+      "date": "Date"
+    },
+    "actions": "Actions",
+    "actionsMenu": {
+      "export": "Export",
+      "delete": "Delete"
+    },
+    "pagination": {
+      "selected": "{selected} of {total} row(s) selected.",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
   "Capstones": {
     "title": "Capstone Projects",
     "description": "Upload and manage projects and more",
