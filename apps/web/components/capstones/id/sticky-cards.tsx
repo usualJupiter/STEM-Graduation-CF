@@ -3,6 +3,7 @@
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import Image from "next/image"
 import { useRef } from "react"
 
 import { cn } from "@workspace/ui/lib/utils"
@@ -100,12 +101,14 @@ export function StickyCards({
           )}
         >
           {cards.map((card, i) => (
-            <img
+            <Image
               key={card.id}
               src={card.image}
               alt={card.alt || ""}
+              fill
+              sizes="(max-width: 1024px) 100vw, 80vw"
               className={cn(
-                "absolute h-full w-full rounded-4xl object-cover",
+                "absolute rounded-4xl object-cover",
                 imageClassName,
               )}
               ref={(el) => {

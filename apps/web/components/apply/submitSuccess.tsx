@@ -5,14 +5,10 @@ import { CircleCheckBig } from "lucide-react"
 
 interface SubmitSuccessProps {
   title?: string
-  linkText?: string
-  linkHref?: string
 }
 
 export default function SubmitSuccess({
   title = "تم تقديم طلبك بنجاح",
-  linkText = "العودة للموقع الرسمي",
-  linkHref = "/",
 }: SubmitSuccessProps) {
   return (
     <div
@@ -25,10 +21,10 @@ export default function SubmitSuccess({
           {title}
         </h1>
         <Link
-          href={linkHref}
+          href="/"
           className="text-center text-base text-muted-foreground hover:underline sm:text-lg sm:leading-8"
         >
-          {linkText}
+          العودة للموقع الرسمي
         </Link>
       </div>
     </div>

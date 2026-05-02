@@ -1,14 +1,14 @@
 import { z } from "zod"
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787"
+import { env } from "@/lib/env"
+
+const API_URL = env.NEXT_PUBLIC_API_URL
 
 export interface ApplicationStatus {
   accepting: boolean
   alreadySubmitted: boolean
   group: {
     id: number
-    name: string
     academic_year_label: string
     declaration_text: string
   } | null
@@ -24,7 +24,7 @@ export async function getApplicationStatus(): Promise<ApplicationStatus> {
   return json.data
 }
 
-const PHOTO_MAX_BYTES = 1 * 1024 * 1024
+const PHOTO_MAX_BYTES = 1024 * 1024
 const CERT_MAX_BYTES = 5 * 1024 * 1024
 const PHOTO_TYPES = ["image/png", "image/jpeg"] as const
 const PDF_TYPE = "application/pdf"
@@ -67,11 +67,17 @@ export const studentSchema = z.object({
   guardian_mobile: z
     .string()
     .trim()
-    .regex(EG_MOBILE, "رقم محمول مصري غير صحيح"),
+    .regex(EG_MOBILE, "رقم محمول غير صحيح"),
 })
 
 export function digitsOnly(value: string): string {
   return value.replace(/\D/g, "")
+}
+
+export function formatBytes(n: number): string {
+  if (n < 1024) return `${n} B`
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`
+  return `${(n / 1024 / 1024).toFixed(2)} MB`
 }
 
 export function formatDateDDMMYYYY(value: string): string {
@@ -123,7 +129,7 @@ export const certSchema = z.object({
   governorate: requiredString(),
 })
 
-export const filesSchema = z.object({
+const filesSchema = z.object({
   photo: z
     .instanceof(File, { message: "الرجاء اختيار صورة شخصية" })
     .refine(
@@ -143,9 +149,6 @@ export const fullSchema = z.object({
   ...filesSchema.shape,
 })
 
-export type StudentValues = z.infer<typeof studentSchema>
-export type CertValues = z.infer<typeof certSchema>
-export type FilesValues = z.infer<typeof filesSchema>
 export type ApplyValues = z.infer<typeof fullSchema>
 
 export const APPLY_DRAFT_KEY = (groupId: number) =>
@@ -156,6 +159,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   ALREADY_SUBMITTED: "تم تقديم طلبك بالفعل",
   DUPLICATE_NATIONAL_ID: "تم تقديم طلبك بالفعل",
   TURNSTILE_FAILED: "تعذّر التحقق، يرجى تحديث الصفحة والمحاولة مرة أخرى",
+  NETWORK_FAILED: "تعذّر الاتصال بالخادم، تأكد من الإنترنت وحاول مرة أخرى",
+  TIMEOUT: "استغرق الإرسال وقتًا طويلًا، حاول مرة أخرى",
   PHOTO_TYPE: "صيغة الصورة غير مدعومة (PNG أو JPEG فقط)",
   PHOTO_SIZE: "حجم الصورة يجب أن يكون أقل من 1 ميجابايت",
   CERTIFICATE_TYPE: "ملف الشهادة يجب أن يكون PDF",
@@ -171,35 +176,36 @@ export function applyErrorMessage(code: string | undefined): string {
   return ERROR_MESSAGES[code ?? ""] ?? "حدث خطأ غير متوقع"
 }
 
-export interface SubmitResult {
-  ok: boolean
-  errorCode?: string
-  applicationId?: string
-}
-
 export async function submitApplication(
   values: ApplyValues,
-  declarationAccepted: boolean,
   turnstileToken: string,
-): Promise<SubmitResult> {
+): Promise<{ ok: boolean; errorCode?: string }> {
   const form = new FormData()
   for (const [key, val] of Object.entries(values)) {
     if (val instanceof File) form.append(key, val)
-    else if (val !== undefined && val !== null) form.append(key, String(val))
+    else form.append(key, String(val))
   }
-  form.set("declaration_accepted", String(declarationAccepted))
+  form.set("declaration_accepted", "true")
   form.set("turnstile_token", turnstileToken)
 
-  const res = await fetch(`${API_URL}/api/applications`, {
-    method: "POST",
-    body: form,
-    credentials: "include",
-  })
+  let res: Response
+  try {
+    res = await fetch(`${API_URL}/api/applications`, {
+      method: "POST",
+      body: form,
+      credentials: "include",
+      signal: AbortSignal.timeout(30_000),
+    })
+  } catch (err) {
+    const code =
+      err instanceof DOMException && err.name === "TimeoutError"
+        ? "TIMEOUT"
+        : "NETWORK_FAILED"
+    return { ok: false, errorCode: code }
+  }
   const json = (await res.json().catch(() => null)) as
     | { error?: string; data?: { id: string } }
     | null
-  if (res.ok && json?.data?.id) {
-    return { ok: true, applicationId: json.data.id }
-  }
+  if (res.ok && json?.data?.id) return { ok: true }
   return { ok: false, errorCode: json?.error }
 }

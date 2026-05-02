@@ -1,23 +1,14 @@
 "use client"
 
-import { useFormContext } from "react-hook-form"
-
-import { Button } from "@workspace/ui/components/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
 import {
   FieldDescription,
   FieldLegend,
   FieldSet,
 } from "@workspace/ui/components/field"
 
+import StepCard from "@/components/apply/stepCard"
+import StepNav from "@/components/apply/stepNav"
+import TextFormField from "@/components/apply/textFormField"
 import type { ApplyValues } from "@/lib/applications"
 
 interface CerInfoProps {
@@ -42,64 +33,29 @@ const FIELDS: Array<{
 ]
 
 export default function CerInfo({ onNext, onBack }: CerInfoProps) {
-  const form = useFormContext<ApplyValues>()
   return (
-    <Form {...form}>
-      <div
-        dir="rtl"
-        className="w-full max-w-[562px] rounded-none border border-border bg-background"
-      >
-        <FieldSet>
-          <div className="flex flex-col gap-1.5 p-4 pb-0">
-            <FieldLegend>بيانات الشهادة الدراسية</FieldLegend>
-            <FieldDescription>
-              املأ بياناتك بشكل صحيح في الحقول التالية
-            </FieldDescription>
-          </div>
-
-          <div className="flex flex-col gap-5 p-4">
-            {FIELDS.map((f) => (
-              <FormField
-                key={f.name}
-                control={form.control}
-                name={f.name}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{f.label}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        value={typeof field.value === "string" ? field.value : ""}
-                        inputMode={f.inputMode}
-                        className="text-right"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-          </div>
-        </FieldSet>
-
-        <div className="flex items-start gap-3 border-t border-border p-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={onBack}
-          >
-            السابق
-          </Button>
-          <Button
-            type="button"
-            className="flex-1 bg-defult-web text-main hover:bg-defult-web/90"
-            onClick={onNext}
-          >
-            التالي
-          </Button>
+    <StepCard>
+      <FieldSet>
+        <div className="flex flex-col gap-1.5 p-4 pb-0">
+          <FieldLegend>بيانات الشهادة الدراسية</FieldLegend>
+          <FieldDescription>
+            املأ بياناتك بشكل صحيح في الحقول التالية
+          </FieldDescription>
         </div>
-      </div>
-    </Form>
+
+        <div className="flex flex-col gap-5 p-4">
+          {FIELDS.map((f) => (
+            <TextFormField
+              key={f.name}
+              name={f.name}
+              label={f.label}
+              inputMode={f.inputMode}
+            />
+          ))}
+        </div>
+      </FieldSet>
+
+      <StepNav onBack={onBack} onNext={onNext} />
+    </StepCard>
   )
 }

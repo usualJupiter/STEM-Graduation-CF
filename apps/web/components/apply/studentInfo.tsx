@@ -2,22 +2,15 @@
 
 import { useFormContext } from "react-hook-form"
 
-import { Button } from "@workspace/ui/components/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
 import {
   FieldDescription,
   FieldLegend,
   FieldSet,
 } from "@workspace/ui/components/field"
 
+import StepCard from "@/components/apply/stepCard"
+import StepNav from "@/components/apply/stepNav"
+import TextFormField from "@/components/apply/textFormField"
 import {
   ageOnNextOctober,
   digitsOnly,
@@ -105,70 +98,37 @@ export default function StudentInfo({ onNext }: StudentInfoProps) {
     typeof birthdate === "string" ? ageOnNextOctober(birthdate) : null
 
   return (
-    <Form {...form}>
-      <div
-        dir="rtl"
-        className="w-full max-w-[562px] rounded-none border border-border bg-background"
-      >
-        <FieldSet>
-          <div className="flex flex-col gap-1.5 p-4 pb-0">
-            <FieldLegend>بيانات الطالب</FieldLegend>
-            <FieldDescription>
-              املأ بياناتك بشكل صحيح في الحقول التالية
-            </FieldDescription>
-          </div>
-
-          <div className="flex flex-col gap-5 p-4">
-            {FIELDS.map((f) => (
-              <div key={f.name} className="flex flex-col gap-2">
-                <FormField
-                  control={form.control}
-                  name={f.name}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{f.label}</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          value={
-                            typeof field.value === "string" ? field.value : ""
-                          }
-                          inputMode={f.inputMode}
-                          maxLength={f.maxLength}
-                          placeholder={f.placeholder}
-                          className="text-right"
-                          onChange={(e) => {
-                            const next = f.format
-                              ? f.format(e.target.value)
-                              : e.target.value
-                            field.onChange(next)
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {f.name === "birthdate" && computedAge !== null && (
-                  <p className="text-sm text-muted-foreground">
-                    السن في أول أكتوبر القادم: {computedAge} سنة
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </FieldSet>
-
-        <div className="flex items-start justify-between border-t border-border p-4">
-          <Button
-            type="button"
-            className="w-full bg-defult-web text-main hover:bg-defult-web/90"
-            onClick={onNext}
-          >
-            التالي
-          </Button>
+    <StepCard>
+      <FieldSet>
+        <div className="flex flex-col gap-1.5 p-4 pb-0">
+          <FieldLegend>بيانات الطالب</FieldLegend>
+          <FieldDescription>
+            املأ بياناتك بشكل صحيح في الحقول التالية
+          </FieldDescription>
         </div>
-      </div>
-    </Form>
+
+        <div className="flex flex-col gap-5 p-4">
+          {FIELDS.map((f) => (
+            <div key={f.name} className="flex flex-col gap-2">
+              <TextFormField
+                name={f.name}
+                label={f.label}
+                placeholder={f.placeholder}
+                inputMode={f.inputMode}
+                maxLength={f.maxLength}
+                format={f.format}
+              />
+              {f.name === "birthdate" && computedAge !== null && (
+                <p className="text-sm text-muted-foreground">
+                  السن في أول أكتوبر القادم: {computedAge} سنة
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </FieldSet>
+
+      <StepNav onNext={onNext} />
+    </StepCard>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef } from "react"
 
 declare global {
   interface Window {
@@ -55,12 +55,30 @@ interface TurnstileProps {
   siteKey: string
   onToken: (token: string) => void
   onExpire?: () => void
+  onError?: () => void
 }
 
-export default function Turnstile({ siteKey, onToken, onExpire }: TurnstileProps) {
+export default function Turnstile({
+  siteKey,
+  onToken,
+  onExpire,
+  onError,
+}: TurnstileProps) {
   const ref = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
+  const onTokenRef = useRef(onToken)
+  const onExpireRef = useRef(onExpire)
+  const onErrorRef = useRef(onError)
 
+  // Keep refs current without retriggering the mount effect.
+  useLayoutEffect(() => {
+    onTokenRef.current = onToken
+    onExpireRef.current = onExpire
+    onErrorRef.current = onError
+  })
+
+  // Mount the widget once per site key. Callback identity changes
+  // would otherwise re-render the widget and re-challenge the user.
   useEffect(() => {
     let cancelled = false
     loadScript()
@@ -68,12 +86,15 @@ export default function Turnstile({ siteKey, onToken, onExpire }: TurnstileProps
         if (cancelled || !ref.current || !window.turnstile) return
         widgetIdRef.current = window.turnstile.render(ref.current, {
           sitekey: siteKey,
-          callback: (token) => onToken(token),
-          "expired-callback": () => onExpire?.(),
+          callback: (token) => onTokenRef.current(token),
+          "expired-callback": () => onExpireRef.current?.(),
+          "error-callback": () => onErrorRef.current?.(),
           language: "ar",
         })
       })
-      .catch(() => {})
+      .catch(() => {
+        if (!cancelled) onErrorRef.current?.()
+      })
     return () => {
       cancelled = true
       if (widgetIdRef.current && window.turnstile) {
@@ -83,7 +104,7 @@ export default function Turnstile({ siteKey, onToken, onExpire }: TurnstileProps
         widgetIdRef.current = null
       }
     }
-  }, [siteKey, onToken, onExpire])
+  }, [siteKey])
 
   return <div ref={ref} />
 }

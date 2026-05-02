@@ -42,7 +42,7 @@ export default function Hero() {
           <motion.div variants={fadeUpVariants}>
             <Button
               asChild
-              className="h-12 bg-defult-web px-6 text-base text-main [&_svg]:size-5 [a]:hover:bg-defult-web/90"
+              className="h-12 bg-default-web px-6 text-base text-main [&_svg]:size-5 [a]:hover:bg-default-web/90"
             >
               <Link href="/programs">
                 {t("cta")}

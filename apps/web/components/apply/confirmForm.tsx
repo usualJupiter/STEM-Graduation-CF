@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 
-import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Field,
@@ -16,24 +15,27 @@ import {
   InputGroupTextarea,
 } from "@workspace/ui/components/input-group"
 
+import StepCard from "@/components/apply/stepCard"
+import StepNav from "@/components/apply/stepNav"
 import Turnstile from "@/components/apply/turnstile"
 
 interface ConfirmFormProps {
-  declarationText: string
   turnstileSiteKey: string
+  declarationText: string
   onSubmit: (turnstileToken: string) => void | Promise<void>
   onBack: () => void
 }
 
 export default function ConfirmForm({
-  declarationText,
   turnstileSiteKey,
+  declarationText,
   onSubmit,
   onBack,
 }: ConfirmFormProps) {
   const [agreed, setAgreed] = useState(false)
   const [token, setToken] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [turnstileError, setTurnstileError] = useState(false)
 
   const handleSubmit = async () => {
     if (!agreed || !token || submitting) return
@@ -46,10 +48,7 @@ export default function ConfirmForm({
   }
 
   return (
-    <div
-      dir="rtl"
-      className="w-full max-w-[562px] rounded-none border border-border bg-background"
-    >
+    <StepCard>
       <div className="flex flex-col gap-1.5 px-4 pt-4">
         <FieldSet>
           <FieldLegend className="text-right">تقديم الطلب</FieldLegend>
@@ -85,34 +84,34 @@ export default function ConfirmForm({
           </FieldLabel>
         </Field>
 
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center gap-2">
           <Turnstile
             siteKey={turnstileSiteKey}
-            onToken={(t) => setToken(t)}
+            onToken={(t) => {
+              setToken(t)
+              setTurnstileError(false)
+            }}
             onExpire={() => setToken(null)}
+            onError={() => {
+              setToken(null)
+              setTurnstileError(true)
+            }}
           />
+          {turnstileError && (
+            <p className="text-sm text-destructive">
+              تعذّر تحميل التحقق، يرجى تحديث الصفحة والمحاولة مرة أخرى
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="flex items-start gap-3 border-t border-border p-4">
-        <Button
-          type="button"
-          variant="outline"
-          className="flex-1"
-          onClick={onBack}
-          disabled={submitting}
-        >
-          السابق
-        </Button>
-        <Button
-          type="button"
-          className="flex-1 bg-defult-web text-main hover:bg-defult-web/90"
-          onClick={handleSubmit}
-          disabled={!agreed || !token || submitting}
-        >
-          {submitting ? "جارٍ الإرسال…" : "تقديم الطلب"}
-        </Button>
-      </div>
-    </div>
+      <StepNav
+        onBack={onBack}
+        onNext={handleSubmit}
+        nextLabel={submitting ? "جارٍ الإرسال…" : "تقديم الطلب"}
+        nextDisabled={!agreed || !token || submitting}
+        backDisabled={submitting}
+      />
+    </StepCard>
   )
 }

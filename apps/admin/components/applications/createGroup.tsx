@@ -24,7 +24,6 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
-import { Textarea } from "@workspace/ui/components/textarea"
 
 import { APPLICATION_GROUPS_INVALIDATE_EVENT } from "@/components/applications/constants"
 import { fetchJson } from "@/lib/api"
@@ -40,7 +39,6 @@ function buildSchema(t: Translator) {
   return z.object({
     name: z.string().trim().min(1, t("validation.required")),
     academic_year_label: z.string().trim().min(1, t("validation.required")),
-    declaration_text: z.string().trim().min(1, t("validation.required")),
   })
 }
 type FormValues = z.infer<ReturnType<typeof buildSchema>>
@@ -56,7 +54,6 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
     defaultValues: {
       name: "",
       academic_year_label: "",
-      declaration_text: "",
     },
   })
 
@@ -116,19 +113,6 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
                   <FormLabel>{t("yearLabel")}</FormLabel>
                   <FormControl>
                     <Input placeholder="2025/2026" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="declaration_text"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("declaration")}</FormLabel>
-                  <FormControl>
-                    <Textarea rows={6} dir="rtl" className="text-right" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

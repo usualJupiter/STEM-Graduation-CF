@@ -21,8 +21,8 @@ const SLOTS = [
   },
   {
     cardClass: "",
-    borderClass: "border-defult-web",
-    overlayClass: "bg-defult-web",
+    borderClass: "border-default-web",
+    overlayClass: "bg-default-web",
     brushVariant: "tertiary" as const,
   },
   {

@@ -43,7 +43,7 @@
   --sidebar-ring: oklch(0.708 0 0);
   --main: oklch(0.2054 0.1004 278.35);
   --main-foreground: oklch(0.985 0 0);
-  --defult-web: oklch(0.9088 0.2134 118.92);
+  --default-web: oklch(0.9088 0.2134 118.92);
   --secondry-web: oklch(0.4925 0.234 273.19);
   --web-third: oklch(0.9079 0.1765 98.61);
   --web-card-1: oklch(0.9088 0.2134 118.92);
@@ -88,7 +88,7 @@
   --sidebar-ring: oklch(0.439 0 0);
   --main: oklch(0.2054 0.1004 278.35);
   --main-foreground: oklch(0.985 0 0);
-  --defult-web: oklch(0.9088 0.2134 118.92);
+  --default-web: oklch(0.9088 0.2134 118.92);
   --secondry-web: oklch(0.4925 0.234 273.19);
   --web-third: oklch(0.9079 0.1765 98.61);
   --web-card-1: oklch(0.9088 0.2134 118.92);
@@ -137,7 +137,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-main: var(--main);
   --color-main-foreground: var(--main-foreground);
-  --color-defult-web: var(--defult-web);
+  --color-default-web: var(--default-web);
   --color-secondry-web: var(--secondry-web);
   --color-web-third: var(--web-third);
   --color-web-card-1: var(--web-card-1);

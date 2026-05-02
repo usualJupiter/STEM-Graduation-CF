@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
+import Image from "next/image"
 
 import {
   fadeUpVariants,
@@ -34,12 +35,16 @@ export default function Producers({
         >
           {title}
         </motion.h2>
-        <motion.div variants={fadeUpVariants} className="w-full">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <motion.div
+          variants={fadeUpVariants}
+          className="relative aspect-[16/9] w-full overflow-hidden rounded-lg"
+        >
+          <Image
             src={imageUrl}
             alt={imageAlt ?? title}
-            className="w-full rounded-lg object-cover"
+            fill
+            sizes="(max-width: 1280px) 100vw, 1280px"
+            className="object-cover"
           />
         </motion.div>
       </div>

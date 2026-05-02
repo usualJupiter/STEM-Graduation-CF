@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion } from "motion/react";
+import Image from "next/image";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { Link } from "@/i18n/navigation";
@@ -83,12 +84,12 @@ export function HoverExpand({
                 scale: { duration: 0.55, ease: [0.23, 1, 0.32, 1] },
               }}
             >
-              <img
+              <Image
                 src={item.image}
                 alt={item.imageAlt ?? ""}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                decoding="async"
+                fill
+                sizes="100vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
             </motion.div>

@@ -1,23 +1,16 @@
 "use client"
 
 import { CircleOff } from "lucide-react"
-import Link from "next/link"
 
 import { Button } from "@workspace/ui/components/button"
 
 interface SubmitFailProps {
-  title?: string
-  linkText?: string
-  linkHref?: string
-  onRetry?: () => void
+  title: string
+  linkText: string
+  onRetry: () => void
 }
 
-export default function SubmitFail({
-  title = "حدث خطأ",
-  linkText = "العودة للموقع الرسمي",
-  linkHref = "/",
-  onRetry,
-}: SubmitFailProps) {
+export default function SubmitFail({ title, linkText, onRetry }: SubmitFailProps) {
   return (
     <div
       dir="rtl"
@@ -31,22 +24,9 @@ export default function SubmitFail({
         <h2 className="text-center text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {title}
         </h2>
-        {onRetry ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onRetry}
-          >
-            {linkText}
-          </Button>
-        ) : (
-          <Link
-            href={linkHref}
-            className="text-center text-lg text-muted-foreground hover:underline"
-          >
-            {linkText}
-          </Link>
-        )}
+        <Button type="button" variant="outline" onClick={onRetry}>
+          {linkText}
+        </Button>
       </div>
     </div>
   )

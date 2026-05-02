@@ -27,7 +27,7 @@ export default async function NotFoundPage() {
         </p>
         <Button
           asChild
-          className="h-12 bg-defult-web px-8 text-base font-semibold text-main [a]:hover:bg-defult-web/90"
+          className="h-12 bg-default-web px-8 text-base font-semibold text-main [a]:hover:bg-default-web/90"
         >
           <Link href="/">{t("buttonLabel")}</Link>
         </Button>

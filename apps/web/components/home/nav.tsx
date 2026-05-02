@@ -110,7 +110,7 @@ export function Nav() {
       <div className="hidden flex-col items-end gap-1 lg:flex">
         <div className="flex items-center gap-3">
           <LanguageSwitcher onMain />
-          <Button asChild className="bg-defult-web text-main [a]:hover:bg-defult-web/90">
+          <Button asChild className="bg-default-web text-main [a]:hover:bg-default-web/90">
             <Link href="/apply">{t("apply")}</Link>
           </Button>
         </div>
@@ -171,7 +171,7 @@ export function Nav() {
           <SheetContent side="right" className="p-4">
             <SheetTitle className="sr-only">{t("menu")}</SheetTitle>
             <div className="flex flex-col gap-6 pt-8">
-              <Button asChild className="bg-defult-web text-main [a]:hover:bg-defult-web/90">
+              <Button asChild className="bg-default-web text-main [a]:hover:bg-default-web/90">
                 <Link href="/apply">{t("apply")}</Link>
               </Button>
               <div className="flex flex-col gap-2">

@@ -1,4 +1,6 @@
-const API_URL = process.env.API_URL ?? "http://localhost:8787"
+import { env } from "@/lib/env"
+
+const API_URL = env.API_URL
 
 async function fetchJson<T>(path: string, label: string): Promise<T> {
   const url = `${API_URL}${path}`

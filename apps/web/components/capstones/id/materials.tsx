@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
+import Image from "next/image"
 
 import { AspectRatio } from "@workspace/ui/components/aspect-ratio"
 
@@ -58,12 +59,13 @@ export default function Materials({ title, items }: MaterialsProps) {
                 </p>
               </div>
               <div className="px-3 pb-3">
-                <AspectRatio ratio={3 / 2}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <AspectRatio ratio={3 / 2} className="relative">
+                  <Image
                     src={material.image}
                     alt={material.title}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                    className="object-cover"
                   />
                 </AspectRatio>
               </div>

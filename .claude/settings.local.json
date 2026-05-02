@@ -42,7 +42,9 @@
       "Bash(git -C \"E:\\\\Projects\\\\STEM Graduation\\\\STEM CF\" stash pop)",
       "Bash(awk '{print $NF}')",
       "Bash(xargs -I {} taskkill //F //PID {})",
-      "Bash(bunx --bun wrangler d1 execute stem --local --command \"DELETE FROM applications\")"
+      "Bash(bunx --bun wrangler d1 execute stem --local --command \"DELETE FROM applications\")",
+      "PowerShell(bun run *)",
+      "Bash(test -f \"E:\\\\\\\\Projects\\\\\\\\STEM Graduation\\\\\\\\STEM CF\\\\\\\\apps\\\\\\\\web\\\\\\\\.env.example\")"
     ]
   }
 }
