@@ -3,12 +3,14 @@ import { cors } from "hono/cors"
 
 import { createAuth } from "./lib/auth"
 import { createDb } from "./lib/db"
+import adminApplications from "./routes/admin/applications"
 import adminCapstones from "./routes/admin/capstones"
 import adminEvents from "./routes/admin/events"
 import adminGallery from "./routes/admin/gallery"
 import adminSchedules from "./routes/admin/schedules"
 import adminUploads from "./routes/admin/uploads"
 import allowedEmails from "./routes/allowed-emails"
+import applications from "./routes/applications"
 import capstones from "./routes/capstones"
 import events from "./routes/events"
 import gallery from "./routes/gallery"
@@ -47,11 +49,13 @@ app.route("/api/events", events)
 app.route("/api/capstones", capstones)
 app.route("/api/gallery", gallery)
 app.route("/api/schedules", schedules)
+app.route("/api/applications", applications)
 app.route("/api/admin/events", adminEvents)
 app.route("/api/admin/capstones", adminCapstones)
 app.route("/api/admin/uploads", adminUploads)
 app.route("/api/admin/gallery", adminGallery)
 app.route("/api/admin/schedules", adminSchedules)
+app.route("/api/admin/applications", adminApplications)
 
 app.get("/", (c) => c.text("STEM API"))
 

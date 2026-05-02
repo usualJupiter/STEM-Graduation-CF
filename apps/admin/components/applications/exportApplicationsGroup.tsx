@@ -1,6 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
+
+import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -9,7 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { Button } from "@workspace/ui/components/button"
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@workspace/ui/components/field"
 import {
   Select,
   SelectContent,
@@ -17,98 +24,137 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import {
-  Field,
-  FieldDescription,
-  FieldLabel,
-} from "@workspace/ui/components/field"
 
-const GROUP_OPTIONS = [
-  { value: "2025", label: "2025" },
-  { value: "2024", label: "2024" },
-  { value: "2023", label: "2023" },
-]
-
-const EXPORT_TYPE_OPTIONS = [
-  { value: "zip", label: "ZIP File" },
-  { value: "csv", label: "CSV File" },
-  { value: "json", label: "JSON File" },
-]
+import { downloadAuthed } from "@/components/applications/download"
+import { fetchJson } from "@/lib/api"
 
 interface ExportApplicationsGroupProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  onExport?: (group: string, exportType: string) => void
-  onCancel?: () => void
 }
+
+interface GroupRow {
+  id: number
+  name: string
+  application_count: number
+}
+
+interface GroupsResponse {
+  data: GroupRow[]
+}
+
+const TYPES = [
+  { value: "xlsx", labelKey: "xlsx" },
+  { value: "zip", labelKey: "zip" },
+] as const
 
 export default function ExportApplicationsGroup({
   open,
   onOpenChange,
-  onExport,
-  onCancel,
 }: ExportApplicationsGroupProps) {
-  const [group, setGroup] = useState("2025")
-  const [exportType, setExportType] = useState("zip")
+  const t = useTranslations("Applications.exportGroupDialog")
+  const [groups, setGroups] = useState<GroupRow[]>([])
+  const [groupId, setGroupId] = useState<string>("")
+  const [type, setType] = useState<"xlsx" | "zip">("xlsx")
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleExport = () => {
-    onExport?.(group, exportType)
-  }
+  useEffect(() => {
+    if (!open) {
+      setError(null)
+      return
+    }
+    let cancelled = false
+    fetchJson<GroupsResponse>("/api/admin/applications/groups")
+      .then((res) => {
+        if (cancelled) return
+        setGroups(res.data)
+        if (res.data.length > 0 && !groupId) {
+          setGroupId(String(res.data[0]!.id))
+        }
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [open, groupId])
 
-  const handleCancel = () => {
-    onCancel?.()
-    onOpenChange?.(false)
+  const handleExport = async () => {
+    if (!groupId) return
+    setBusy(true)
+    setError(null)
+    try {
+      const group = groups.find((g) => String(g.id) === groupId)
+      const fallback = `${group?.name ?? "group"}.${type === "xlsx" ? "xlsx" : "zip"}`
+      await downloadAuthed(
+        `/api/admin/applications/groups/${groupId}/export?type=${type}`,
+        fallback,
+      )
+      onOpenChange?.(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed")
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Export Applications</DialogTitle>
-          <DialogDescription>
-            export application by group.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <Field>
-            <FieldLabel htmlFor="group">Group</FieldLabel>
-            <Select value={group} onValueChange={setGroup}>
+            <FieldLabel htmlFor="group">{t("group")}</FieldLabel>
+            <Select value={groupId} onValueChange={setGroupId}>
               <SelectTrigger id="group">
-                <SelectValue placeholder="Select group" />
+                <SelectValue placeholder={t("groupPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
-                {GROUP_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                {groups.map((g) => (
+                  <SelectItem key={g.id} value={String(g.id)}>
+                    {g.name} ({g.application_count})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
           <Field>
-            <FieldLabel htmlFor="export-type">Export Type</FieldLabel>
-            <Select value={exportType} onValueChange={setExportType}>
-              <SelectTrigger id="export-type">
-                <SelectValue placeholder="Select export type" />
+            <FieldLabel htmlFor="type">{t("type")}</FieldLabel>
+            <Select
+              value={type}
+              onValueChange={(v) => setType(v as "xlsx" | "zip")}
+            >
+              <SelectTrigger id="type">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {EXPORT_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                {TYPES.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {t(opt.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <FieldDescription>
-              Any type different to ZIP will not include application files.
-            </FieldDescription>
+            <FieldDescription>{t("typeHint")}</FieldDescription>
           </Field>
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange?.(false)}
+            disabled={busy}
+          >
+            {t("cancel")}
           </Button>
-          <Button onClick={handleExport}>Export</Button>
+          <Button onClick={handleExport} disabled={!groupId || busy}>
+            {busy ? t("exporting") : t("export")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

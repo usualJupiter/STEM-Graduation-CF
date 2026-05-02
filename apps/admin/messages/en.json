@@ -108,7 +108,7 @@
     "description": "Manage applications, export and more.",
     "manage": "Manage",
     "exportApplications": "Export Applications",
-    "searchPlaceholder": "Search Application",
+    "searchPlaceholder": "Search by name or national ID",
     "sort": "Sort",
     "sortOptions": {
       "dateNewest": "Date (newest)",
@@ -116,21 +116,138 @@
       "nameAsc": "Name (A-Z)",
       "nameDesc": "Name (Z-A)"
     },
+    "groupFilter": {
+      "label": "Group",
+      "all": "All groups"
+    },
     "columns": {
       "id": "ID",
       "name": "Name",
+      "nationalId": "National ID",
       "group": "Group",
       "date": "Date"
     },
     "actions": "Actions",
     "actionsMenu": {
+      "view": "View",
       "export": "Export",
       "delete": "Delete"
     },
     "pagination": {
       "selected": "{selected} of {total} row(s) selected.",
+      "showing": "{shown} of {total} showing.",
       "previous": "Previous",
       "next": "Next"
+    },
+    "manageDialog": {
+      "title": "Manage Applications",
+      "description": "Activate one group at a time to accept new submissions.",
+      "columns": {
+        "group": "Group",
+        "year": "Year",
+        "count": "Applications",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "on": "ON",
+      "off": "OFF",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete",
+      "create": "Create New Group",
+      "close": "Close",
+      "empty": "No groups yet.",
+      "confirmDelete": "Delete \"{name}\" and all its applications and files?"
+    },
+    "createGroupDialog": {
+      "title": "Create Group",
+      "description": "A group is a batch of applications, e.g. one academic year.",
+      "name": "Group name",
+      "yearLabel": "Academic year label",
+      "declaration": "Declaration text (shown to applicants)",
+      "cancel": "Cancel",
+      "create": "Create Group",
+      "submitting": "Creating…",
+      "createFailed": "Failed to create group",
+      "validation": {
+        "required": "This field is required"
+      }
+    },
+    "exportGroupDialog": {
+      "title": "Export Applications",
+      "description": "Export an entire group at once.",
+      "group": "Group",
+      "groupPlaceholder": "Select group",
+      "type": "Export type",
+      "xlsx": "XLSX file",
+      "zip": "ZIP file",
+      "typeHint": "ZIP includes the XLSX manifest and every applicant's photo and certificate.",
+      "cancel": "Cancel",
+      "export": "Export",
+      "exporting": "Exporting…"
+    },
+    "exportStudentDialog": {
+      "title": "Export Application",
+      "description": "Export a single applicant.",
+      "student": "Applicant",
+      "type": "Export type",
+      "xlsx": "XLSX file",
+      "zip": "ZIP file",
+      "typeHint": "ZIP includes the XLSX manifest and this applicant's photo and certificate.",
+      "cancel": "Cancel",
+      "export": "Export",
+      "exporting": "Exporting…"
+    },
+    "viewDialog": {
+      "title": "Application",
+      "loading": "Loading…",
+      "openCertificate": "Open certificate",
+      "close": "Close",
+      "sections": {
+        "group": "Group",
+        "student": "Student",
+        "guardian": "Guardian",
+        "certificate": "Certificate"
+      },
+      "fields": {
+        "group": "Group",
+        "submittedAt": "Submitted at",
+        "declarationAcceptedAt": "Declaration accepted at",
+        "name": "Name",
+        "nationality": "Nationality",
+        "religion": "Religion",
+        "residence": "Residence",
+        "home_phone": "Home phone",
+        "mobile": "Mobile",
+        "birthdate": "Birthdate",
+        "birthplace": "Birthplace",
+        "age_october": "Age in October",
+        "national_id": "National ID",
+        "id_issuing_authority": "ID issuing authority",
+        "id_issue_date": "ID issue date",
+        "guardian_name": "Guardian name",
+        "guardian_job": "Guardian job",
+        "guardian_address": "Guardian address",
+        "guardian_mobile": "Guardian mobile",
+        "certificate": "Certificate",
+        "graduation_year": "Graduation year",
+        "total_grades": "Total grades",
+        "first_language": "First language",
+        "second_language": "Second language",
+        "school": "School",
+        "division": "Division",
+        "educational_district": "Educational district",
+        "governorate": "Governorate"
+      }
+    },
+    "deleteDialog": {
+      "title": "Delete application",
+      "description": "This will permanently remove the application and its files. This action cannot be undone.",
+      "deleting": "Deleting: {name}",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "submitting": "Deleting…",
+      "failed": "Failed to delete"
     }
   },
   "Capstones": {

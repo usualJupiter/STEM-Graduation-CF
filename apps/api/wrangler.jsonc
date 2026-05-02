@@ -16,6 +16,10 @@
     {
       "binding": "PUBLIC_MEDIA",
       "bucket_name": "cdn"
+    },
+    {
+      "binding": "APP_FILES",
+      "bucket_name": "applications"
     }
   ]
   // "vars": {

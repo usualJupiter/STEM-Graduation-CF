@@ -22,7 +22,27 @@
       "Bash(bun x *)",
       "Bash(echo \"exit=$?\")",
       "Bash(echo \"api=$?\")",
-      "Bash(xargs cat *)"
+      "Bash(xargs cat *)",
+      "Bash(curl -s http://localhost:8787/api/applications/status)",
+      "Bash(cd /tmp)",
+      "Bash(printf '\\\\x89PNG\\\\r\\\\n\\\\x1a\\\\n\\\\x00\\\\x00\\\\x00\\\\rIHDR\\\\x00\\\\x00\\\\x00\\\\x01\\\\x00\\\\x00\\\\x00\\\\x01\\\\x08\\\\x06\\\\x00\\\\x00\\\\x00\\\\x1f\\\\x15\\\\xc4\\\\x89\\\\x00\\\\x00\\\\x00\\\\rIDATx\\\\xdac\\\\xf8\\\\xff\\\\xff?\\\\x00\\\\x05\\\\x00\\\\x01\\\\x00\\\\x00\\\\x00\\\\xfb\\(\\\\xf3\\\\x87\\\\x00\\\\x00\\\\x00\\\\x00IEND\\\\xaeB`\\\\x82')",
+      "Bash(printf '%%PDF-1.4\\\\n%%\\\\xe2\\\\xe3\\\\xcf\\\\xd3\\\\n%%EOF')",
+      "Bash(curl -s -i -X POST http://localhost:8787/api/applications -F turnstile_token=dummy -F 'name=احمد محمد' -F nationality=مصري -F religion=مسلم -F residence=القاهرة -F home_phone=02-1234567 -F mobile=01012345678 -F birthdate=2007-01-01 -F birthplace=القاهرة -F age_october=18 -F national_id=30701011234567 -F 'id_issuing_authority=قسم القاهرة' -F id_issue_date=2023-01-01 -F 'guardian_name=محمد علي' -F guardian_job=مهندس -F guardian_address=القاهرة -F guardian_mobile=01098765432 -F 'certificate=الثانوية العامة' -F graduation_year=2025 -F total_grades=395 -F first_language=الانجليزية -F second_language=الفرنسية -F 'school=مدرسة الثانوية' -F 'division=علمي رياضة' -F 'educational_district=شرق القاهرة' -F governorate=القاهرة -F declaration_accepted=true -F 'photo=@/tmp/test_photo.png;type=image/png' -F 'certificate_file=@/tmp/test_cert.pdf;type=application/pdf'.)",
+      "Bash(curl -sv -X POST http://localhost:8787/api/applications -F turnstile_token=dummy -F 'name=احمد محمد' -F nationality=مصري -F religion=مسلم -F residence=القاهرة -F home_phone=02-1234567 -F mobile=01012345678 -F birthdate=2007-01-01 -F birthplace=القاهرة -F age_october=18 -F national_id=30701011234567 -F 'id_issuing_authority=قسم القاهرة' -F id_issue_date=2023-01-01 -F 'guardian_name=محمد علي' -F guardian_job=مهندس -F guardian_address=القاهرة -F guardian_mobile=01098765432 -F 'certificate=الثانوية العامة' -F graduation_year=2025 -F total_grades=395 -F first_language=الانجليزية -F second_language=الفرنسية -F 'school=مدرسة الثانوية' -F 'division=علمي رياضة' -F 'educational_district=شرق القاهرة' -F governorate=القاهرة -F declaration_accepted=true -F 'photo=@/tmp/test_photo.png;type=image/png' -F 'certificate_file=@/tmp/test_cert.pdf;type=application/pdf')",
+      "Bash(curl *)",
+      "Bash(cygpath -w /tmp/test_photo.png)",
+      "Bash(kill 1669 1671)",
+      "Bash(awk '{print $2}')",
+      "Bash(kill -9 425 427)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 19360 //T)",
+      "Bash(taskkill //F //PID 19428 //T)",
+      "Bash(awk -F'[\\(:]' '{print $1}')",
+      "Bash(git -C \"E:\\\\Projects\\\\STEM Graduation\\\\STEM CF\" stash)",
+      "Bash(git -C \"E:\\\\Projects\\\\STEM Graduation\\\\STEM CF\" stash pop)",
+      "Bash(awk '{print $NF}')",
+      "Bash(xargs -I {} taskkill //F //PID {})",
+      "Bash(bunx --bun wrangler d1 execute stem --local --command \"DELETE FROM applications\")"
     ]
   }
 }

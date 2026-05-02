@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
@@ -15,23 +16,43 @@ import {
   InputGroupTextarea,
 } from "@workspace/ui/components/input-group"
 
-const DECLARATION_TEXT =
-  "أقر انا الطالب المرشح للقبول بكلية التربية جامعة أسيوط في العام الجامعة 2025/2026 بأنني تقدمت بملف اوراقي للكلية بناء علي بطاقة الترشيح وأنني علي علم تام بعدم وجود كشوف بأسماء الطلاب المرشحين للكلية من مكتب التنسيق القبول بالجامعات والمعاهد وانه في حاله وصول الكشوف النهائية بعد اعلان نتيجة التحويلات الالكترونية ولم يرد فيها اسمي وبياناتي يصبح قيدي بالكلية لاغيا دون ادني مسؤلية علي الكلية"
+import Turnstile from "@/components/apply/turnstile"
 
 interface ConfirmFormProps {
-  onSubmit?: () => void
+  declarationText: string
+  turnstileSiteKey: string
+  onSubmit: (turnstileToken: string) => void | Promise<void>
 }
 
-export default function ConfirmForm({ onSubmit }: ConfirmFormProps) {
-  const [agreed, setAgreed] = useState(true)
+export default function ConfirmForm({
+  declarationText,
+  turnstileSiteKey,
+  onSubmit,
+}: ConfirmFormProps) {
+  const [agreed, setAgreed] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    if (!agreed || !token || submitting) return
+    setSubmitting(true)
+    try {
+      await onSubmit(token)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
-    <div dir="rtl" className="w-full max-w-[562px] rounded-none border border-border bg-background">
+    <div
+      dir="rtl"
+      className="w-full max-w-[562px] rounded-none border border-border bg-background"
+    >
       <div className="flex flex-col gap-1.5 px-4 pt-4">
         <FieldSet>
           <FieldLegend className="text-right">تقديم الطلب</FieldLegend>
           <FieldDescription className="text-right">
-            أقرأ الأقرار بجديه
+            اقرأ الإقرار بجدية
           </FieldDescription>
         </FieldSet>
       </div>
@@ -39,14 +60,14 @@ export default function ConfirmForm({ onSubmit }: ConfirmFormProps) {
       <div className="flex flex-col gap-5 p-4">
         <Field>
           <FieldLabel htmlFor="declaration" className="text-right">
-            أقرار الترشح
+            إقرار الترشح
           </FieldLabel>
           <InputGroup>
             <InputGroupTextarea
               id="declaration"
               readOnly
-              value={DECLARATION_TEXT}
-              className="min-h-[100px] text-right"
+              value={declarationText}
+              className="min-h-[120px] text-right"
             />
           </InputGroup>
         </Field>
@@ -58,18 +79,27 @@ export default function ConfirmForm({ onSubmit }: ConfirmFormProps) {
             onCheckedChange={(checked) => setAgreed(checked === true)}
           />
           <FieldLabel htmlFor="agree-checkbox" className="font-medium">
-            أقر انا الطالب اني قرأت الاقرار وقمت بالموافقة عليه
+            أقر أنا الطالب أني قرأت الإقرار وقمت بالموافقة عليه
           </FieldLabel>
         </Field>
+
+        <div className="flex justify-center">
+          <Turnstile
+            siteKey={turnstileSiteKey}
+            onToken={(t) => setToken(t)}
+            onExpire={() => setToken(null)}
+          />
+        </div>
       </div>
 
       <div className="flex items-start justify-between border-t border-border p-4">
         <Button
+          type="button"
           className="w-full bg-defult-web text-main hover:bg-defult-web/90"
-          onClick={onSubmit}
-          disabled={!agreed}
+          onClick={handleSubmit}
+          disabled={!agreed || !token || submitting}
         >
-          تقديم الطلب
+          {submitting ? "جارٍ الإرسال…" : "تقديم الطلب"}
         </Button>
       </div>
     </div>

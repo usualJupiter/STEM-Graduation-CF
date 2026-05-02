@@ -108,7 +108,7 @@
     "description": "إدارة الطلبات والتصدير والمزيد.",
     "manage": "إدارة",
     "exportApplications": "تصدير الطلبات",
-    "searchPlaceholder": "ابحث عن طلب",
+    "searchPlaceholder": "ابحث بالاسم أو الرقم القومي",
     "sort": "ترتيب",
     "sortOptions": {
       "dateNewest": "التاريخ (الأحدث)",
@@ -116,21 +116,138 @@
       "nameAsc": "الاسم (أ-ي)",
       "nameDesc": "الاسم (ي-أ)"
     },
+    "groupFilter": {
+      "label": "المجموعة",
+      "all": "كل المجموعات"
+    },
     "columns": {
       "id": "المعرّف",
       "name": "الاسم",
+      "nationalId": "الرقم القومي",
       "group": "المجموعة",
       "date": "التاريخ"
     },
     "actions": "إجراءات",
     "actionsMenu": {
+      "view": "عرض",
       "export": "تصدير",
       "delete": "حذف"
     },
     "pagination": {
       "selected": "{selected} من {total} صفوف محددة.",
+      "showing": "{shown} من {total}.",
       "previous": "السابق",
       "next": "التالي"
+    },
+    "manageDialog": {
+      "title": "إدارة الطلبات",
+      "description": "فعّل مجموعة واحدة فقط لاستقبال الطلبات.",
+      "columns": {
+        "group": "المجموعة",
+        "year": "العام",
+        "count": "عدد الطلبات",
+        "status": "الحالة",
+        "actions": "إجراءات"
+      },
+      "on": "مُفعَّلة",
+      "off": "غير مُفعَّلة",
+      "activate": "تفعيل",
+      "deactivate": "إيقاف",
+      "delete": "حذف",
+      "create": "إنشاء مجموعة جديدة",
+      "close": "إغلاق",
+      "empty": "لا توجد مجموعات بعد.",
+      "confirmDelete": "حذف \"{name}\" وجميع طلباتها وملفاتها؟"
+    },
+    "createGroupDialog": {
+      "title": "إنشاء مجموعة",
+      "description": "المجموعة هي دفعة طلبات لعام دراسي محدد.",
+      "name": "اسم المجموعة",
+      "yearLabel": "العام الدراسي",
+      "declaration": "نص الإقرار (يظهر للطلاب)",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "submitting": "جارٍ الإنشاء…",
+      "createFailed": "فشل إنشاء المجموعة",
+      "validation": {
+        "required": "هذا الحقل مطلوب"
+      }
+    },
+    "exportGroupDialog": {
+      "title": "تصدير الطلبات",
+      "description": "تصدير مجموعة كاملة دفعة واحدة.",
+      "group": "المجموعة",
+      "groupPlaceholder": "اختر المجموعة",
+      "type": "نوع الملف",
+      "xlsx": "ملف XLSX",
+      "zip": "ملف ZIP",
+      "typeHint": "ZIP يحتوي على ملف XLSX وكل صور الطلاب وشهاداتهم.",
+      "cancel": "إلغاء",
+      "export": "تصدير",
+      "exporting": "جارٍ التصدير…"
+    },
+    "exportStudentDialog": {
+      "title": "تصدير الطلب",
+      "description": "تصدير طلب طالب واحد.",
+      "student": "الطالب",
+      "type": "نوع الملف",
+      "xlsx": "ملف XLSX",
+      "zip": "ملف ZIP",
+      "typeHint": "ZIP يحتوي على ملف XLSX وصورة وشهادة هذا الطالب.",
+      "cancel": "إلغاء",
+      "export": "تصدير",
+      "exporting": "جارٍ التصدير…"
+    },
+    "viewDialog": {
+      "title": "الطلب",
+      "loading": "جارٍ التحميل…",
+      "openCertificate": "فتح الشهادة",
+      "close": "إغلاق",
+      "sections": {
+        "group": "المجموعة",
+        "student": "بيانات الطالب",
+        "guardian": "ولي الأمر",
+        "certificate": "بيانات الشهادة"
+      },
+      "fields": {
+        "group": "المجموعة",
+        "submittedAt": "تاريخ التقديم",
+        "declarationAcceptedAt": "تاريخ قبول الإقرار",
+        "name": "الاسم",
+        "nationality": "الجنسية",
+        "religion": "الديانة",
+        "residence": "محل الإقامة",
+        "home_phone": "رقم هاتف المنزل",
+        "mobile": "محمول",
+        "birthdate": "تاريخ الميلاد",
+        "birthplace": "جهة الميلاد",
+        "age_october": "السن في أكتوبر",
+        "national_id": "الرقم القومي",
+        "id_issuing_authority": "جهة الإصدار",
+        "id_issue_date": "تاريخ الإصدار",
+        "guardian_name": "اسم ولي الأمر",
+        "guardian_job": "وظيفة ولي الأمر",
+        "guardian_address": "عنوان ولي الأمر",
+        "guardian_mobile": "محمول ولي الأمر",
+        "certificate": "الشهادة",
+        "graduation_year": "سنة التخرج",
+        "total_grades": "المجموع الكلي",
+        "first_language": "اللغة الأولى",
+        "second_language": "اللغة الثانية",
+        "school": "المدرسة",
+        "division": "الشعبة",
+        "educational_district": "المنطقة التعليمية",
+        "governorate": "المحافظة"
+      }
+    },
+    "deleteDialog": {
+      "title": "حذف الطلب",
+      "description": "سيتم حذف الطلب وملفاته نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+      "deleting": "جارٍ الحذف: {name}",
+      "cancel": "إلغاء",
+      "confirm": "حذف",
+      "submitting": "جارٍ الحذف…",
+      "failed": "فشل الحذف"
     }
   },
   "Capstones": {

@@ -3,13 +3,13 @@
 interface TitleProps {
   tagline?: string
   heading?: string
-  description?: string
+  academicYearLabel?: string
 }
 
 export default function Title({
   tagline = "التقديم للبرنامج",
   heading = "طلب التحاق",
-  description = "العام الجامعة 2025/2026",
+  academicYearLabel,
 }: TitleProps) {
   return (
     <div
@@ -22,9 +22,11 @@ export default function Title({
       <h1 className="text-center text-4xl font-semibold leading-10 tracking-tight text-foreground">
         {heading}
       </h1>
-      <p className="text-center text-lg leading-8 text-muted-foreground">
-        {description}
-      </p>
+      {academicYearLabel && (
+        <p className="text-center text-lg leading-8 text-muted-foreground">
+          العام الجامعي {academicYearLabel}
+        </p>
+      )}
     </div>
   )
 }

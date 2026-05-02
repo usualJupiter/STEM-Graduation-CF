@@ -15,6 +15,8 @@ export interface Database {
   capstone_people: CapstonePersonTable
   capstone_materials: CapstoneMaterialTable
   capstone_photos: CapstonePhotoTable
+  application_groups: ApplicationGroupTable
+  applications: ApplicationTable
 }
 
 interface UserTable {
@@ -164,6 +166,54 @@ interface CapstonePhotoTable {
   capstone_id: number
   photo_key: string
   position: number
+  created_at: string
+}
+
+interface ApplicationGroupTable {
+  id: Generated<number>
+  name: string
+  academic_year_label: string
+  declaration_text: string
+  is_active: Generated<number>
+  created_at: string
+  updated_at: string
+}
+
+interface ApplicationTable {
+  id: string
+  group_id: number
+  name: string
+  nationality: string
+  religion: string
+  residence: string
+  home_phone: string
+  mobile: string
+  birthdate: string
+  birthplace: string
+  age_october: string
+  national_id: string
+  id_issuing_authority: string
+  id_issue_date: string
+  guardian_name: string
+  guardian_job: string
+  guardian_address: string
+  guardian_mobile: string
+  certificate: string
+  graduation_year: string
+  total_grades: string
+  first_language: string
+  second_language: string
+  school: string
+  division: string
+  educational_district: string
+  governorate: string
+  photo_key: string
+  photo_content_type: string
+  photo_size: number
+  certificate_key: string
+  certificate_size: number
+  declaration_accepted_at: string
+  submitter_ip: string | null
   created_at: string
 }
 
