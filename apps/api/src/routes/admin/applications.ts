@@ -1,3 +1,10 @@
+/**
+ * Admin: Application groups + individual applications.
+ * - Groups: batches of applications (one academic year). Only one can be active
+ *   at a time; activating one auto-deactivates the rest.
+ * - Applications: individual submissions. Photo + certificate live in R2 and
+ *   are streamed back through this API (no public URLs).
+ */
 import { Hono, type Context } from "hono"
 import { z } from "zod"
 
@@ -21,8 +28,11 @@ const groupCreateSchema = z.object({
   academic_year_label: z.string().trim().max(50).optional().default(""),
 })
 
+// Auto-fills `academic_year_label` when the create request omits it.
+// Sept (month 8) onwards belongs to the new academic year, so applications
+// opened in Sept 2026 are for "2026/2027". UTC is fine here — admin won't
+// be creating groups exactly at midnight on the boundary.
 function currentAcademicYearLabel(now: Date = new Date()): string {
-  // Sept (month 8) onwards belongs to the new academic year.
   const m = now.getUTCMonth()
   const y = now.getUTCFullYear()
   const start = m >= 8 ? y : y - 1
@@ -105,22 +115,42 @@ app.patch("/groups/:id", async (c) => {
   const now = new Date().toISOString()
   const id = idParsed.data
 
-  if (parsed.data.is_active === true) {
-    // Enforce single-active by deactivating others first.
-    await db
-      .updateTable("application_groups")
-      .set({ is_active: 0, updated_at: now })
-      .where("is_active", "=", 1)
-      .where("id", "!=", id)
-      .execute()
-  }
-
   const updateValues: Record<string, unknown> = { updated_at: now }
   if (parsed.data.name !== undefined) updateValues.name = parsed.data.name
   if (parsed.data.academic_year_label !== undefined)
     updateValues.academic_year_label = parsed.data.academic_year_label
   if (parsed.data.is_active !== undefined)
     updateValues.is_active = parsed.data.is_active ? 1 : 0
+
+  // Single-active invariant: when activating this group, deactivate every
+  // other active group atomically. D1's batch() runs both statements as one
+  // transaction so we can never end up with zero or two active groups on a
+  // partial failure.
+  if (parsed.data.is_active === true) {
+    const deactivate = db
+      .updateTable("application_groups")
+      .set({ is_active: 0, updated_at: now })
+      .where("is_active", "=", 1)
+      .where("id", "!=", id)
+      .compile()
+    const activate = db
+      .updateTable("application_groups")
+      .set(updateValues)
+      .where("id", "=", id)
+      .compile()
+    await c.env.stem_db.batch([
+      c.env.stem_db.prepare(deactivate.sql).bind(...deactivate.parameters),
+      c.env.stem_db.prepare(activate.sql).bind(...activate.parameters),
+    ])
+    // Verify the row existed (D1 batch doesn't throw on zero-row updates).
+    const exists = await db
+      .selectFrom("application_groups")
+      .select("id")
+      .where("id", "=", id)
+      .executeTakeFirst()
+    if (!exists) return c.json({ error: "Not found" }, 404)
+    return c.json({ data: { id } })
+  }
 
   const result = await db
     .updateTable("application_groups")
@@ -152,15 +182,35 @@ app.delete("/groups/:id", async (c) => {
     .where("group_id", "=", id)
     .execute()
 
-  await db.deleteFrom("applications").where("group_id", "=", id).execute()
-  await db.deleteFrom("application_groups").where("id", "=", id).execute()
+  // Atomic cascade: deleting children + parent in one D1 batch so we never
+  // leave a "ghost" group with no applications behind on partial failure.
+  const delChildren = db
+    .deleteFrom("applications")
+    .where("group_id", "=", id)
+    .compile()
+  const delParent = db
+    .deleteFrom("application_groups")
+    .where("id", "=", id)
+    .compile()
+  await c.env.stem_db.batch([
+    c.env.stem_db.prepare(delChildren.sql).bind(...delChildren.parameters),
+    c.env.stem_db.prepare(delParent.sql).bind(...delParent.parameters),
+  ])
 
-  await Promise.allSettled(
-    apps.flatMap((a) => [
-      c.env.APP_FILES.delete(a.photo_key),
-      c.env.APP_FILES.delete(a.certificate_key),
-    ]),
+  // R2 cleanup is best-effort and outside the DB transaction; log any
+  // rejections so orphans are detectable in observability.
+  const allKeys = apps.flatMap((a) => [a.photo_key, a.certificate_key])
+  const results = await Promise.allSettled(
+    allKeys.map((k) => c.env.APP_FILES.delete(k)),
   )
+  const failed = results.filter((r) => r.status === "rejected").length
+  if (failed > 0) {
+    console.error("[applications] R2 orphan(s) after group delete", {
+      group_id: id,
+      failed,
+      total: allKeys.length,
+    })
+  }
 
   return c.json({ data: { id, deleted_applications: apps.length } })
 })
@@ -334,6 +384,9 @@ app.get("/:id", async (c) => {
   })
 })
 
+// Streams an applicant's photo or certificate from R2 with a private,
+// short-lived cache directive. Auth is already enforced by `requireAuth`
+// at the router level.
 async function streamPrivateFile(
   c: Context<AppEnv>,
   id: string,
@@ -429,10 +482,18 @@ app.delete("/:id", async (c) => {
     .executeTakeFirst()
   if (!row) return c.json({ error: "Not found" }, 404)
   await db.deleteFrom("applications").where("id", "=", id).execute()
-  await Promise.allSettled([
+  const results = await Promise.allSettled([
     c.env.APP_FILES.delete(row.photo_key),
     c.env.APP_FILES.delete(row.certificate_key),
   ])
+  const failed = results.filter((r) => r.status === "rejected").length
+  if (failed > 0) {
+    console.error("[applications] R2 orphan(s) after delete", {
+      id,
+      failed,
+      total: 2,
+    })
+  }
   return c.json({ data: { id } })
 })
 

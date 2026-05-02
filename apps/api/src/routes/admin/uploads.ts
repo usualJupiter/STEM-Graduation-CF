@@ -1,3 +1,9 @@
+/**
+ * Admin: Issues presigned PUT URLs to R2 for client-side uploads.
+ * Always image/webp, key shape `{prefix}/{uuid}.webp`. The client compresses
+ * inputs to webp before requesting a URL, so this endpoint doesn't deal with
+ * file bytes — only with naming and (for the gallery) capacity enforcement.
+ */
 import { PutObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { Hono } from "hono"
@@ -37,6 +43,8 @@ app.post("/sign", async (c) => {
 
   const { prefix, files } = parsed.data
 
+  // Gallery has a 2 GB total cap. Reject the batch up front if it would exceed
+  // it; events/capstones uploads are unbounded (their own row counts cap them).
   if (prefix === "gallery") {
     const db = c.get("db")
     const usageRow = await db

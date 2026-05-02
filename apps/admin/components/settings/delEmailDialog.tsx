@@ -44,7 +44,7 @@ export default function DelEmailDialog({
     setError(null)
     setDeleting(true)
     try {
-      await fetchJson(`/api/allowed-emails/${encodeURIComponent(email)}`, {
+      await fetchJson(`/api/admin/allowed-emails/${encodeURIComponent(email)}`, {
         method: "DELETE",
       })
       onSuccess()

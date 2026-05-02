@@ -50,7 +50,7 @@ export default function Access() {
     setLoading(true)
     setError(null)
 
-    fetchJson<ListResponse>("/api/allowed-emails", {
+    fetchJson<ListResponse>("/api/admin/allowed-emails", {
       signal: controller.signal,
     })
       .then((res) => {

@@ -48,7 +48,7 @@ export function buildXlsx(rows: ApplicationRow[]): Uint8Array {
   return new Uint8Array(buf)
 }
 
-export function safeFolderName(name: string, id: string): string {
+function safeFolderName(name: string, id: string): string {
   // Strip filesystem-unsafe chars rather than replacing with "_" so badly-formed
   // names (e.g. " / / ") don't produce ugly folders like "abcd1234___ _".
   const cleaned = name.replace(/[\\/:*?"<>|\r\n\t]+/g, "").trim()
@@ -56,7 +56,7 @@ export function safeFolderName(name: string, id: string): string {
   return cleaned ? `${cleaned}-${short}` : `applicant-${short}`
 }
 
-export async function fetchFileBytes(
+async function fetchFileBytes(
   bucket: R2Bucket,
   key: string,
 ): Promise<Uint8Array | null> {
@@ -84,8 +84,10 @@ export async function buildZip(opts: {
     const folder = isSingle
       ? "Files"
       : `Files/${safeFolderName(row.name, row.id)}`
-    const photo = await fetchFileBytes(opts.bucket, row.photo_key)
-    const cert = await fetchFileBytes(opts.bucket, row.certificate_key)
+    const [photo, cert] = await Promise.all([
+      fetchFileBytes(opts.bucket, row.photo_key),
+      fetchFileBytes(opts.bucket, row.certificate_key),
+    ])
     if (photo) {
       const ext = row.photo_key.split(".").pop() ?? "bin"
       files[`${folder}/photo.${ext}`] = photo

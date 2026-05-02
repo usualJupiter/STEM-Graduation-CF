@@ -1,16 +1,18 @@
+/**
+ * Public: Paginated read-only gallery.
+ * Photo bytes live on R2 behind the CDN; we expose the URL, not the key.
+ * Admin uploads/deletes are handled in routes/admin/gallery.ts.
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 
-import type { AppEnv } from "../types"
+import { cdnUrl } from "../../lib/cdn"
+import type { AppEnv } from "../../types"
 
 const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(500).default(20),
 })
-
-function photoUrl(cdnBase: string, key: string): string {
-  return `${cdnBase.replace(/\/$/, "")}/${key.replace(/^\//, "")}`
-}
 
 const app = new Hono<AppEnv>()
 
@@ -45,7 +47,7 @@ app.get("/", async (c) => {
 
   const data = rows.map((row) => ({
     id: row.id,
-    url: photoUrl(cdn, row.photo_key),
+    url: cdnUrl(cdn, row.photo_key),
     created_at: row.created_at,
   }))
 

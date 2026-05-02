@@ -1,3 +1,9 @@
+/**
+ * Admin: Dashboard top-line stats.
+ * Applications counts come from D1; visitor counts come from Cloudflare's
+ * GraphQL Analytics API. If the CF token/zone tag aren't configured, visitor
+ * fields fall back to null and the UI renders "—".
+ */
 import { Hono } from "hono"
 
 import { requireAuth } from "../../lib/middleware"
@@ -9,7 +15,6 @@ app.use("*", requireAuth)
 
 app.get("/stats", async (c) => {
   const db = c.get("db")
-  const env = c.env
 
   const now = new Date()
   const monthStart = isoDate(
@@ -31,7 +36,7 @@ app.get("/stats", async (c) => {
       .select((eb) => eb.fn.countAll<number>().as("count"))
       .where("created_at", ">=", monthStart)
       .executeTakeFirstOrThrow(),
-    fetchVisitorStats(env, { monthStart, today, totalStart }),
+    fetchVisitorStats(c.env, { monthStart, today, totalStart }),
   ])
 
   return c.json({
@@ -54,12 +59,13 @@ interface VisitorStats {
   total: number | null
 }
 
+// Sums daily uniques from CF zone analytics. Returns nulls (and logs) on any
+// failure so the dashboard degrades gracefully instead of breaking.
 async function fetchVisitorStats(
   env: CloudflareBindings,
   range: { monthStart: string; today: string; totalStart: string },
 ): Promise<VisitorStats> {
   if (!env.CF_API_TOKEN || !env.CF_ZONE_TAG) {
-    console.warn("[dashboard.stats] missing CF_API_TOKEN or CF_ZONE_TAG")
     return { thisMonth: null, total: null }
   }
 
@@ -81,6 +87,8 @@ async function fetchVisitorStats(
   `
 
   try {
+    // 5s ceiling so a hung CF API doesn't block the dashboard request until
+    // the Workers wall limit kills the whole invocation.
     const res = await fetch("https://api.cloudflare.com/client/v4/graphql", {
       method: "POST",
       headers: {
@@ -91,11 +99,18 @@ async function fetchVisitorStats(
         query,
         variables: { zoneTag: env.CF_ZONE_TAG, ...range },
       }),
+      signal: AbortSignal.timeout(5000),
     })
 
     const bodyText = await res.text()
     if (!res.ok) {
-      console.error("[dashboard.stats] CF http", res.status, bodyText)
+      // Truncate the response body — it can echo token-related errors and
+      // we don't want bearer fragments landing in observability.
+      console.error(
+        "[dashboard.stats] CF http",
+        res.status,
+        bodyText.slice(0, 200),
+      )
       return { thisMonth: null, total: null }
     }
 
@@ -115,10 +130,7 @@ async function fetchVisitorStats(
     }
 
     const zone = json.data?.viewer?.zones?.[0]
-    if (!zone) {
-      console.warn("[dashboard.stats] CF returned no zones; check CF_ZONE_TAG and token scope")
-      return { thisMonth: null, total: null }
-    }
+    if (!zone) return { thisMonth: null, total: null }
 
     const sumUniq = (rows: DayRow[]) =>
       rows.reduce((acc, r) => acc + (r.uniq?.uniques ?? 0), 0)

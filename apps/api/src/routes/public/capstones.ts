@@ -1,7 +1,13 @@
+/**
+ * Public: Read-only capstone projects for the website.
+ * Lists are filtered + sorted; detail is fetched by slug (admin uses id).
+ * People, materials, and photos are joined and shaped into a flat response.
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 
-import type { AppEnv } from "../types"
+import { cdnUrl } from "../../lib/cdn"
+import type { AppEnv } from "../../types"
 
 const listQuerySchema = z.object({
   q: z.string().trim().optional(),
@@ -13,15 +19,9 @@ const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(20),
 })
 
-function photoUrl(cdnBase: string, key: string): string {
-  return `${cdnBase.replace(/\/$/, "")}/${key.replace(/^\//, "")}`
-}
-
-function maybeUrl(cdnBase: string, key: string | null): string | null {
-  return key ? photoUrl(cdnBase, key) : null
-}
-
 const app = new Hono<AppEnv>()
+
+// ---------- List ----------
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(
@@ -92,12 +92,15 @@ app.get("/", async (c) => {
     full_name_ar: row.full_name_ar,
     level: row.level,
     semester: row.semester,
-    card_photo_url: maybeUrl(cdn, row.card_photo_key),
+    card_photo_url: cdnUrl(cdn, row.card_photo_key),
     created_at: row.created_at,
   }))
 
   return c.json({ data, meta: { total, page, limit } })
 })
+
+// ---------- Detail by slug ----------
+// Public detail uses slug (human-readable URLs); admin uses the numeric id.
 
 app.get("/:slug", async (c) => {
   const slug = c.req.param("slug").trim()
@@ -157,8 +160,8 @@ app.get("/:slug", async (c) => {
       conclusion_ar: row.conclusion_ar,
       recommendations_en: row.recommendations_en,
       recommendations_ar: row.recommendations_ar,
-      card_photo_url: maybeUrl(cdn, row.card_photo_key),
-      producers_photo_url: maybeUrl(cdn, row.producers_photo_key),
+      card_photo_url: cdnUrl(cdn, row.card_photo_key),
+      producers_photo_url: cdnUrl(cdn, row.producers_photo_key),
       poster_link: row.poster_link,
       portfolio_link: row.portfolio_link,
       presentation_link: row.presentation_link,
@@ -182,12 +185,12 @@ app.get("/:slug", async (c) => {
         id: m.id,
         name_en: m.name_en,
         name_ar: m.name_ar,
-        photo_url: maybeUrl(cdn, m.photo_key),
+        photo_url: cdnUrl(cdn, m.photo_key),
         position: m.position,
       })),
       photos: photos.map((p) => ({
         id: p.id,
-        url: photoUrl(cdn, p.photo_key),
+        url: cdnUrl(cdn, p.photo_key),
         position: p.position,
       })),
       created_at: row.created_at,

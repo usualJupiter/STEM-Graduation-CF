@@ -47,7 +47,7 @@ export default function AddEmailDialog({
     setError(null)
     setSubmitting(true)
     try {
-      await fetchJson("/api/allowed-emails", {
+      await fetchJson("/api/admin/allowed-emails", {
         method: "POST",
         body: JSON.stringify({ email: email.trim() }),
       })

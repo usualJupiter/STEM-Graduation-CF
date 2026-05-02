@@ -1,3 +1,15 @@
+/**
+ * Public: Application submission flow for the STEM program.
+ *
+ * GET /status → tells the public site whether applications are open and if
+ *   the current visitor has already submitted (cookie-based).
+ * POST /     → accepts a multipart form with photo + certificate, validates
+ *   everything (Turnstile, fields, file types, dedup), uploads files to R2,
+ *   inserts the row, and sets a "submitted" cookie.
+ *
+ * Errors are returned as machine-readable codes (e.g. "DUPLICATE_NATIONAL_ID")
+ * so the form can render the right localized message.
+ */
 import { Hono } from "hono"
 import { getCookie, setCookie } from "hono/cookie"
 import { z } from "zod"
@@ -7,9 +19,9 @@ import {
   IMAGE_EXT,
   detectImageKind,
   isPdf,
-} from "../lib/fileType"
-import { verifyTurnstile } from "../lib/turnstile"
-import type { AppEnv } from "../types"
+} from "../../lib/fileType"
+import { verifyTurnstile } from "../../lib/turnstile"
+import type { AppEnv } from "../../types"
 
 const PHOTO_MAX_BYTES = 1 * 1024 * 1024
 const CERT_MAX_BYTES = 5 * 1024 * 1024
@@ -21,6 +33,29 @@ const MMYYYY = /^(0[1-9]|1[0-2])\/(\d{4})$/
 const HOME_PHONE = /^088\d{7}$/
 const EG_MOBILE = /^01[0125]\d{8}$/
 
+// Best-effort R2 cleanup for half-committed submissions. Logs any rejections
+// so orphan files in the APP_FILES bucket are detectable later.
+async function cleanupOrphans(
+  env: CloudflareBindings,
+  keys: string[],
+  applicationId: string,
+): Promise<void> {
+  const results = await Promise.allSettled(
+    keys.map((k) => env.APP_FILES.delete(k)),
+  )
+  const failed = results.filter((r) => r.status === "rejected").length
+  if (failed > 0) {
+    console.error("[applications] R2 orphan(s) after failed submission", {
+      applicationId,
+      failed,
+      total: keys.length,
+    })
+  }
+}
+
+// Computes the applicant's age on Oct 1 of the upcoming admissions cycle.
+// If the request lands in Sept or earlier, "next October" is this year; from
+// Oct onwards, it's next year. Returns null if `birthdate` doesn't parse.
 function ageOnNextOctober(birthdate: string): number | null {
   const m = DDMMYYYY.exec(birthdate)
   if (!m) return null
@@ -74,6 +109,8 @@ const fieldsSchema = z.object({
 
 const app = new Hono<AppEnv>()
 
+// ---------- Status (form pre-flight) ----------
+
 app.get("/status", async (c) => {
   const db = c.get("db")
   const group = await db
@@ -103,6 +140,16 @@ app.get("/status", async (c) => {
   })
 })
 
+// ---------- Submit ----------
+// Order of operations:
+//   1. Confirm a group is open and the caller hasn't already submitted.
+//   2. Verify Turnstile (cheap-ish, fails fast).
+//   3. Validate fields, declaration, files (size + magic-byte type).
+//   4. Reject duplicate national_id within this group.
+//   5. Upload photo + certificate to R2 (best-effort cleanup on failure).
+//   6. Insert the row; on DB failure, also clean up R2.
+//   7. Set the "submitted" cookie so the user can't re-submit by accident.
+
 app.post("/", async (c) => {
   const db = c.get("db")
 
@@ -125,6 +172,8 @@ app.post("/", async (c) => {
     return c.json({ error: "Invalid form data" }, 400)
   }
 
+  // Turnstile guards the form against bots. Token comes from the widget on
+  // the public site; remoteIp helps Cloudflare correlate when available.
   const turnstileToken = String(form.get("turnstile_token") ?? "")
   const remoteIp = c.req.header("CF-Connecting-IP") ?? null
   const turnstileOk = await verifyTurnstile(
@@ -165,6 +214,8 @@ app.post("/", async (c) => {
     return c.json({ error: "CERTIFICATE_SIZE" }, 400)
   }
 
+  // Trust file extensions from the client at our peril — sniff magic bytes
+  // instead. detectImageKind returns null for anything that isn't png/jpeg.
   const imageKind = await detectImageKind(photo)
   if (!imageKind) return c.json({ error: "PHOTO_TYPE" }, 400)
 
@@ -192,20 +243,15 @@ app.post("/", async (c) => {
       httpMetadata: { contentType: "application/pdf" },
     })
   } catch (err) {
-    await Promise.allSettled([
-      c.env.APP_FILES.delete(photoKey),
-      c.env.APP_FILES.delete(certKey),
-    ])
+    console.error("[applications] R2 upload failed", { applicationId, err })
+    await cleanupOrphans(c.env, [photoKey, certKey], applicationId)
     return c.json({ error: "UPLOAD_FAILED" }, 502)
   }
 
   try {
     const computedAge = ageOnNextOctober(fields.birthdate)
     if (computedAge === null) {
-      await Promise.allSettled([
-        c.env.APP_FILES.delete(photoKey),
-        c.env.APP_FILES.delete(certKey),
-      ])
+      await cleanupOrphans(c.env, [photoKey, certKey], applicationId)
       return c.json({ error: "INVALID_BIRTHDATE" }, 400)
     }
     await db
@@ -226,10 +272,8 @@ app.post("/", async (c) => {
       })
       .execute()
   } catch (err) {
-    await Promise.allSettled([
-      c.env.APP_FILES.delete(photoKey),
-      c.env.APP_FILES.delete(certKey),
-    ])
+    console.error("[applications] DB insert failed", { applicationId, err })
+    await cleanupOrphans(c.env, [photoKey, certKey], applicationId)
     if (
       err instanceof Error &&
       /UNIQUE constraint failed/i.test(err.message)

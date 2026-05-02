@@ -1,7 +1,13 @@
+/**
+ * Public: Read-only event listings + detail.
+ * Public response strips author info and any non-display fields; admin-only
+ * data lives in routes/admin/events.ts.
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 
-import type { AppEnv } from "../types"
+import { cdnUrl } from "../../lib/cdn"
+import type { AppEnv } from "../../types"
 
 const listQuerySchema = z.object({
   q: z.string().trim().optional(),
@@ -14,11 +20,9 @@ const listQuerySchema = z.object({
 
 const idSchema = z.coerce.number().int().positive()
 
-function photoUrl(cdnBase: string, key: string): string {
-  return `${cdnBase.replace(/\/$/, "")}/${key.replace(/^\//, "")}`
-}
-
 const app = new Hono<AppEnv>()
+
+// ---------- List ----------
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(
@@ -76,12 +80,14 @@ app.get("/", async (c) => {
     description_ar: row.description_ar,
     event_date: row.event_date,
     event_time: row.event_time,
-    card_photo_url: row.card_photo_key ? photoUrl(cdn, row.card_photo_key) : null,
+    card_photo_url: cdnUrl(cdn, row.card_photo_key),
     created_at: row.created_at,
   }))
 
   return c.json({ data, meta: { total, page, limit } })
 })
+
+// ---------- Detail ----------
 
 app.get("/:id", async (c) => {
   const parsed = idSchema.safeParse(c.req.param("id"))
@@ -114,13 +120,11 @@ app.get("/:id", async (c) => {
       description_ar: event.description_ar,
       event_date: event.event_date,
       event_time: event.event_time,
-      card_photo_url: event.card_photo_key
-        ? photoUrl(cdn, event.card_photo_key)
-        : null,
+      card_photo_url: cdnUrl(cdn, event.card_photo_key),
       photos: photos.map((p) => ({
         id: p.id,
         position: p.position,
-        url: photoUrl(cdn, p.photo_key),
+        url: cdnUrl(cdn, p.photo_key),
       })),
       created_at: event.created_at,
     },

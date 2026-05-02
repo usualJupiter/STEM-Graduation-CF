@@ -1,3 +1,7 @@
+/**
+ * Admin: Lecture schedule URLs (one Google Drive preview link per level 1-4).
+ * Levels are seeded once and only updated thereafter — no insert/delete here.
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 

@@ -1,6 +1,14 @@
+/**
+ * Admin: Capstone projects (and their people, materials, photos).
+ * Each capstone has 1:N children across `capstone_people`, `capstone_materials`,
+ * and `capstone_photos`. Updates replace child collections wholesale, then
+ * delete any photo objects from R2 that the new state no longer references.
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 
+import { cdnUrl } from "../../lib/cdn"
+import type { Db } from "../../lib/db"
 import { requireAuth } from "../../lib/middleware"
 import { deleteObjects } from "../../lib/r2"
 import { slugify } from "../../lib/slug"
@@ -9,6 +17,8 @@ import type { AppEnv } from "../../types"
 const MAX_PER_LEVEL = 50
 const MAX_PHOTOS = 6
 const MAX_MATERIALS = 30
+
+// ---------- Schemas ----------
 
 const personSchema = z.object({
   name_en: z.string().trim().min(1),
@@ -56,7 +66,6 @@ const createSchema = z.object({
 })
 
 const updateSchema = createSchema.partial()
-
 const idSchema = z.coerce.number().int().positive()
 
 const listQuerySchema = z.object({
@@ -69,11 +78,18 @@ const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
 })
 
-async function uniqueSlug(db: AppEnv["Variables"]["db"], from: string): Promise<string> {
+// ---------- Helpers ----------
+
+type PersonInput = z.infer<typeof personSchema>
+type MaterialInput = z.infer<typeof materialSchema>
+
+// Slug uniqueness is best-effort: we just append a numeric suffix until the
+// candidate is free. With real-world usage that loop terminates in a couple of
+// iterations; collisions are vanishingly rare.
+async function uniqueSlug(db: Db, from: string): Promise<string> {
   const base = slugify(from)
   let candidate = base
   let n = 1
-  // Loop until we find an unused slug. Practically caps at small N.
   while (true) {
     const hit = await db
       .selectFrom("capstones")
@@ -86,9 +102,119 @@ async function uniqueSlug(db: AppEnv["Variables"]["db"], from: string): Promise<
   }
 }
 
+// Replace people of a given role wholesale. Used by both POST and PATCH.
+async function replacePeople(
+  db: Db,
+  capstoneId: number,
+  role: "student" | "supervisor",
+  people: PersonInput[],
+  now: string,
+) {
+  await db
+    .deleteFrom("capstone_people")
+    .where("capstone_id", "=", capstoneId)
+    .where("role", "=", role)
+    .execute()
+  if (people.length === 0) return
+  await db
+    .insertInto("capstone_people")
+    .values(
+      people.map((p, idx) => ({
+        capstone_id: capstoneId,
+        role,
+        name_en: p.name_en,
+        name_ar: p.name_ar,
+        position: idx,
+        created_at: now,
+      })),
+    )
+    .execute()
+}
+
+// Replace materials wholesale; returns photo keys removed by this replacement
+// (new state doesn't reference them) so the caller can delete them from R2.
+async function replaceMaterials(
+  db: Db,
+  capstoneId: number,
+  materials: MaterialInput[],
+  now: string,
+): Promise<string[]> {
+  const oldRows = await db
+    .selectFrom("capstone_materials")
+    .select("photo_key")
+    .where("capstone_id", "=", capstoneId)
+    .execute()
+
+  await db
+    .deleteFrom("capstone_materials")
+    .where("capstone_id", "=", capstoneId)
+    .execute()
+
+  if (materials.length > 0) {
+    await db
+      .insertInto("capstone_materials")
+      .values(
+        materials.map((m, idx) => ({
+          capstone_id: capstoneId,
+          name_en: m.name_en,
+          name_ar: m.name_ar,
+          photo_key: m.photo_key ?? null,
+          position: idx,
+          created_at: now,
+        })),
+      )
+      .execute()
+  }
+
+  const kept = new Set(
+    materials.map((m) => m.photo_key).filter((k): k is string => Boolean(k)),
+  )
+  return oldRows
+    .map((r) => r.photo_key)
+    .filter((k): k is string => !!k && !kept.has(k))
+}
+
+// Replace gallery photos wholesale; returns keys removed for R2 cleanup.
+async function replacePhotos(
+  db: Db,
+  capstoneId: number,
+  photoKeys: string[],
+  now: string,
+): Promise<string[]> {
+  const oldRows = await db
+    .selectFrom("capstone_photos")
+    .select("photo_key")
+    .where("capstone_id", "=", capstoneId)
+    .execute()
+
+  await db
+    .deleteFrom("capstone_photos")
+    .where("capstone_id", "=", capstoneId)
+    .execute()
+
+  if (photoKeys.length > 0) {
+    await db
+      .insertInto("capstone_photos")
+      .values(
+        photoKeys.map((key, idx) => ({
+          capstone_id: capstoneId,
+          photo_key: key,
+          position: idx,
+          created_at: now,
+        })),
+      )
+      .execute()
+  }
+
+  const kept = new Set(photoKeys)
+  return oldRows.map((r) => r.photo_key).filter((k) => !kept.has(k))
+}
+
 const app = new Hono<AppEnv>()
 
 app.use("*", requireAuth)
+
+// ---------- List ----------
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(
@@ -155,14 +281,14 @@ app.get("/", async (c) => {
   return c.json({ data: rows, meta: { total, page, limit } })
 })
 
+// ---------- Detail (with all child collections) ----------
+
 app.get("/:id", async (c) => {
   const parsed = idSchema.safeParse(c.req.param("id"))
   if (!parsed.success) return c.json({ error: "Invalid id" }, 400)
 
   const db = c.get("db")
   const cdn = c.env.CDN_BASE
-  const toUrl = (key: string | null) =>
-    key ? `${cdn.replace(/\/$/, "")}/${key.replace(/^\//, "")}` : null
 
   const row = await db
     .selectFrom("capstones")
@@ -196,15 +322,20 @@ app.get("/:id", async (c) => {
   return c.json({
     data: {
       ...row,
-      card_photo_url: toUrl(row.card_photo_key),
-      producers_photo_url: toUrl(row.producers_photo_key),
+      card_photo_url: cdnUrl(cdn, row.card_photo_key),
+      producers_photo_url: cdnUrl(cdn, row.producers_photo_key),
       students: people.filter((p) => p.role === "student"),
       supervisors: people.filter((p) => p.role === "supervisor"),
-      materials: materials.map((m) => ({ ...m, photo_url: toUrl(m.photo_key) })),
-      photos: photos.map((p) => ({ ...p, url: toUrl(p.photo_key)! })),
+      materials: materials.map((m) => ({
+        ...m,
+        photo_url: cdnUrl(cdn, m.photo_key),
+      })),
+      photos: photos.map((p) => ({ ...p, url: cdnUrl(cdn, p.photo_key) })),
     },
   })
 })
+
+// ---------- Create ----------
 
 app.post("/", async (c) => {
   const body = await c.req.json().catch(() => null)
@@ -221,6 +352,7 @@ app.post("/", async (c) => {
   const now = new Date().toISOString()
   const data = parsed.data
 
+  // Hard cap per level prevents accidental data flooding.
   const countRow = await db
     .selectFrom("capstones")
     .select((eb) => eb.fn.countAll<number>().as("count"))
@@ -273,10 +405,18 @@ app.post("/", async (c) => {
     .returning(["id", "slug"])
     .executeTakeFirstOrThrow()
 
-  await writeChildren(db, inserted.id, data, now)
+  // Insert children in parallel; nothing in here references the others.
+  await Promise.all([
+    replacePeople(db, inserted.id, "student", data.students, now),
+    replacePeople(db, inserted.id, "supervisor", data.supervisors, now),
+    replaceMaterials(db, inserted.id, data.materials, now),
+    replacePhotos(db, inserted.id, data.photo_keys, now),
+  ])
 
   return c.json({ data: { id: inserted.id, slug: inserted.slug } }, 201)
 })
+
+// ---------- Update ----------
 
 app.patch("/:id", async (c) => {
   const idParsed = idSchema.safeParse(c.req.param("id"))
@@ -301,29 +441,24 @@ app.patch("/:id", async (c) => {
   if (!existing) return c.json({ error: "Not found" }, 404)
 
   const now = new Date().toISOString()
-  const {
-    students,
-    supervisors,
-    materials,
-    photo_keys,
-    ...rest
-  } = parsed.data
+  const { students, supervisors, materials, photo_keys, ...rest } = parsed.data
 
+  // Update the parent row first. Re-slug if the English title changed so the
+  // public-facing URL stays in sync with the (renamed) project.
   const updateValues: Record<string, unknown> = { ...rest, updated_at: now }
-  // If title_en changes, regenerate slug for consistency.
   if (rest.title_en && rest.title_en !== existing.title_en) {
     updateValues.slug = await uniqueSlug(db, rest.title_en)
   }
-
   await db.updateTable("capstones").set(updateValues).where("id", "=", id).execute()
 
-  // Track keys to delete from R2 after DB writes complete.
+  // Track R2 keys orphaned by this update so we can delete them at the end
+  // (after all DB writes commit, so a partial failure doesn't lose objects
+  // that the DB still references).
   const keysToDelete: string[] = []
 
-  for (const field of [
-    "card_photo_key",
-    "producers_photo_key",
-  ] as const) {
+  // Card / producers photos: if the field is being replaced, the old key (if
+  // any) is now unreferenced.
+  for (const field of ["card_photo_key", "producers_photo_key"] as const) {
     if (field in parsed.data) {
       const oldKey = existing[field]
       const newKey = parsed.data[field] ?? null
@@ -331,124 +466,28 @@ app.patch("/:id", async (c) => {
     }
   }
 
-  if (students !== undefined || supervisors !== undefined) {
-    const replacingStudents = students ?? null
-    const replacingSupervisors = supervisors ?? null
-
-    if (replacingStudents !== null) {
-      await db
-        .deleteFrom("capstone_people")
-        .where("capstone_id", "=", id)
-        .where("role", "=", "student")
-        .execute()
-      if (replacingStudents.length > 0) {
-        await db
-          .insertInto("capstone_people")
-          .values(
-            replacingStudents.map((p, idx) => ({
-              capstone_id: id,
-              role: "student" as const,
-              name_en: p.name_en,
-              name_ar: p.name_ar,
-              position: idx,
-              created_at: now,
-            })),
-          )
-          .execute()
-      }
-    }
-    if (replacingSupervisors !== null) {
-      await db
-        .deleteFrom("capstone_people")
-        .where("capstone_id", "=", id)
-        .where("role", "=", "supervisor")
-        .execute()
-      if (replacingSupervisors.length > 0) {
-        await db
-          .insertInto("capstone_people")
-          .values(
-            replacingSupervisors.map((p, idx) => ({
-              capstone_id: id,
-              role: "supervisor" as const,
-              name_en: p.name_en,
-              name_ar: p.name_ar,
-              position: idx,
-              created_at: now,
-            })),
-          )
-          .execute()
-      }
-    }
+  // Replace child collections only when the patch includes them. Each helper
+  // returns the photo keys that fell out of the new state, which we add to
+  // the R2 cleanup list.
+  if (students !== undefined) {
+    await replacePeople(db, id, "student", students, now)
   }
-
+  if (supervisors !== undefined) {
+    await replacePeople(db, id, "supervisor", supervisors, now)
+  }
   if (materials !== undefined) {
-    const oldMats = await db
-      .selectFrom("capstone_materials")
-      .select("photo_key")
-      .where("capstone_id", "=", id)
-      .execute()
-    await db
-      .deleteFrom("capstone_materials")
-      .where("capstone_id", "=", id)
-      .execute()
-    if (materials.length > 0) {
-      await db
-        .insertInto("capstone_materials")
-        .values(
-          materials.map((m, idx) => ({
-            capstone_id: id,
-            name_en: m.name_en,
-            name_ar: m.name_ar,
-            photo_key: m.photo_key ?? null,
-            position: idx,
-            created_at: now,
-          })),
-        )
-        .execute()
-    }
-    const keptKeys = new Set(
-      materials.map((m) => m.photo_key).filter((k): k is string => Boolean(k)),
-    )
-    for (const old of oldMats) {
-      if (old.photo_key && !keptKeys.has(old.photo_key)) {
-        keysToDelete.push(old.photo_key)
-      }
-    }
+    keysToDelete.push(...(await replaceMaterials(db, id, materials, now)))
   }
-
   if (photo_keys !== undefined) {
-    const oldPhotos = await db
-      .selectFrom("capstone_photos")
-      .select("photo_key")
-      .where("capstone_id", "=", id)
-      .execute()
-    await db
-      .deleteFrom("capstone_photos")
-      .where("capstone_id", "=", id)
-      .execute()
-    if (photo_keys.length > 0) {
-      await db
-        .insertInto("capstone_photos")
-        .values(
-          photo_keys.map((key, idx) => ({
-            capstone_id: id,
-            photo_key: key,
-            position: idx,
-            created_at: now,
-          })),
-        )
-        .execute()
-    }
-    const keptKeys = new Set(photo_keys)
-    for (const p of oldPhotos) {
-      if (!keptKeys.has(p.photo_key)) keysToDelete.push(p.photo_key)
-    }
+    keysToDelete.push(...(await replacePhotos(db, id, photo_keys, now)))
   }
 
   await deleteObjects(c.env, keysToDelete)
 
   return c.json({ data: { id } })
 })
+
+// ---------- Delete ----------
 
 app.delete("/:id", async (c) => {
   const parsed = idSchema.safeParse(c.req.param("id"))
@@ -478,6 +517,8 @@ app.delete("/:id", async (c) => {
 
   await db.deleteFrom("capstones").where("id", "=", id).execute()
 
+  // Sweep every photo that belonged to this capstone — card, producers,
+  // gallery photos, and material thumbnails.
   const keys = [
     ...(existing.card_photo_key ? [existing.card_photo_key] : []),
     ...(existing.producers_photo_key ? [existing.producers_photo_key] : []),
@@ -488,64 +529,5 @@ app.delete("/:id", async (c) => {
 
   return c.json({ data: { id } })
 })
-
-async function writeChildren(
-  db: AppEnv["Variables"]["db"],
-  capstoneId: number,
-  data: z.infer<typeof createSchema>,
-  now: string,
-) {
-  const peopleRows = [
-    ...data.students.map((p, idx) => ({
-      capstone_id: capstoneId,
-      role: "student" as const,
-      name_en: p.name_en,
-      name_ar: p.name_ar,
-      position: idx,
-      created_at: now,
-    })),
-    ...data.supervisors.map((p, idx) => ({
-      capstone_id: capstoneId,
-      role: "supervisor" as const,
-      name_en: p.name_en,
-      name_ar: p.name_ar,
-      position: idx,
-      created_at: now,
-    })),
-  ]
-  if (peopleRows.length > 0) {
-    await db.insertInto("capstone_people").values(peopleRows).execute()
-  }
-
-  if (data.materials.length > 0) {
-    await db
-      .insertInto("capstone_materials")
-      .values(
-        data.materials.map((m, idx) => ({
-          capstone_id: capstoneId,
-          name_en: m.name_en,
-          name_ar: m.name_ar,
-          photo_key: m.photo_key ?? null,
-          position: idx,
-          created_at: now,
-        })),
-      )
-      .execute()
-  }
-
-  if (data.photo_keys.length > 0) {
-    await db
-      .insertInto("capstone_photos")
-      .values(
-        data.photo_keys.map((key, idx) => ({
-          capstone_id: capstoneId,
-          photo_key: key,
-          position: idx,
-          created_at: now,
-        })),
-      )
-      .execute()
-  }
-}
 
 export default app

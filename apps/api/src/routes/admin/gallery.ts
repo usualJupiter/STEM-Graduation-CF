@@ -1,6 +1,13 @@
+/**
+ * Admin: Gallery photos (the public site's photo gallery).
+ * Tracks file_size per row to enforce a 2 GB total cap (also pre-checked at
+ * upload-sign time in routes/admin/uploads.ts).
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 
+import { cdnUrl } from "../../lib/cdn"
+import type { Db } from "../../lib/db"
 import { requireAuth } from "../../lib/middleware"
 import { deleteObjects } from "../../lib/r2"
 import type { AppEnv } from "../../types"
@@ -33,13 +40,22 @@ const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
 })
 
-function photoUrl(cdnBase: string, key: string): string {
-  return `${cdnBase.replace(/\/$/, "")}/${key.replace(/^\//, "")}`
+// Sums file_size across all gallery_photos rows. Used by GET (display) and
+// POST (cap enforcement); we re-check on POST in case other uploads landed
+// between client-side cap pre-check and final commit.
+async function loadUsage(db: Db): Promise<number> {
+  const row = await db
+    .selectFrom("gallery_photos")
+    .select((eb) => eb.fn.sum<number>("file_size").as("total"))
+    .executeTakeFirstOrThrow()
+  return Number(row.total) || 0
 }
 
 const app = new Hono<AppEnv>()
 
 app.use("*", requireAuth)
+
+// ---------- List ----------
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(
@@ -58,8 +74,7 @@ app.get("/", async (c) => {
     .selectFrom("gallery_photos")
     .innerJoin("user", "user.id", "gallery_photos.author_id")
   if (q) {
-    const like = `%${q}%`
-    baseQuery = baseQuery.where("gallery_photos.original_name", "like", like)
+    baseQuery = baseQuery.where("gallery_photos.original_name", "like", `%${q}%`)
   }
 
   const totalRow = await baseQuery
@@ -99,17 +114,9 @@ app.get("/", async (c) => {
     .offset((page - 1) * limit)
     .execute()
 
-  const usageRow = await db
-    .selectFrom("gallery_photos")
-    .select((eb) => eb.fn.sum<number>("file_size").as("total"))
-    .executeTakeFirstOrThrow()
-  const used = Number(usageRow.total) || 0
-
+  const used = await loadUsage(db)
   const cdn = c.env.CDN_BASE
-  const data = rows.map((row) => ({
-    ...row,
-    url: photoUrl(cdn, row.photo_key),
-  }))
+  const data = rows.map((row) => ({ ...row, url: cdnUrl(cdn, row.photo_key) }))
 
   return c.json({
     data,
@@ -124,6 +131,8 @@ app.get("/", async (c) => {
   })
 })
 
+// ---------- Create (commit uploaded photos) ----------
+
 app.post("/", async (c) => {
   const body = await c.req.json().catch(() => null)
   const parsed = createSchema.safeParse(body)
@@ -137,11 +146,9 @@ app.post("/", async (c) => {
   const db = c.get("db")
   const session = c.get("session")!
 
-  const usageRow = await db
-    .selectFrom("gallery_photos")
-    .select((eb) => eb.fn.sum<number>("file_size").as("total"))
-    .executeTakeFirstOrThrow()
-  const used = Number(usageRow.total) || 0
+  // Re-check the cap server-side. If it's been exceeded since the pre-sign,
+  // delete the now-orphaned R2 objects rather than letting them leak.
+  const used = await loadUsage(db)
   const incoming = parsed.data.photos.reduce((s, p) => s + p.file_size, 0)
   if (used + incoming > GALLERY_MAX_TOTAL_SIZE) {
     await deleteObjects(
@@ -171,6 +178,8 @@ app.post("/", async (c) => {
 
   return c.json({ data: { ids: inserted.map((r) => r.id) } }, 201)
 })
+
+// ---------- Delete ----------
 
 app.delete("/:id", async (c) => {
   const parsed = idSchema.safeParse(c.req.param("id"))

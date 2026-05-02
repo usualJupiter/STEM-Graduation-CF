@@ -1,3 +1,8 @@
+/**
+ * Admin: Events CRUD. Each event has one card photo + up to 5 gallery photos.
+ * Photo keys are stored in DB; the actual files live in R2 and are deleted
+ * via the S3 SDK whenever the keys change.
+ */
 import { Hono } from "hono"
 import { z } from "zod"
 
@@ -36,6 +41,8 @@ const listQuerySchema = z.object({
 const app = new Hono<AppEnv>()
 
 app.use("*", requireAuth)
+
+// ---------- List ----------
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(
@@ -102,6 +109,8 @@ app.get("/", async (c) => {
   return c.json({ data: rows, meta: { total, page, limit } })
 })
 
+// ---------- Detail ----------
+
 app.get("/:id", async (c) => {
   const parsed = idSchema.safeParse(c.req.param("id"))
   if (!parsed.success) return c.json({ error: "Invalid id" }, 400)
@@ -123,6 +132,8 @@ app.get("/:id", async (c) => {
 
   return c.json({ data: { ...event, photos } })
 })
+
+// ---------- Create ----------
 
 app.post("/", async (c) => {
   const body = await c.req.json().catch(() => null)
@@ -182,6 +193,8 @@ app.post("/", async (c) => {
 
   return c.json({ data: { id: inserted.id } }, 201)
 })
+
+// ---------- Update ----------
 
 app.patch("/:id", async (c) => {
   const idParsed = idSchema.safeParse(c.req.param("id"))
@@ -249,6 +262,8 @@ app.patch("/:id", async (c) => {
 
   return c.json({ data: { id } })
 })
+
+// ---------- Delete ----------
 
 app.delete("/:id", async (c) => {
   const parsed = idSchema.safeParse(c.req.param("id"))

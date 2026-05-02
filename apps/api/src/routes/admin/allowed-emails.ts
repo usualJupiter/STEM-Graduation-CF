@@ -1,9 +1,14 @@
+/**
+ * Admin: Manages the allowlist of admin emails.
+ * Only emails listed here can sign in via Google OAuth (enforced by both the
+ * Better Auth user.create.before hook and `requireAuth`'s allowlist re-check).
+ */
 import { Hono } from "hono"
 import { sql } from "kysely"
 import { z } from "zod"
 
-import { requireAuth } from "../lib/middleware"
-import type { AppEnv } from "../types"
+import { requireAuth } from "../../lib/middleware"
+import type { AppEnv } from "../../types"
 
 const addSchema = z.object({
   email: z
@@ -102,6 +107,10 @@ app.delete("/:email", async (c) => {
 
   await db.deleteFrom("allowed_emails").where("email", "=", email).execute()
 
+  // Revoke existing sessions so the removed user is signed out immediately.
+  // The user row is intentionally kept — re-allowing the email later will let
+  // them sign back in without re-creating their record. The allowlist re-check
+  // in `requireAuth` covers the gap if their session is still cookie-cached.
   const user = await db
     .selectFrom("user")
     .select("id")
