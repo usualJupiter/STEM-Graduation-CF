@@ -1,3 +1,5 @@
+import path from "node:path"
+
 import createNextIntlPlugin from "next-intl/plugin"
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
@@ -33,6 +35,12 @@ const securityHeaders = [
 const nextConfig = {
   poweredByHeader: false,
   transpilePackages: ["@workspace/ui"],
+  // Monorepo: tell Turbopack the workspace root so it can resolve
+  // hoisted packages (next, react, etc.) when invoked from sub-builders
+  // like @cloudflare/next-on-pages.
+  turbopack: {
+    root: path.join(import.meta.dirname, "..", ".."),
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "cdn.stem-program.com" },
