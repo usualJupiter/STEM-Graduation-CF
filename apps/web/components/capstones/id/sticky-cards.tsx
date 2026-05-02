@@ -37,13 +37,15 @@ export function StickyCards({
       const imageElements = imageRefs.current
       const totalCards = imageElements.length
 
-      if (!imageElements[0]) return
+      const first = imageElements[0]
+      if (!first) return
 
-      gsap.set(imageElements[0], { y: "0%", scale: 1, rotation: 0 })
+      gsap.set(first, { y: "0%", scale: 1, rotation: 0 })
 
       for (let i = 1; i < totalCards; i++) {
-        if (!imageElements[i]) continue
-        gsap.set(imageElements[i], { y: "100%", scale: 1, rotation: 0 })
+        const el = imageElements[i]
+        if (!el) continue
+        gsap.set(el, { y: "100%", scale: 1, rotation: 0 })
       }
 
       const scrollTimeline = gsap.timeline({
