@@ -23,6 +23,7 @@ import {
 
 import { APPLICATION_GROUPS_INVALIDATE_EVENT } from "@/components/applications/constants"
 import CreateGroup from "@/components/applications/createGroup"
+import DelGroup from "@/components/applications/delGroup"
 import { fetchJson } from "@/lib/api"
 
 interface ManageApplicationsProps {
@@ -53,6 +54,11 @@ export default function ManageApplications({
   const [error, setError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<number | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [deleting, setDeleting] = useState<{
+    id: number
+    name: string
+    count: number
+  } | null>(null)
 
   useEffect(() => {
     const handler = () => setRefreshKey((k) => k + 1)
@@ -89,22 +95,6 @@ export default function ManageApplications({
       await fetchJson(`/api/admin/applications/groups/${row.id}`, {
         method: "PATCH",
         body: JSON.stringify({ is_active: row.is_active === 0 }),
-      })
-      window.dispatchEvent(new Event(APPLICATION_GROUPS_INVALIDATE_EVENT))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "failed")
-    } finally {
-      setBusyId(null)
-    }
-  }
-
-  const removeGroup = async (row: GroupRow) => {
-    if (!confirm(t("confirmDelete", { name: row.name }))) return
-    setBusyId(row.id)
-    setError(null)
-    try {
-      await fetchJson(`/api/admin/applications/groups/${row.id}`, {
-        method: "DELETE",
       })
       window.dispatchEvent(new Event(APPLICATION_GROUPS_INVALIDATE_EVENT))
     } catch (err) {
@@ -191,7 +181,13 @@ export default function ManageApplications({
                             variant="ghost"
                             size="sm"
                             disabled={busyId === row.id}
-                            onClick={() => removeGroup(row)}
+                            onClick={() =>
+                              setDeleting({
+                                id: row.id,
+                                name: row.name,
+                                count: row.application_count,
+                              })
+                            }
                           >
                             {t("delete")}
                           </Button>
@@ -212,6 +208,14 @@ export default function ManageApplications({
       </Dialog>
 
       <CreateGroup open={createOpen} onOpenChange={setCreateOpen} />
+      <DelGroup
+        groupId={deleting?.id ?? null}
+        groupName={deleting?.name}
+        applicationCount={deleting?.count}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null)
+        }}
+      />
     </>
   )
 }

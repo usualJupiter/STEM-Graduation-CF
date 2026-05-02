@@ -6,13 +6,13 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb"
-import { Button } from "@workspace/ui/components/button"
 import { ChevronLeft } from "lucide-react"
 import React from "react"
 
+import { cn } from "@workspace/ui/lib/utils"
+
 interface ProgressProps {
   step: 1 | 2 | 3 | 4
-  onStepChange?: (step: 1 | 2 | 3 | 4) => void
 }
 
 const STEPS = [
@@ -22,23 +22,28 @@ const STEPS = [
   { id: 4, label: "الانهاء" },
 ] as const
 
-export default function Progress({ step, onStepChange }: ProgressProps) {
+export default function Progress({ step }: ProgressProps) {
   return (
     <div dir="rtl" className="inline-flex items-center rounded-lg bg-muted p-0.5">
       <Breadcrumb>
         <BreadcrumbList className="gap-1">
           {STEPS.map((s, idx) => {
             const isCurrent = s.id === step
+            const isPast = s.id < step
             return (
               <React.Fragment key={s.id}>
                 <BreadcrumbItem>
-                  <Button
-                    variant={isCurrent ? "outline" : "ghost"}
+                  <span
                     aria-current={isCurrent ? "step" : undefined}
-                    onClick={() => onStepChange?.(s.id)}
+                    className={cn(
+                      "select-none rounded-md px-3 py-1.5 text-sm",
+                      isCurrent && "bg-background text-foreground shadow-sm",
+                      !isCurrent && isPast && "text-foreground",
+                      !isCurrent && !isPast && "text-muted-foreground",
+                    )}
                   >
                     {s.label}
-                  </Button>
+                  </span>
                 </BreadcrumbItem>
                 {idx < STEPS.length - 1 && (
                   <BreadcrumbSeparator>

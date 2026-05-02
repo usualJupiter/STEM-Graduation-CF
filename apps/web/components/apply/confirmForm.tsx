@@ -22,12 +22,14 @@ interface ConfirmFormProps {
   declarationText: string
   turnstileSiteKey: string
   onSubmit: (turnstileToken: string) => void | Promise<void>
+  onBack: () => void
 }
 
 export default function ConfirmForm({
   declarationText,
   turnstileSiteKey,
   onSubmit,
+  onBack,
 }: ConfirmFormProps) {
   const [agreed, setAgreed] = useState(false)
   const [token, setToken] = useState<string | null>(null)
@@ -92,10 +94,19 @@ export default function ConfirmForm({
         </div>
       </div>
 
-      <div className="flex items-start justify-between border-t border-border p-4">
+      <div className="flex items-start gap-3 border-t border-border p-4">
         <Button
           type="button"
-          className="w-full bg-defult-web text-main hover:bg-defult-web/90"
+          variant="outline"
+          className="flex-1"
+          onClick={onBack}
+          disabled={submitting}
+        >
+          السابق
+        </Button>
+        <Button
+          type="button"
+          className="flex-1 bg-defult-web text-main hover:bg-defult-web/90"
           onClick={handleSubmit}
           disabled={!agreed || !token || submitting}
         >

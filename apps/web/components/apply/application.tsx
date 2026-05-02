@@ -34,12 +34,6 @@ const STEP_NUMBER: Record<FormStep, 1 | 2 | 3 | 4> = {
   files: 3,
   confirm: 4,
 }
-const NUMBER_TO_STEP: Record<1 | 2 | 3 | 4, FormStep> = {
-  1: "student",
-  2: "cert",
-  3: "files",
-  4: "confirm",
-}
 
 const STUDENT_FIELDS = Object.keys(studentSchema.shape) as Array<
   keyof typeof studentSchema.shape
@@ -195,9 +189,7 @@ export default function Application() {
   }
   if (!status?.accepting) return <ApplyClosed />
   if (status.alreadySubmitted) {
-    return (
-      <SubmitSuccess title="لقد قمت بتقديم طلب من هذا المتصفح بالفعل" />
-    )
+    return <SubmitSuccess title="تم تقديم طلبك بالفعل" />
   }
   if (step === "success") return <SubmitSuccess />
   if (step === "fail") {
@@ -219,19 +211,21 @@ export default function Application() {
       className="flex w-full flex-1 flex-col items-center gap-8 bg-muted px-4 py-12 text-foreground"
     >
       <Title academicYearLabel={status.group?.academic_year_label} />
-      <Progress
-        step={STEP_NUMBER[step]}
-        onStepChange={(n) => setStep(NUMBER_TO_STEP[n])}
-      />
+      <Progress step={STEP_NUMBER[step]} />
       <FormProvider {...form}>
         {step === "student" && <StudentInfo onNext={onNextStudent} />}
-        {step === "cert" && <CerInfo onNext={onNextCert} />}
-        {step === "files" && <FilesUpload onNext={onNextFiles} />}
+        {step === "cert" && (
+          <CerInfo onNext={onNextCert} onBack={() => setStep("student")} />
+        )}
+        {step === "files" && (
+          <FilesUpload onNext={onNextFiles} onBack={() => setStep("cert")} />
+        )}
         {step === "confirm" && (
           <ConfirmForm
             declarationText={status.group?.declaration_text ?? ""}
             turnstileSiteKey={TURNSTILE_SITE_KEY}
             onSubmit={onSubmit}
+            onBack={() => setStep("files")}
           />
         )}
       </FormProvider>

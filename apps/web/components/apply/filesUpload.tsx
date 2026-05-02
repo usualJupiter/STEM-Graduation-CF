@@ -23,6 +23,7 @@ import type { ApplyValues } from "@/lib/applications"
 
 interface FilesUploadProps {
   onNext: () => void
+  onBack: () => void
 }
 
 function formatBytes(n: number): string {
@@ -31,7 +32,7 @@ function formatBytes(n: number): string {
   return `${(n / 1024 / 1024).toFixed(2)} MB`
 }
 
-export default function FilesUpload({ onNext }: FilesUploadProps) {
+export default function FilesUpload({ onNext, onBack }: FilesUploadProps) {
   const form = useFormContext<ApplyValues>()
   const photo = form.watch("photo") as File | undefined
   const cert = form.watch("certificate_file") as File | undefined
@@ -142,10 +143,18 @@ export default function FilesUpload({ onNext }: FilesUploadProps) {
           </div>
         </FieldSet>
 
-        <div className="flex items-start justify-between border-t p-4">
+        <div className="flex items-start gap-3 border-t p-4">
           <Button
             type="button"
-            className="w-full bg-defult-web text-main hover:bg-defult-web/90"
+            variant="outline"
+            className="flex-1"
+            onClick={onBack}
+          >
+            السابق
+          </Button>
+          <Button
+            type="button"
+            className="flex-1 bg-defult-web text-main hover:bg-defult-web/90"
             onClick={onNext}
           >
             التالي

@@ -1,5 +1,6 @@
 "use client"
 
+import { Printer } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 
@@ -14,6 +15,14 @@ import {
 } from "@workspace/ui/components/dialog"
 
 import { API_URL, fetchJson } from "@/lib/api"
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+}
 
 interface ViewApplicationProps {
   applicationId: string | null
@@ -149,6 +158,128 @@ export default function ViewApplication({
         return `${photoDims.w / d}:${photoDims.h / d}`
       })()
     : null
+
+  const handlePrint = () => {
+    if (!detail) return
+    const w = window.open("", "_blank", "width=900,height=1100")
+    if (!w) {
+      alert(t("popupBlocked"))
+      return
+    }
+    const esc = escapeHtml
+    const row = (label: string, value: string) =>
+      `<dt>${esc(label)}</dt><dd>${esc(value || "—")}</dd>`
+    const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>${esc(detail.name)} — ${esc(detail.id.slice(0, 8))}</title>
+  <style>
+    @page { size: A4 portrait; margin: 0.7cm; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; color: #000; background: #fff;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      font-size: 9pt; line-height: 1.35;
+    }
+    h2 {
+      font-size: 9pt; margin: 6pt 0 3pt; padding-bottom: 2pt;
+      border-bottom: 1px solid #999; font-weight: 600;
+      text-transform: uppercase; color: #444; letter-spacing: 0.04em;
+    }
+    .top { display: flex; gap: 8pt; align-items: flex-start; margin-bottom: 2pt; }
+    .photo-wrap { width: 38mm; flex-shrink: 0; }
+    .photo { width: 100%; height: auto; border: 1px solid #ccc; display: block; }
+    .meta { flex: 1; }
+    section { page-break-inside: avoid; break-inside: avoid; }
+    section + section { margin-top: 2pt; }
+    dl { display: grid; grid-template-columns: 38mm 1fr; column-gap: 6pt; row-gap: 2pt; margin: 0; }
+    dt { color: #555; }
+    dd { margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    ${
+      photoSrc
+        ? `<div class="photo-wrap"><img class="photo" src="${esc(photoSrc)}" alt=""></div>`
+        : ""
+    }
+    <div class="meta">
+      <section>
+        <h2>${esc(t("sections.group"))}</h2>
+        <dl>
+          ${row(t("fields.name"), detail.name)}
+          ${row(t("fields.national_id"), detail.national_id)}
+          ${row(t("fields.group"), detail.group_name)}
+          ${row(
+            t("fields.submittedAt"),
+            new Date(detail.created_at).toLocaleString(),
+          )}
+        </dl>
+      </section>
+    </div>
+  </div>
+
+  <section>
+    <h2>${esc(t("sections.student"))}</h2>
+    <dl>
+      ${row(t("fields.nationality"), detail.nationality)}
+      ${row(t("fields.religion"), detail.religion)}
+      ${row(t("fields.residence"), detail.residence)}
+      ${row(t("fields.home_phone"), detail.home_phone)}
+      ${row(t("fields.mobile"), detail.mobile)}
+      ${row(t("fields.birthdate"), detail.birthdate)}
+      ${row(t("fields.birthplace"), detail.birthplace)}
+      ${row(t("fields.age_october"), detail.age_october)}
+      ${row(t("fields.id_issuing_authority"), detail.id_issuing_authority)}
+      ${row(t("fields.id_issue_date"), detail.id_issue_date)}
+    </dl>
+  </section>
+
+  <section>
+    <h2>${esc(t("sections.guardian"))}</h2>
+    <dl>
+      ${row(t("fields.guardian_name"), detail.guardian_name)}
+      ${row(t("fields.guardian_job"), detail.guardian_job)}
+      ${row(t("fields.guardian_address"), detail.guardian_address)}
+      ${row(t("fields.guardian_mobile"), detail.guardian_mobile)}
+    </dl>
+  </section>
+
+  <section>
+    <h2>${esc(t("sections.certificate"))}</h2>
+    <dl>
+      ${row(t("fields.certificate"), detail.certificate)}
+      ${row(t("fields.graduation_year"), detail.graduation_year)}
+      ${row(t("fields.total_grades"), detail.total_grades)}
+      ${row(t("fields.first_language"), detail.first_language)}
+      ${row(t("fields.second_language"), detail.second_language)}
+      ${row(t("fields.school"), detail.school)}
+      ${row(t("fields.division"), detail.division)}
+      ${row(t("fields.educational_district"), detail.educational_district)}
+      ${row(t("fields.governorate"), detail.governorate)}
+    </dl>
+  </section>
+</body>
+</html>`
+
+    w.document.open()
+    w.document.write(html)
+    w.document.close()
+
+    const triggerPrint = () => {
+      w.focus()
+      w.print()
+    }
+    const img = w.document.querySelector("img.photo")
+    if (img && !(img as HTMLImageElement).complete) {
+      img.addEventListener("load", triggerPrint, { once: true })
+      img.addEventListener("error", triggerPrint, { once: true })
+    } else {
+      triggerPrint()
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -297,6 +428,10 @@ export default function ViewApplication({
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t("close")}
+          </Button>
+          <Button onClick={handlePrint} disabled={!detail}>
+            <Printer />
+            {t("print")}
           </Button>
         </DialogFooter>
       </DialogContent>

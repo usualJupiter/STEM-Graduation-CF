@@ -22,6 +22,7 @@ import type { ApplyValues } from "@/lib/applications"
 
 interface CerInfoProps {
   onNext: () => void
+  onBack: () => void
 }
 
 const FIELDS: Array<{
@@ -40,7 +41,7 @@ const FIELDS: Array<{
   { name: "governorate", label: "المحافظة" },
 ]
 
-export default function CerInfo({ onNext }: CerInfoProps) {
+export default function CerInfo({ onNext, onBack }: CerInfoProps) {
   const form = useFormContext<ApplyValues>()
   return (
     <Form {...form}>
@@ -81,10 +82,18 @@ export default function CerInfo({ onNext }: CerInfoProps) {
           </div>
         </FieldSet>
 
-        <div className="flex items-start justify-between border-t border-border p-4">
+        <div className="flex items-start gap-3 border-t border-border p-4">
           <Button
             type="button"
-            className="w-full bg-defult-web text-main hover:bg-defult-web/90"
+            variant="outline"
+            className="flex-1"
+            onClick={onBack}
+          >
+            السابق
+          </Button>
+          <Button
+            type="button"
+            className="flex-1 bg-defult-web text-main hover:bg-defult-web/90"
             onClick={onNext}
           >
             التالي

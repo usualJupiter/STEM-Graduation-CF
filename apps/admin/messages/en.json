@@ -156,8 +156,16 @@
       "delete": "Delete",
       "create": "Create New Group",
       "close": "Close",
-      "empty": "No groups yet.",
-      "confirmDelete": "Delete \"{name}\" and all its applications and files?"
+      "empty": "No groups yet."
+    },
+    "deleteGroupDialog": {
+      "title": "Delete group",
+      "description": "This will permanently remove the group, every application in it, and all of their files. This action cannot be undone.",
+      "deleting": "Deleting \"{name}\" — {count} application(s) and their files will be removed.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "submitting": "Deleting…",
+      "failed": "Failed to delete"
     },
     "createGroupDialog": {
       "title": "Create Group",
@@ -203,6 +211,8 @@
       "loading": "Loading…",
       "openCertificate": "Open certificate",
       "close": "Close",
+      "print": "Print",
+      "popupBlocked": "Please allow popups for this site to print.",
       "sections": {
         "group": "Group",
         "student": "Student",

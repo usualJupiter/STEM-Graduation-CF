@@ -153,18 +153,18 @@ export const APPLY_DRAFT_KEY = (groupId: number) =>
 
 const ERROR_MESSAGES: Record<string, string> = {
   APPLICATIONS_CLOSED: "التقديم مغلق حاليًا",
-  ALREADY_SUBMITTED: "لقد قمت بتقديم طلب من هذا المتصفح بالفعل",
-  TURNSTILE_FAILED: "فشل التحقق الأمني. حدّث الصفحة وأعد المحاولة",
-  DUPLICATE_NATIONAL_ID: "تم استخدام هذا الرقم القومي مسبقًا في هذه المجموعة",
+  ALREADY_SUBMITTED: "تم تقديم طلبك بالفعل",
+  DUPLICATE_NATIONAL_ID: "تم تقديم طلبك بالفعل",
+  TURNSTILE_FAILED: "تعذّر التحقق، يرجى تحديث الصفحة والمحاولة مرة أخرى",
   PHOTO_TYPE: "صيغة الصورة غير مدعومة (PNG أو JPEG فقط)",
   PHOTO_SIZE: "حجم الصورة يجب أن يكون أقل من 1 ميجابايت",
   CERTIFICATE_TYPE: "ملف الشهادة يجب أن يكون PDF",
   CERTIFICATE_SIZE: "حجم ملف الشهادة يجب أن يكون أقل من 5 ميجابايت",
   DECLARATION_REQUIRED: "يجب الموافقة على الإقرار",
-  INVALID_FIELDS: "بعض البيانات غير صحيحة. تحقق من الحقول",
+  INVALID_FIELDS: "بعض البيانات غير صحيحة، يرجى مراجعة الحقول",
   FILES_REQUIRED: "الملفات المطلوبة غير مرفقة",
-  UPLOAD_FAILED: "فشل رفع الملفات. أعد المحاولة",
-  DB_FAILED: "حدث خطأ، أعد المحاولة لاحقًا",
+  UPLOAD_FAILED: "تعذّر رفع الملفات، يرجى المحاولة مرة أخرى",
+  DB_FAILED: "حدث خطأ، يرجى المحاولة مرة أخرى لاحقًا",
 }
 
 export function applyErrorMessage(code: string | undefined): string {

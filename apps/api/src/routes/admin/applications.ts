@@ -141,22 +141,30 @@ app.delete("/groups/:id", async (c) => {
   const id = idParsed.data
   const db = c.get("db")
 
-  // Collect all R2 keys for the group's applications.
+  const group = await db
+    .selectFrom("application_groups")
+    .select("id")
+    .where("id", "=", id)
+    .executeTakeFirst()
+  if (!group) return c.json({ error: "Not found" }, 404)
+
   const apps = await db
     .selectFrom("applications")
     .select(["photo_key", "certificate_key"])
     .where("group_id", "=", id)
     .execute()
 
+  await db.deleteFrom("applications").where("group_id", "=", id).execute()
   await db.deleteFrom("application_groups").where("id", "=", id).execute()
 
-  for (const a of apps) {
-    await Promise.allSettled([
+  await Promise.allSettled(
+    apps.flatMap((a) => [
       c.env.APP_FILES.delete(a.photo_key),
       c.env.APP_FILES.delete(a.certificate_key),
-    ])
-  }
-  return c.json({ data: { id } })
+    ]),
+  )
+
+  return c.json({ data: { id, deleted_applications: apps.length } })
 })
 
 app.get("/groups/:id/export", async (c) => {
