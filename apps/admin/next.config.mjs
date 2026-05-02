@@ -33,14 +33,16 @@ const securityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
 ]
 
+const monorepoRoot = path.join(import.meta.dirname, "..", "..")
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
   transpilePackages: ["@workspace/ui"],
-  // Monorepo: tell Turbopack the workspace root so it can resolve
-  // hoisted packages when invoked from sub-builders like @cloudflare/next-on-pages.
+  // See apps/web/next.config.mjs — same fix for the monorepo + next-on-pages combo.
+  outputFileTracingRoot: monorepoRoot,
   turbopack: {
-    root: path.join(import.meta.dirname, "..", ".."),
+    root: monorepoRoot,
   },
   images: {
     remotePatterns: [

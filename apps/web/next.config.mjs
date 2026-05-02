@@ -31,15 +31,20 @@ const securityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
 ]
 
+const monorepoRoot = path.join(import.meta.dirname, "..", "..")
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
   transpilePackages: ["@workspace/ui"],
-  // Monorepo: tell Turbopack the workspace root so it can resolve
-  // hoisted packages (next, react, etc.) when invoked from sub-builders
-  // like @cloudflare/next-on-pages.
+  // Monorepo: pin both Turbopack and Next's file-tracing to the workspace root
+  // so packages hoisted to the repo root (next, react, etc.) are resolvable.
+  // @cloudflare/next-on-pages re-invokes `next build` via vercel CLI, which
+  // tries to auto-set outputFileTracingRoot to apps/web — by setting it
+  // explicitly here, that override is neutralised. Both keys must match.
+  outputFileTracingRoot: monorepoRoot,
   turbopack: {
-    root: path.join(import.meta.dirname, "..", ".."),
+    root: monorepoRoot,
   },
   images: {
     remotePatterns: [
