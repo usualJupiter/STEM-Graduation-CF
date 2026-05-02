@@ -60,38 +60,179 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-## Commands
+## Apps
 
-Run from the repo root (Turborepo fans out to workspaces):
+- **`apps/web`** — public-facing website (Next.js 16, App Router, RTL Arabic + English). Visitors browse events / capstones / gallery / schedules and submit applications. No auth.
+- **`apps/admin`** — internal admin dashboard (Next.js 16). Sign-in via Google OAuth, gated by an allowlist (`allowed_emails` table on the api). Manages everything the public site reads.
+- **`apps/api`** — Cloudflare Workers backend (Hono + Better Auth + Kysely on D1 + R2). Serves both apps. Routes split into `src/routes/public/` (consumed by web, no auth) and `src/routes/admin/` (consumed by admin, gated by `requireAuth`).
 
-- `bun run dev` — run all apps in dev mode (`next dev --turbopack` for `web`/`admin`, `wrangler dev` for `api`)
-- `bun run build` / `bun run lint` / `bun run typecheck` / `bun run format`
-- Scope to one workspace: `bun run dev --filter=web` (or `admin`, `api`, `@workspace/ui`)
-- Deploy API worker: `bun run --filter=api deploy` (runs `wrangler deploy --minify`)
-- Regenerate Cloudflare binding types: `bun run --filter=api cf-typegen`
+Shared packages: `@workspace/ui` (shadcn components, Tailwind v4, RTL), `@workspace/eslint-config`, `@workspace/typescript-config`. Validation schemas always live in the apps — `@workspace/ui` pins `zod@^3` while apps use `zod@^4`.
 
-Package manager is **bun** (`packageManager: bun@1.3.13`). There is no test runner configured yet.
+## Adding a public API endpoint
 
-## Architecture
+Public endpoints serve unauthenticated traffic from `apps/web` and live under `apps/api/src/routes/public/`.
 
-Monorepo with `apps/*` + `packages/*` workspaces, orchestrated by Turborepo.
+1. Pick the resource file (or create `routes/public/<resource>.ts` and mount it in `src/index.ts` under the `// Public API` block).
+2. Define zod schemas at the top of the file.
+3. Validate inputs with `safeParse`, return JSON 400 with `issues` on failure:
+   ```ts
+   const parsed = querySchema.safeParse(
+     Object.fromEntries(new URL(c.req.url).searchParams),
+   )
+   if (!parsed.success) {
+     return c.json({ error: "Invalid query", issues: parsed.error.issues }, 400)
+   }
+   ```
+4. Use `c.get("db")` for Kysely. Use `cdnUrl(cdn, key)` from `lib/cdn.ts` to expose R2-stored media — never return raw R2 keys.
+5. Public POSTs that accept user input (e.g. application submission) must verify Turnstile via `lib/turnstile.ts`.
 
-**Apps**
-- `apps/web` — public Next.js 16 App Router site (React 19, Turbopack). Uses `react-hook-form` + `zod@4`.
-- `apps/admin` — internal Next.js 16 admin app. Same stack as `web`, plus `better-auth` client.
-- `apps/api` — Hono app deployed to Cloudflare Workers via Wrangler. Uses `better-auth`, `kysely`, `zod@4`. Entry: `apps/api/src/index.ts`. Worker config: `apps/api/wrangler.jsonc` (bindings for KV/R2/D1 are scaffolded-but-commented — uncomment and run `cf-typegen` when adding them).
+Public response shapes should strip admin-only fields (author info, internal IDs) — see `routes/public/events.ts` vs `routes/admin/events.ts` for the pattern.
 
-**Shared packages** (consumed as `workspace:*`)
-- `@workspace/ui` — shadcn/ui component library. Components live in `packages/ui/src/components/` and are added via shadcn CLI (see below). Exports are subpath-style: import from `@workspace/ui/components/<name>`, `@workspace/ui/lib/<name>`, `@workspace/ui/hooks/<name>`. Global styles at `@workspace/ui/globals.css`. Uses Tailwind v4 (`@tailwindcss/postcss`) and `radix-ui`. Note: this package pins `zod@^3` while apps use `zod@^4` — keep validation schemas in the apps, not here.
-- `@workspace/eslint-config` — shared flat configs: `base.js`, `next.js`, `react-internal.js`.
-- `@workspace/typescript-config` — shared tsconfigs: `base.json`, `nextjs.json`, `react-library.json`.
+## Adding an admin API endpoint
 
-**shadcn/ui workflow.** Components are centralized in `packages/ui`, not duplicated per app. To add one, run from the repo root:
+Admin endpoints live under `apps/api/src/routes/admin/<resource>.ts`.
+
+1. Mount `requireAuth` once at the top of the file:
+   ```ts
+   const app = new Hono<AppEnv>()
+   app.use("*", requireAuth)
+   ```
+   `requireAuth` validates the session **and** re-checks the email against `allowed_emails`. Removing a member takes effect on the next request — no cookie-cache window.
+2. Read identity via `c.get("session")!` (non-null after `requireAuth`).
+3. Validate bodies the same way as public:
+   ```ts
+   const body = await c.req.json().catch(() => null)
+   const parsed = createSchema.safeParse(body)
+   if (!parsed.success) {
+     return c.json({ error: "Invalid payload", issues: parsed.error.issues }, 400)
+   }
+   ```
+4. **D1 has no real transactions.** For multi-statement atomicity (cascade delete, single-active invariant, etc.), compile Kysely queries and pass them to `c.env.stem_db.batch()`:
+   ```ts
+   const a = db.deleteFrom("children").where("parent_id", "=", id).compile()
+   const b = db.deleteFrom("parent").where("id", "=", id).compile()
+   await c.env.stem_db.batch([
+     c.env.stem_db.prepare(a.sql).bind(...a.parameters),
+     c.env.stem_db.prepare(b.sql).bind(...b.parameters),
+   ])
+   ```
+5. **R2 cleanup is best-effort and stays outside the DB transaction.** Use `deleteObjects(env, keys)` from `lib/r2.ts` (uses the native R2 binding — one subrequest, regardless of `keys.length`). Log rejections so orphans are detectable.
+
+Mount the route in `src/index.ts` under the `// Admin API` block.
+
+## Calling the api from admin
+
+`apps/admin/lib/api.ts` exports `fetchJson(path, init)` — sends `credentials: "include"` so the auth cookie flows. Use it for everything:
+
+```ts
+const res = await fetchJson<{ data: Foo[] }>("/api/admin/foos")
+```
+
+For authed downloads (xlsx, zip), use `downloadAuthed(path, fallbackName)` from `apps/admin/lib/download.ts`.
+
+For file uploads, **never PUT to R2 yourself** — go through the shared library:
+
+```ts
+import { uploadImage, uploadImages } from "@/lib/upload"
+
+const { key, size } = await uploadImage(file, "events")
+// or for batch: const results = await uploadImages(files, "gallery")
+```
+
+`uploadImage` validates PNG/JPEG, compresses to WebP (≤1 MB) client-side, requests a presigned PUT URL from `/api/admin/uploads/sign`, PUTs the blob, and returns `{ key, size }`. The `prefix` arg becomes the R2 key prefix and must be one of `"events"`, `"capstones"`, `"gallery"`.
+
+## Forms
+
+Forms use **react-hook-form + zod** with the shadcn `Form` component. Build the schema inside a function so error messages can be translated:
+
+```tsx
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
+function buildSchema(t: Translator) {
+  return z.object({
+    name: z.string().trim().min(1, t("validation.required")),
+    email: z.email(t("validation.email")),
+  })
+}
+
+export default function MyForm() {
+  const t = useTranslations("MyForm")
+  const schema = useMemo(() => buildSchema(t), [t])
+  const form = useForm<z.infer<typeof schema>>({
+    // @ts-expect-error zod@4 / @hookform/resolvers@5 generic mismatch (runtime is fine)
+    resolver: zodResolver(schema),
+    defaultValues: { name: "", email: "" },
+  })
+  // ...
+}
+```
+
+The `@ts-expect-error` is a known generic mismatch between zod 4 and `@hookform/resolvers` 5 — runtime is fine. Match this pattern in new forms.
+
+For dialogs that fetch + write, prevent the dialog from closing mid-submit:
+
+```tsx
+<Dialog
+  open={open}
+  onOpenChange={(o) => {
+    if (isSubmitting) return
+    onOpenChange(o)
+  }}
+>
+```
+
+For long forms inside dialogs, the `DialogContent` should be a flex column so only the body scrolls:
+
+```tsx
+<DialogContent className="flex max-h-[90vh] flex-col gap-0 p-0 sm:max-w-[850px]">
+  <DialogHeader className="border-b border-border p-4">…</DialogHeader>
+  <form className="flex min-h-0 flex-1 flex-col">
+    <div className="flex-1 overflow-y-auto pt-4">…fields…</div>
+    <DialogFooter className="border-t bg-muted/50 p-4">…</DialogFooter>
+  </form>
+</DialogContent>
+```
+
+## UI components
+
+Components are centralized in `packages/ui/src/components/`. Add new ones via the shadcn CLI from the repo root:
 
 ```bash
 bun x shadcn@latest add <component> -c apps/web
 ```
 
-The `-c apps/web` flag points shadcn at `apps/web/components.json`, which is configured so components land in `packages/ui/src/components/`. The config uses `style: "radix-lyra"`, `baseColor: "neutral"`, `iconLibrary: "lucide"`, and `rtl: true` — preserve these when scaffolding. Then import across apps as `import { Button } from "@workspace/ui/components/button"`.
+The `-c apps/web` flag points at `apps/web/components.json`, which is configured to drop new files into `packages/ui/`. Config: `style: "radix-lyra"`, `baseColor: "neutral"`, `iconLibrary: "lucide"`, `rtl: true`. Preserve these when scaffolding.
 
-**Icon library.** `lucide-react` across all workspaces — matches `iconLibrary: "lucide"` in `components.json`. Import icons directly: `import { ChevronRight } from "lucide-react"`.
+Import across apps:
+```ts
+import { Button } from "@workspace/ui/components/button"
+import { ChevronRight } from "lucide-react"   // icons direct from lucide
+```
+
+Primary action buttons use `bg-secondry-web text-white hover:bg-secondry-web/90` (note: `secondry`, not `secondary` — pre-existing typo, leave it).
+
+## i18n
+
+`next-intl`, two locales (`en`, `ar`), RTL on for `ar`.
+
+- Translation files: `apps/<app>/messages/{en,ar}.json`. Always add a key to **both**.
+- Client components: `useTranslations("Namespace")`. Server components: `getTranslations({ locale, namespace })`.
+- ICU-style interpolation: `"hello": "Hi {name}"` → `t("hello", { name: "Bob" })`.
+- Don't render English literals as fallbacks (e.g. `"Upload failed"`); pull them from translations.
+
+For per-page browser titles in admin, use `buildMetadata("key")` from `apps/admin/lib/metadata.ts`:
+```ts
+export const generateMetadata = buildMetadata("dashboard")
+```
+Web pages: write `generateMetadata` directly using `getTranslations`.
+
+## Conventions
+
+- **JSON error shape** everywhere: `{ error: "CODE_OR_MESSAGE", ... }` with optional `issues` (zod) or domain-specific fields. Public endpoints use SCREAMING_SNAKE error codes (e.g. `"DUPLICATE_NATIONAL_ID"`) so clients can render localized messages; admin endpoints can use plain English strings.
+- **`requireAuth` is mandatory** for everything under `routes/admin/`. The single exception is `/api/auth/*` (Better Auth's own handler).
+- **Logging**: bare `console.error("[scope] thing failed", err)` for actionable failures. No `console.log`. Workers observability is enabled in `wrangler.jsonc` so these land in the CF dashboard.
+- **Cookie / session**: cookie prefix is `auth` (not `better-auth`). Cross-origin cookies kick in automatically when `BETTER_AUTH_URL` starts with `https://` (`sameSite: "none"; secure: true`). Use HTTPS in dev or accept that auth won't cross origins in plain dev.
+- **Workers subrequest cap** (50 free / 1000 paid): routes that loop over R2 operations must stay under it. Use `bucket.delete(keys[])` for bulk deletes; never `Promise.all` of N single deletes via the S3 SDK.
+- **No real transactions in D1** — see admin recipe step 4. Use `db.batch()` for any multi-statement atomicity.
