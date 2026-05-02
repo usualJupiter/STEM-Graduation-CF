@@ -1,4 +1,14 @@
 {
+  "Metadata": {
+    "appName": "STEM Admin",
+    "appDescription": "Admin panel for the STEM program",
+    "dashboard": "Dashboard",
+    "events": "Events",
+    "applications": "Applications",
+    "capstones": "Capstones",
+    "resources": "Resources",
+    "settings": "Settings"
+  },
   "Auth": {
     "title": "Admin login",
     "description": "Use your Google account to sign in",
@@ -32,6 +42,7 @@
       "edit": "Edit",
       "delete": "Delete"
     },
+    "empty": "No events yet.",
     "pagination": {
       "showing": "{shown} of {total} showing.",
       "previous": "Previous",
@@ -59,8 +70,7 @@
       "limitReached": "Event limit reached ({limit}). Delete an old event before creating a new one.",
       "validation": {
         "required": "This field is required",
-        "fileType": "Only JPEG, PNG, or WebP images are allowed",
-        "fileTooLarge": "File must be {maxKb} KB or smaller",
+        "fileType": "Only PNG or JPEG images are allowed",
         "tooManyFiles": "You can upload at most {max} photos"
       }
     },
@@ -97,8 +107,7 @@
       "saveFailed": "Failed to save changes",
       "validation": {
         "required": "This field is required",
-        "fileType": "Only JPEG, PNG, or WebP images are allowed",
-        "fileTooLarge": "File must be {maxKb} KB or smaller",
+        "fileType": "Only PNG or JPEG images are allowed",
         "tooManyFiles": "You can upload at most {max} photos"
       }
     }
@@ -133,6 +142,7 @@
       "export": "Export",
       "delete": "Delete"
     },
+    "empty": "No applications yet.",
     "pagination": {
       "selected": "{selected} of {total} row(s) selected.",
       "showing": "{shown} of {total} showing.",
@@ -144,7 +154,6 @@
       "description": "Activate one group at a time to accept new submissions.",
       "columns": {
         "group": "Group",
-        "year": "Year",
         "count": "Applications",
         "status": "Status",
         "actions": "Actions"
@@ -156,7 +165,8 @@
       "delete": "Delete",
       "create": "Create New Group",
       "close": "Close",
-      "empty": "No groups yet."
+      "empty": "No groups yet.",
+      "failed": "Failed to update group"
     },
     "deleteGroupDialog": {
       "title": "Delete group",
@@ -171,8 +181,7 @@
       "title": "Create Group",
       "description": "A group is a batch of applications, e.g. one academic year.",
       "name": "Group name",
-      "yearLabel": "Academic year label",
-      "declaration": "Declaration text (shown to applicants)",
+      "namePlaceholder": "e.g. 2026 Wave 1",
       "cancel": "Cancel",
       "create": "Create Group",
       "submitting": "Creating…",
@@ -192,7 +201,8 @@
       "typeHint": "ZIP includes the XLSX manifest and every applicant's photo and certificate.",
       "cancel": "Cancel",
       "export": "Export",
-      "exporting": "Exporting…"
+      "exporting": "Exporting…",
+      "failed": "Export failed"
     },
     "exportStudentDialog": {
       "title": "Export Application",
@@ -204,15 +214,15 @@
       "typeHint": "ZIP includes the XLSX manifest and this applicant's photo and certificate.",
       "cancel": "Cancel",
       "export": "Export",
-      "exporting": "Exporting…"
+      "exporting": "Exporting…",
+      "failed": "Export failed"
     },
     "viewDialog": {
       "title": "Application",
       "loading": "Loading…",
-      "openCertificate": "Open certificate",
+      "viewCertificate": "View certificate",
       "close": "Close",
       "print": "Print",
-      "popupBlocked": "Please allow popups for this site to print.",
       "sections": {
         "group": "Group",
         "student": "Student",
@@ -286,6 +296,7 @@
       "edit": "Edit",
       "delete": "Delete"
     },
+    "empty": "No projects yet.",
     "pagination": {
       "selected": "{selected} of {total} row(s) selected.",
       "previous": "Previous",
@@ -375,7 +386,8 @@
       "sectionRequired": "{label} is required",
       "sectionTooLong": "{label} must be {max} characters or fewer",
       "materialNameRequired": "Material name is required",
-      "materialNameArRequired": "Material name (AR) is required"
+      "materialNameArRequired": "Material name (AR) is required",
+      "invalidUrl": "Must be a valid URL (https://…)"
     },
     "submitErrors": {
       "createFailed": "Failed to create capstone",
@@ -414,9 +426,9 @@
       "next": "Next",
       "empty": "No images yet.",
       "limitReached": "Gallery is full. Delete images to free up space.",
-      "fileTooLarge": "Files must be {maxKb} KB or smaller.",
-      "fileType": "Only JPEG, PNG, WebP, or GIF images are allowed.",
+      "fileType": "Only PNG or JPEG images are allowed.",
       "tooManyFiles": "You can upload at most {max} photos at once.",
+      "uploadFailed": "Upload failed",
       "actionsMenu": {
         "view": "View",
         "delete": "Delete"
@@ -443,12 +455,6 @@
     }
   },
   "Dashboard": {
-    "title": "Project ready!",
-    "description": "You may now add components and start building.",
-    "buttonHint": "We've already added the button component for you.",
-    "button": "Button",
-    "darkModeHint": "(Press <kbd>d</kbd> to toggle dark mode)",
-    "overview": "Overview",
     "greetings": {
       "morning": "Good morning",
       "afternoon": "Good afternoon",

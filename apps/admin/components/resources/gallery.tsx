@@ -23,14 +23,8 @@ import {
 
 import DelPhoto from "@/components/resources/delPhoto"
 import { fetchJson } from "@/lib/api"
+import { ACCEPT_ATTR, isAcceptedFile, uploadImages } from "@/lib/upload"
 
-const ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-] as const
-const MAX_FILE_SIZE = 1024 * 1024
 const MAX_BATCH = 5
 const PAGE_SIZE = 20
 
@@ -54,10 +48,6 @@ interface ListResponse {
     capacity: number
     maxFileSize: number
   }
-}
-
-interface SignResponse {
-  data: { items: { uploadUrl: string; key: string }[] }
 }
 
 function formatSize(bytes: number): string {
@@ -136,52 +126,23 @@ export default function Gallery() {
     }
 
     for (const file of files) {
-      if (
-        !(ALLOWED_TYPES as readonly string[]).includes(file.type)
-      ) {
+      if (!isAcceptedFile(file)) {
         setUploadError(t("fileType"))
-        return
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        setUploadError(t("fileTooLarge", { maxKb: MAX_FILE_SIZE / 1024 }))
         return
       }
     }
 
     setUploading(true)
     try {
-      const sign = await fetchJson<SignResponse>(
-        "/api/admin/uploads/gallery/sign",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            files: files.map((f) => ({
-              contentType: f.type,
-              fileSize: f.size,
-            })),
-          }),
-        },
-      )
-
-      await Promise.all(
-        sign.data.items.map(async (item, idx) => {
-          const file = files[idx]!
-          const res = await fetch(item.uploadUrl, {
-            method: "PUT",
-            body: file,
-            headers: { "Content-Type": file.type },
-          })
-          if (!res.ok) throw new Error(`R2 upload failed (${res.status})`)
-        }),
-      )
+      const results = await uploadImages(files, "gallery")
 
       await fetchJson("/api/admin/gallery", {
         method: "POST",
         body: JSON.stringify({
-          photos: sign.data.items.map((item, idx) => ({
-            photo_key: item.key,
-            file_size: files[idx]!.size,
-            original_name: files[idx]!.name,
+          photos: results.map((r, i) => ({
+            photo_key: r.key,
+            file_size: r.size,
+            original_name: files[i]!.name,
           })),
         }),
       })
@@ -189,7 +150,7 @@ export default function Gallery() {
       setPage(1)
       setRefreshKey((k) => k + 1)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Upload failed"
+      const msg = err instanceof Error ? err.message : t("uploadFailed")
       if (msg === "GALLERY_LIMIT_REACHED") {
         setUploadError(t("limitReached"))
       } else {
@@ -209,7 +170,7 @@ export default function Gallery() {
               ref={inputRef}
               type="file"
               multiple
-              accept={ALLOWED_TYPES.join(",")}
+              accept={ACCEPT_ATTR}
               className="hidden"
               onChange={(e) => {
                 const picked = e.target.files

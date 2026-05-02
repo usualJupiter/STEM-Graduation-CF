@@ -28,10 +28,9 @@ import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import { fetchJson } from "@/lib/api"
+import { ACCEPT_ATTR, isAcceptedFile, uploadImage } from "@/lib/upload"
 import { EVENTS_INVALIDATE_EVENT } from "@/components/events/createEvent"
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"] as const
-const MAX_BYTES = 1024 * 1024 // 1 MB
 const MAX_GALLERY = 5
 
 type Translator = (key: string, values?: Record<string, unknown>) => string
@@ -41,11 +40,8 @@ function buildSchema(t: Translator) {
     kind: z.literal("new"),
     file: z
       .instanceof(File, { message: t("validation.required") })
-      .refine((f) => (ALLOWED_TYPES as readonly string[]).includes(f.type), {
+      .refine(isAcceptedFile, {
         message: t("validation.fileType"),
-      })
-      .refine((f) => f.size <= MAX_BYTES, {
-        message: t("validation.fileTooLarge", { maxKb: MAX_BYTES / 1024 }),
       }),
   })
 
@@ -91,33 +87,9 @@ interface EventDetailResponse {
   }
 }
 
-interface SignResponse {
-  data: { uploadUrl: string; key: string }
-}
-
 interface EditEventProps {
   eventId: number | null
   onOpenChange: (open: boolean) => void
-}
-
-async function uploadFile(
-  file: File,
-  kind: "card" | "gallery",
-): Promise<string> {
-  const sign = await fetchJson<SignResponse>(
-    "/api/admin/uploads/event-photos/sign",
-    {
-      method: "POST",
-      body: JSON.stringify({ contentType: file.type, kind }),
-    },
-  )
-  const res = await fetch(sign.data.uploadUrl, {
-    method: "PUT",
-    body: file,
-    headers: { "Content-Type": file.type },
-  })
-  if (!res.ok) throw new Error(`R2 upload failed (${res.status})`)
-  return sign.data.key
 }
 
 function keyFilename(key: string): string {
@@ -192,14 +164,14 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
     try {
       const cardKey =
         values.card_photo.kind === "new"
-          ? await uploadFile(values.card_photo.file, "card")
+          ? (await uploadImage(values.card_photo.file, "events")).key
           : values.card_photo.key
 
       const galleryKeys = await Promise.all(
-        values.event_photos.map((item) =>
+        values.event_photos.map(async (item) =>
           item.kind === "new"
-            ? uploadFile(item.file, "gallery")
-            : Promise.resolve(item.key),
+            ? (await uploadImage(item.file, "events")).key
+            : item.key,
         ),
       )
 
@@ -227,36 +199,35 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
   const open = eventId != null
 
   const validateFile = (file: File): string | null => {
-    if (!(ALLOWED_TYPES as readonly string[]).includes(file.type)) {
-      return t("validation.fileType")
-    }
-    if (file.size > MAX_BYTES) {
-      return t("validation.fileTooLarge", { maxKb: MAX_BYTES / 1024 })
-    }
+    if (!isAcceptedFile(file)) return t("validation.fileType")
     return null
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[850px]">
-        <DialogHeader className="p-4">
+      <DialogContent className="flex max-h-[90vh] flex-col gap-0 p-0 sm:max-w-[850px]">
+        <DialogHeader className="border-b border-border p-4">
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         {loading && (
-          <p className="px-4 pb-4 text-sm text-muted-foreground">
+          <p className="p-4 text-sm text-muted-foreground">
             {t("loading")}
           </p>
         )}
 
         {loadError && !loading && (
-          <p className="px-4 pb-4 text-sm text-destructive">{loadError}</p>
+          <p className="p-4 text-sm text-destructive">{loadError}</p>
         )}
 
         {!loading && !loadError && (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex min-h-0 flex-1 flex-col"
+            >
+              <div className="flex-1 overflow-y-auto pt-4">
               <div className="flex flex-col gap-4 px-4 pb-4 md:flex-row">
                 <div className="flex flex-1 flex-col gap-4">
                   <FormField
@@ -359,7 +330,7 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
                         <SingleFilePicker
                           value={field.value as PhotoValue | undefined}
                           onChange={field.onChange}
-                          accept={ALLOWED_TYPES.join(",")}
+                          accept={ACCEPT_ATTR}
                           chooseLabel={t("chooseFile")}
                           removeLabel={t("removeFile")}
                           savedBadge={t("savedBadge")}
@@ -382,7 +353,7 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
                         <MultiFilePicker
                           value={(field.value as PhotoValue[] | undefined) ?? []}
                           onChange={field.onChange}
-                          accept={ALLOWED_TYPES.join(",")}
+                          accept={ACCEPT_ATTR}
                           max={MAX_GALLERY}
                           addLabel={t("addFiles")}
                           removeLabel={t("removeFile")}
@@ -401,6 +372,7 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
                   {submitError}
                 </p>
               )}
+              </div>
 
               <DialogFooter className="border-t bg-muted/50 p-4">
                 <Button
@@ -411,7 +383,11 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
                 >
                   {t("cancel")}
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-secondry-web text-white hover:bg-secondry-web/90"
+                >
                   {isSubmitting ? t("submitting") : t("submit")}
                 </Button>
               </DialogFooter>

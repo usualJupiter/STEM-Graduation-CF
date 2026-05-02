@@ -1,4 +1,4 @@
-import { zipSync, strToU8 } from "fflate"
+import { zipSync } from "fflate"
 import * as XLSX from "xlsx"
 
 import type { Database } from "./db"
@@ -49,9 +49,11 @@ export function buildXlsx(rows: ApplicationRow[]): Uint8Array {
 }
 
 export function safeFolderName(name: string, id: string): string {
-  const cleaned = name.replace(/[\\/:*?"<>|\r\n\t]+/g, "_").trim()
+  // Strip filesystem-unsafe chars rather than replacing with "_" so badly-formed
+  // names (e.g. " / / ") don't produce ugly folders like "abcd1234___ _".
+  const cleaned = name.replace(/[\\/:*?"<>|\r\n\t]+/g, "").trim()
   const short = id.slice(0, 8)
-  return `${short}__${cleaned || "applicant"}`
+  return cleaned ? `${cleaned}-${short}` : `applicant-${short}`
 }
 
 export async function fetchFileBytes(
@@ -74,8 +76,14 @@ export async function buildZip(opts: {
     [opts.manifestName ?? "applications.xlsx"]: xlsx,
   }
 
+  // Single-applicant export: drop the per-applicant subfolder and just call it "Files".
+  // Multi-applicant: each applicant gets a uniquely-named subfolder under "Files/".
+  const isSingle = opts.rows.length === 1
+
   for (const row of opts.rows) {
-    const folder = safeFolderName(row.name, row.id)
+    const folder = isSingle
+      ? "Files"
+      : `Files/${safeFolderName(row.name, row.id)}`
     const photo = await fetchFileBytes(opts.bucket, row.photo_key)
     const cert = await fetchFileBytes(opts.bucket, row.certificate_key)
     if (photo) {
@@ -86,12 +94,6 @@ export async function buildZip(opts: {
       files[`${folder}/certificate.pdf`] = cert
     }
   }
-
-  // README to disambiguate the export
-  files["README.txt"] = strToU8(
-    "This archive contains an applications.xlsx manifest and one folder per applicant " +
-      "with their photo and high-school certificate.\n",
-  )
 
   return zipSync(files, { level: 6 })
 }

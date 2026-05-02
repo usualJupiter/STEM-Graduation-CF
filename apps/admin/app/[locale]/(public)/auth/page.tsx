@@ -14,8 +14,8 @@ export default function AuthPage() {
     const origin = window.location.origin
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${origin}/${locale}/auth-callback`,
-      errorCallbackURL: `${origin}/${locale}/auth-callback`,
+      callbackURL: `${origin}/${locale}/dashboard`,
+      errorCallbackURL: `${origin}/${locale}/auth?error=login_failed`,
     })
   }
 

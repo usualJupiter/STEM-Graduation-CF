@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import { sql } from "kysely"
 import { z } from "zod"
 
+import { requireAuth } from "../lib/middleware"
 import type { AppEnv } from "../types"
 
 const addSchema = z.object({
@@ -12,13 +13,7 @@ const addSchema = z.object({
 
 const app = new Hono<AppEnv>()
 
-app.use("*", async (c, next) => {
-  const auth = c.get("auth")
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-  if (!session) return c.json({ error: "Unauthorized" }, 401)
-  c.set("session", session)
-  await next()
-})
+app.use("*", requireAuth)
 
 app.get("/", async (c) => {
   const db = c.get("db")
@@ -62,18 +57,24 @@ app.post("/", async (c) => {
   const session = c.get("session")!
   const email = parsed.data.email
 
-  try {
-    await db
-      .insertInto("allowed_emails")
-      .values({
-        email,
-        addedByUserId: session.user.id,
-        addedAt: new Date().toISOString(),
-      })
-      .execute()
-  } catch {
+  const existing = await db
+    .selectFrom("allowed_emails")
+    .select("email")
+    .where("email", "=", email)
+    .executeTakeFirst()
+  if (existing) {
     return c.json({ error: "Email already in allowlist" }, 409)
   }
+
+  await db
+    .insertInto("allowed_emails")
+    .values({
+      email,
+      addedByUserId: session.user.id,
+      addedAt: new Date().toISOString(),
+    })
+    .execute()
+
   return c.json({ data: { email } }, 201)
 })
 

@@ -210,7 +210,7 @@ function UserMenu({
           aria-label={openLabel}
           className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Avatar className="size-10">
+          <Avatar size="lg">
             {image ? <AvatarImage src={image} alt={name ?? ""} /> : null}
             <AvatarFallback>{getInitials(name)}</AvatarFallback>
           </Avatar>

@@ -1,5 +1,6 @@
 "use client"
 
+import { Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 
@@ -34,7 +35,6 @@ interface ManageApplicationsProps {
 interface GroupRow {
   id: number
   name: string
-  academic_year_label: string
   is_active: number
   application_count: number
 }
@@ -98,7 +98,7 @@ export default function ManageApplications({
       })
       window.dispatchEvent(new Event(APPLICATION_GROUPS_INVALIDATE_EVENT))
     } catch (err) {
-      setError(err instanceof Error ? err.message : "failed")
+      setError(err instanceof Error ? err.message : t("failed"))
     } finally {
       setBusyId(null)
     }
@@ -117,7 +117,6 @@ export default function ManageApplications({
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("columns.group")}</TableHead>
-                  <TableHead>{t("columns.year")}</TableHead>
                   <TableHead>{t("columns.count")}</TableHead>
                   <TableHead className="text-right">
                     {t("columns.status")}
@@ -131,7 +130,7 @@ export default function ManageApplications({
                 {loading && (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={4}
                       className="text-center text-muted-foreground"
                     >
                       …
@@ -140,7 +139,7 @@ export default function ManageApplications({
                 )}
                 {!loading && error && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-destructive">
+                    <TableCell colSpan={4} className="text-center text-destructive">
                       {error}
                     </TableCell>
                   </TableRow>
@@ -148,7 +147,7 @@ export default function ManageApplications({
                 {!loading && !error && rows.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
+                      colSpan={4}
                       className="text-center text-muted-foreground"
                     >
                       {t("empty")}
@@ -157,44 +156,47 @@ export default function ManageApplications({
                 )}
                 {!loading &&
                   !error &&
-                  rows.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.academic_year_label}</TableCell>
-                      <TableCell>{row.application_count}</TableCell>
-                      <TableCell className="text-right">
-                        {row.is_active === 1 ? t("on") : t("off")}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={busyId === row.id}
-                            onClick={() => toggleActive(row)}
-                          >
-                            {row.is_active === 1 ? t("deactivate") : t("activate")}
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            disabled={busyId === row.id}
-                            onClick={() =>
-                              setDeleting({
-                                id: row.id,
-                                name: row.name,
-                                count: row.application_count,
-                              })
-                            }
-                          >
-                            {t("delete")}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  rows.map((row) => {
+                    const isActive = row.is_active === 1
+                    return (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.application_count}</TableCell>
+                        <TableCell className="text-right">
+                          {isActive ? t("on") : t("off")}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              type="button"
+                              variant={isActive ? "destructive" : "default"}
+                              size="sm"
+                              disabled={busyId === row.id}
+                              onClick={() => toggleActive(row)}
+                            >
+                              {isActive ? t("deactivate") : t("activate")}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-sm"
+                              aria-label={t("delete")}
+                              disabled={busyId === row.id}
+                              onClick={() =>
+                                setDeleting({
+                                  id: row.id,
+                                  name: row.name,
+                                  count: row.application_count,
+                                })
+                              }
+                            >
+                              <Trash2 className="text-destructive" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
               </TableBody>
             </Table>
           </div>
@@ -202,7 +204,12 @@ export default function ManageApplications({
             <Button variant="outline" onClick={() => onOpenChange?.(false)}>
               {t("close")}
             </Button>
-            <Button onClick={() => setCreateOpen(true)}>{t("create")}</Button>
+            <Button
+              onClick={() => setCreateOpen(true)}
+              className="bg-secondry-web text-white hover:bg-secondry-web/90"
+            >
+              {t("create")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

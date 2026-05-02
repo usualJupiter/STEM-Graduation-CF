@@ -13,7 +13,7 @@ export default function Header() {
           priority
         />
       </Link>
-      <Button asChild className="bg-default-web text-main hover:bg-default-web/90">
+      <Button asChild className="bg-default-web text-main [a]:hover:bg-default-web/90">
         <Link href="/">الموقع الرسمي</Link>
       </Button>
     </header>

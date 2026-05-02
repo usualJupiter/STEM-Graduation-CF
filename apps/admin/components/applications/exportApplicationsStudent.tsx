@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { downloadAuthed } from "@/components/applications/download"
+import { downloadAuthed } from "@/lib/download"
 
 interface ExportApplicationsStudentProps {
   applicationId: string | null
@@ -62,16 +62,14 @@ export default function ExportApplicationsStudent({
     setBusy(true)
     setError(null)
     try {
-      const fallback = `${studentName ?? applicationId.slice(0, 8)}.${
-        type === "xlsx" ? "xlsx" : "zip"
-      }`
+      const fallback = `${studentName ?? applicationId.slice(0, 8)}.${type}`
       await downloadAuthed(
         `/api/admin/applications/${applicationId}/export?type=${type}`,
         fallback,
       )
       onOpenChange?.(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "failed")
+      setError(err instanceof Error ? err.message : t("failed"))
     } finally {
       setBusy(false)
     }
@@ -118,7 +116,11 @@ export default function ExportApplicationsStudent({
           >
             {t("cancel")}
           </Button>
-          <Button onClick={handleExport} disabled={busy}>
+          <Button
+            onClick={handleExport}
+            disabled={busy}
+            className="bg-secondry-web text-white hover:bg-secondry-web/90"
+          >
             {busy ? t("exporting") : t("export")}
           </Button>
         </DialogFooter>

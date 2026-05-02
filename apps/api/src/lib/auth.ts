@@ -4,6 +4,7 @@ import { createDb } from "./db"
 
 export function createAuth(env: CloudflareBindings) {
   const db = createDb(env.stem_db)
+  const isHttps = env.BETTER_AUTH_URL?.startsWith("https://") ?? false
 
   return betterAuth({
     baseURL: env.BETTER_AUTH_URL,
@@ -25,6 +26,17 @@ export function createAuth(env: CloudflareBindings) {
         prompt: "select_account",
       },
     },
+    session: {
+      cookieCache: { enabled: true, maxAge: 60 * 5 },
+    },
+    advanced: {
+      cookiePrefix: "auth",
+      useSecureCookies: isHttps,
+      defaultCookieAttributes: {
+        sameSite: isHttps ? "none" : "lax",
+        secure: isHttps,
+      },
+    },
     databaseHooks: {
       user: {
         create: {
@@ -33,25 +45,6 @@ export function createAuth(env: CloudflareBindings) {
               .selectFrom("allowed_emails")
               .select("email")
               .where("email", "=", user.email.toLowerCase())
-              .executeTakeFirst()
-            if (!allowed) return false
-          },
-        },
-      },
-      session: {
-        create: {
-          before: async (session) => {
-            const userRow = await db
-              .selectFrom("user")
-              .select("email")
-              .where("id", "=", session.userId)
-              .executeTakeFirst()
-            if (!userRow) return false
-
-            const allowed = await db
-              .selectFrom("allowed_emails")
-              .select("email")
-              .where("email", "=", userRow.email.toLowerCase())
               .executeTakeFirst()
             if (!allowed) return false
           },

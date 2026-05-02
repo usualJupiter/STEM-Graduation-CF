@@ -54,6 +54,7 @@ export default function Schedules() {
   const t = useTranslations("Resources.schedules")
   const schema = useMemo(() => buildSchema(t), [t])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
 
@@ -76,8 +77,11 @@ export default function Schedules() {
           level4: map.get(4) ?? "",
         })
       })
-      .catch(() => {
-        /* user can still edit and save */
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("[schedules] load failed", err)
+          setLoadError(true)
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -152,6 +156,11 @@ export default function Schedules() {
                       />
                     )
                   })}
+                  {loadError && (
+                    <p className="text-sm text-destructive">
+                      {t("saveFailed")}
+                    </p>
+                  )}
                   {submitError && (
                     <p className="text-sm text-destructive">{submitError}</p>
                   )}

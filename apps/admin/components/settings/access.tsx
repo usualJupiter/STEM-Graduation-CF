@@ -10,19 +10,12 @@ import {
   AvatarImage,
 } from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 
 import { fetchJson } from "@/lib/api"
 import { authClient } from "@/lib/auth-client"
 import AddEmailDialog from "@/components/settings/addEmailDialog"
+import DelEmailDialog from "@/components/settings/delEmailDialog"
 
 interface AllowedEmailRow {
   email: string
@@ -48,12 +41,9 @@ export default function Access() {
   const [search, setSearch] = useState("")
 
   const [addOpen, setAddOpen] = useState(false)
+  const [deletingEmail, setDeletingEmail] = useState<string | null>(null)
 
-  const [deletingTarget, setDeletingTarget] = useState<{
-    email: string
-  } | null>(null)
-  const [deleting, setDeleting] = useState(false)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const refresh = () => setRefreshKey((k) => k + 1)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -87,34 +77,6 @@ export default function Access() {
         (r.name?.toLowerCase().includes(q) ?? false),
     )
   }, [rows, search])
-
-  const handleDeleteOpenChange = (next: boolean) => {
-    if (deleting) return
-    if (!next) {
-      setDeleteError(null)
-      setDeletingTarget(null)
-    }
-  }
-
-  const handleDelete = async () => {
-    if (!deletingTarget) return
-    setDeleteError(null)
-    setDeleting(true)
-    try {
-      await fetchJson(
-        `/api/allowed-emails/${encodeURIComponent(deletingTarget.email)}`,
-        { method: "DELETE" },
-      )
-      setDeletingTarget(null)
-      setRefreshKey((k) => k + 1)
-    } catch (err) {
-      setDeleteError(
-        err instanceof Error ? err.message : t("deleteDialog.failed"),
-      )
-    } finally {
-      setDeleting(false)
-    }
-  }
 
   return (
     <div className="flex flex-col items-center gap-8 px-6 pb-6">
@@ -183,9 +145,7 @@ export default function Access() {
                       </div>
                       <button
                         type="button"
-                        onClick={() =>
-                          setDeletingTarget({ email: member.email })
-                        }
+                        onClick={() => setDeletingEmail(member.email)}
                         disabled={!canDelete}
                         className="shrink-0 text-destructive disabled:cursor-not-allowed disabled:opacity-30"
                         aria-label={t("deleteAriaLabel", {
@@ -205,50 +165,14 @@ export default function Access() {
       <AddEmailDialog
         open={addOpen}
         onOpenChange={setAddOpen}
-        onSuccess={() => setRefreshKey((k) => k + 1)}
+        onSuccess={refresh}
       />
 
-      <Dialog
-        open={deletingTarget != null}
-        onOpenChange={handleDeleteOpenChange}
-      >
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
-            <DialogTitle>{t("deleteDialog.title")}</DialogTitle>
-            <DialogDescription>
-              {t("deleteDialog.description")}
-            </DialogDescription>
-          </DialogHeader>
-          {deletingTarget && (
-            <p className="text-sm text-muted-foreground">
-              {t("deleteDialog.removing", { email: deletingTarget.email })}
-            </p>
-          )}
-          {deleteError && (
-            <p className="text-sm text-destructive">{deleteError}</p>
-          )}
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleDeleteOpenChange(false)}
-              disabled={deleting}
-            >
-              {t("deleteDialog.cancel")}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
-              {deleting
-                ? t("deleteDialog.submitting")
-                : t("deleteDialog.confirm")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DelEmailDialog
+        email={deletingEmail}
+        onClose={() => setDeletingEmail(null)}
+        onSuccess={refresh}
+      />
     </div>
   )
 }

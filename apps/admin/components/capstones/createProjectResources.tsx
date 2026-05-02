@@ -13,10 +13,12 @@ import { Input } from "@workspace/ui/components/input"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 
 import type { CapstoneFormState } from "@/components/capstones/types"
+import type { FieldErrors } from "@/components/capstones/schemas"
 
 interface CreateProjectResourcesProps {
   value: CapstoneFormState
   onChange: (patch: Partial<CapstoneFormState>) => void
+  errors?: FieldErrors
   onBack?: () => void
   onSubmit?: () => void
   submitting?: boolean
@@ -30,6 +32,7 @@ interface CreateProjectResourcesProps {
 export default function CreateProjectResources({
   value,
   onChange,
+  errors = {},
   onBack,
   onSubmit,
   submitting,
@@ -55,10 +58,14 @@ export default function CreateProjectResources({
           </FieldLabel>
           <Input
             id="poster-link"
+            dir="ltr"
             value={value.poster_link}
             onChange={(e) => onChange({ poster_link: e.target.value })}
             className="rounded-none"
           />
+          {errors.poster_link && (
+            <p className="text-xs text-destructive">{errors.poster_link}</p>
+          )}
         </Field>
         <Field>
           <FieldLabel htmlFor="portfolio-link">
@@ -66,10 +73,14 @@ export default function CreateProjectResources({
           </FieldLabel>
           <Input
             id="portfolio-link"
+            dir="ltr"
             value={value.portfolio_link}
             onChange={(e) => onChange({ portfolio_link: e.target.value })}
             className="rounded-none"
           />
+          {errors.portfolio_link && (
+            <p className="text-xs text-destructive">{errors.portfolio_link}</p>
+          )}
         </Field>
         <Field>
           <FieldLabel htmlFor="presentation-link">
@@ -77,10 +88,16 @@ export default function CreateProjectResources({
           </FieldLabel>
           <Input
             id="presentation-link"
+            dir="ltr"
             value={value.presentation_link}
             onChange={(e) => onChange({ presentation_link: e.target.value })}
             className="rounded-none"
           />
+          {errors.presentation_link && (
+            <p className="text-xs text-destructive">
+              {errors.presentation_link}
+            </p>
+          )}
         </Field>
         {error && <p className="text-sm text-destructive">{error}</p>}
       </div>

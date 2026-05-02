@@ -44,7 +44,14 @@
       "Bash(xargs -I {} taskkill //F //PID {})",
       "Bash(bunx --bun wrangler d1 execute stem --local --command \"DELETE FROM applications\")",
       "PowerShell(bun run *)",
-      "Bash(test -f \"E:\\\\\\\\Projects\\\\\\\\STEM Graduation\\\\\\\\STEM CF\\\\\\\\apps\\\\\\\\web\\\\\\\\.env.example\")"
+      "Bash(test -f \"E:\\\\\\\\Projects\\\\\\\\STEM Graduation\\\\\\\\STEM CF\\\\\\\\apps\\\\\\\\web\\\\\\\\.env.example\")",
+      "Bash(echo \"exit:$?\")",
+      "Bash(awk -F= '{ print $1 \"=\" \\(NF>1 && length\\($2\\)>0 ? \"<set>\" : \"<EMPTY>\"\\) }' .dev.vars)",
+      "Bash(echo \"api:$?\")",
+      "Bash(git remote *)",
+      "Bash(git *)",
+      "Bash(git -C \"E:/Projects/STEM Graduation/STEM CF\" diff)",
+      "Read(//tmp/**)"
     ]
   }
 }

@@ -41,7 +41,9 @@ export default function AddEmailDialog({
     onOpenChange(next)
   }
 
-  const handleAdd = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim() || submitting) return
     setError(null)
     setSubmitting(true)
     try {
@@ -70,41 +72,37 @@ export default function AddEmailDialog({
             {t("addEmailDialog.description")}
           </DialogDescription>
         </DialogHeader>
-        <Input
-          type="email"
-          dir="ltr"
-          placeholder={t("addEmailDialog.placeholder")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={submitting}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && email.trim() && !submitting) {
-              e.preventDefault()
-              void handleAdd()
-            }
-          }}
-        />
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => handleOpenChange(false)}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            type="email"
+            dir="ltr"
+            placeholder={t("addEmailDialog.placeholder")}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             disabled={submitting}
-          >
-            {t("addEmailDialog.cancel")}
-          </Button>
-          <Button
-            type="button"
-            onClick={handleAdd}
-            disabled={submitting || !email.trim()}
-            className="bg-secondry-web text-white hover:bg-secondry-web/90"
-          >
-            {submitting
-              ? t("addEmailDialog.submitting")
-              : t("addEmailDialog.confirm")}
-          </Button>
-        </DialogFooter>
+            autoFocus
+          />
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleOpenChange(false)}
+              disabled={submitting}
+            >
+              {t("addEmailDialog.cancel")}
+            </Button>
+            <Button
+              type="submit"
+              disabled={submitting || !email.trim()}
+              className="bg-secondry-web text-white hover:bg-secondry-web/90"
+            >
+              {submitting
+                ? t("addEmailDialog.submitting")
+                : t("addEmailDialog.confirm")}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

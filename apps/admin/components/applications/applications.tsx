@@ -47,7 +47,6 @@ interface AdminApplicationRow {
   name: string
   national_id: string
   created_at: string
-  group_id: number
   group_name: string
 }
 
@@ -63,14 +62,10 @@ interface GroupOption {
 }
 
 interface GroupsResponse {
-  data: Array<GroupOption & { is_active: number }>
+  data: GroupOption[]
 }
 
-interface ApplicationsProps {
-  className?: string
-}
-
-export default function Applications({ className }: ApplicationsProps) {
+export default function Applications() {
   const t = useTranslations("Applications")
 
   const [search, setSearch] = useState("")
@@ -117,16 +112,10 @@ export default function Applications({ className }: ApplicationsProps) {
     fetchJson<GroupsResponse>("/api/admin/applications/groups")
       .then((res) => {
         if (cancelled) return
-        setGroups(
-          res.data.map((g) => ({
-            id: g.id,
-            name: g.name,
-            application_count: g.application_count,
-          })),
-        )
+        setGroups(res.data)
       })
-      .catch(() => {
-        /* group list is non-critical */
+      .catch((err) => {
+        if (!cancelled) console.error("[applications] groups fetch failed", err)
       })
     return () => {
       cancelled = true
@@ -173,9 +162,7 @@ export default function Applications({ className }: ApplicationsProps) {
   }, [groupFilter, groups, t])
 
   return (
-    <div
-      className={`flex flex-col items-center gap-0 px-6 pb-6 ${className ?? ""}`}
-    >
+    <div className="flex flex-col items-center gap-0 px-6 pb-6">
       <div className="w-full max-w-[1280px] rounded-none border border-border bg-background shadow-sm">
         <div className="p-6">
           <div className="mx-auto max-w-[1280px] px-4">
@@ -280,7 +267,7 @@ export default function Applications({ className }: ApplicationsProps) {
                           colSpan={6}
                           className="text-center text-muted-foreground"
                         >
-                          —
+                          {t("empty")}
                         </TableCell>
                       </TableRow>
                     )}

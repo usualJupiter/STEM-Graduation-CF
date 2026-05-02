@@ -12,10 +12,7 @@ import {
 } from "@workspace/ui/components/dialog"
 
 import { fetchJson } from "@/lib/api"
-import {
-  uploadCapstoneImage,
-  type CapstoneUploadKind,
-} from "@/lib/capstones-upload"
+import { uploadImage } from "@/lib/upload"
 
 import CreateProjectInfo from "@/components/capstones/createProjectInfo"
 import CreateProjectData from "@/components/capstones/createProjectData"
@@ -140,13 +137,11 @@ function hydrate(row: AdminCapstoneFetchResponse["data"]): CapstoneFormState {
   }
 }
 
-async function resolveSlot(
-  slot: ImageSlot | null,
-  kind: CapstoneUploadKind,
-): Promise<string | null> {
+async function resolveSlot(slot: ImageSlot | null): Promise<string | null> {
   if (!slot) return null
   if (slot.kind === "existing") return slot.key
-  return uploadCapstoneImage(slot.file, kind)
+  const result = await uploadImage(slot.file, "capstones")
+  return result.key
 }
 
 export default function CreateProject({
@@ -246,6 +241,14 @@ export default function CreateProject({
       const r = schemas.mediaSchema.safeParse({ materials: form.materials })
       return r.success ? {} : issuesToErrors(r.error.issues)
     }
+    if (s === "resources") {
+      const r = schemas.resourcesSchema.safeParse({
+        poster_link: form.poster_link,
+        portfolio_link: form.portfolio_link,
+        presentation_link: form.presentation_link,
+      })
+      return r.success ? {} : issuesToErrors(r.error.issues)
+    }
     return {}
   }
 
@@ -270,6 +273,7 @@ export default function CreateProject({
       { step: "info", errs: validateStep("info") },
       { step: "data", errs: validateStep("data") },
       { step: "media", errs: validateStep("media") },
+      { step: "resources", errs: validateStep("resources") },
     ]
     for (const c of checks) {
       if (Object.keys(c.errs).length > 0) {
@@ -283,13 +287,12 @@ export default function CreateProject({
     setSubmitting(true)
     setError(null)
     try {
-
       const [card_photo_key, producers_photo_key, photo_keys, materialKeys] =
         await Promise.all([
-          resolveSlot(form.card, "card"),
-          resolveSlot(form.producers, "producers"),
-          Promise.all(form.photos.map((p) => resolveSlot(p, "gallery"))),
-          Promise.all(form.materials.map((m) => resolveSlot(m.photo, "material"))),
+          resolveSlot(form.card),
+          resolveSlot(form.producers),
+          Promise.all(form.photos.map((p) => resolveSlot(p))),
+          Promise.all(form.materials.map((m) => resolveSlot(m.photo))),
         ])
 
       const payload = {
@@ -412,6 +415,7 @@ export default function CreateProject({
               <CreateProjectResources
                 value={form}
                 onChange={onChange}
+                errors={errors}
                 onBack={() => goBack("media")}
                 onSubmit={handleSubmit}
                 submitting={submitting}

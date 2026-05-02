@@ -1,4 +1,14 @@
 {
+  "Metadata": {
+    "appName": "إدارة ستيم",
+    "appDescription": "لوحة إدارة برنامج ستيم",
+    "dashboard": "الرئيسية",
+    "events": "الأنشطة",
+    "applications": "الطلبات",
+    "capstones": "المشاريع",
+    "resources": "الموارد",
+    "settings": "الإعدادات"
+  },
   "Auth": {
     "title": "تسجيل دخول المسؤول",
     "description": "استخدم حساب جوجل لتسجيل الدخول",
@@ -32,6 +42,7 @@
       "edit": "تعديل",
       "delete": "حذف"
     },
+    "empty": "لا توجد أنشطة بعد.",
     "pagination": {
       "showing": "{shown} من {total} ظاهرة.",
       "previous": "السابق",
@@ -59,8 +70,7 @@
       "limitReached": "تم بلوغ الحد الأقصى للأنشطة ({limit}). احذف نشاطًا قديمًا قبل إنشاء نشاط جديد.",
       "validation": {
         "required": "هذا الحقل مطلوب",
-        "fileType": "يُسمح فقط بصور JPEG أو PNG أو WebP",
-        "fileTooLarge": "يجب أن يكون حجم الملف {maxKb} ك.ب أو أقل",
+        "fileType": "يُسمح فقط بصور PNG أو JPEG",
         "tooManyFiles": "يمكنك رفع {max} صور كحد أقصى"
       }
     },
@@ -97,8 +107,7 @@
       "saveFailed": "فشل حفظ التغييرات",
       "validation": {
         "required": "هذا الحقل مطلوب",
-        "fileType": "يُسمح فقط بصور JPEG أو PNG أو WebP",
-        "fileTooLarge": "يجب أن يكون حجم الملف {maxKb} ك.ب أو أقل",
+        "fileType": "يُسمح فقط بصور PNG أو JPEG",
         "tooManyFiles": "يمكنك رفع {max} صور كحد أقصى"
       }
     }
@@ -133,6 +142,7 @@
       "export": "تصدير",
       "delete": "حذف"
     },
+    "empty": "لا توجد طلبات بعد.",
     "pagination": {
       "selected": "{selected} من {total} صفوف محددة.",
       "showing": "{shown} من {total}.",
@@ -144,7 +154,6 @@
       "description": "فعّل مجموعة واحدة فقط لاستقبال الطلبات.",
       "columns": {
         "group": "المجموعة",
-        "year": "العام",
         "count": "عدد الطلبات",
         "status": "الحالة",
         "actions": "إجراءات"
@@ -156,7 +165,8 @@
       "delete": "حذف",
       "create": "إنشاء مجموعة جديدة",
       "close": "إغلاق",
-      "empty": "لا توجد مجموعات بعد."
+      "empty": "لا توجد مجموعات بعد.",
+      "failed": "فشل تحديث المجموعة"
     },
     "deleteGroupDialog": {
       "title": "حذف المجموعة",
@@ -171,8 +181,7 @@
       "title": "إنشاء مجموعة",
       "description": "المجموعة هي دفعة طلبات لعام دراسي محدد.",
       "name": "اسم المجموعة",
-      "yearLabel": "العام الدراسي",
-      "declaration": "نص الإقرار (يظهر للطلاب)",
+      "namePlaceholder": "مثال: 2026 الدفعة الأولى",
       "cancel": "إلغاء",
       "create": "إنشاء",
       "submitting": "جارٍ الإنشاء…",
@@ -192,7 +201,8 @@
       "typeHint": "ZIP يحتوي على ملف XLSX وكل صور الطلاب وشهاداتهم.",
       "cancel": "إلغاء",
       "export": "تصدير",
-      "exporting": "جارٍ التصدير…"
+      "exporting": "جارٍ التصدير…",
+      "failed": "فشل التصدير"
     },
     "exportStudentDialog": {
       "title": "تصدير الطلب",
@@ -204,15 +214,15 @@
       "typeHint": "ZIP يحتوي على ملف XLSX وصورة وشهادة هذا الطالب.",
       "cancel": "إلغاء",
       "export": "تصدير",
-      "exporting": "جارٍ التصدير…"
+      "exporting": "جارٍ التصدير…",
+      "failed": "فشل التصدير"
     },
     "viewDialog": {
       "title": "الطلب",
       "loading": "جارٍ التحميل…",
-      "openCertificate": "فتح الشهادة",
+      "viewCertificate": "عرض الشهادة",
       "close": "إغلاق",
       "print": "طباعة",
-      "popupBlocked": "السماح بفتح النوافذ المنبثقة من هذا الموقع للطباعة.",
       "sections": {
         "group": "المجموعة",
         "student": "بيانات الطالب",
@@ -286,6 +296,7 @@
       "edit": "تعديل",
       "delete": "حذف"
     },
+    "empty": "لا توجد مشاريع بعد.",
     "pagination": {
       "selected": "{selected} من {total} صفوف محددة.",
       "previous": "السابق",
@@ -375,7 +386,8 @@
       "sectionRequired": "{label} مطلوب",
       "sectionTooLong": "يجب أن يكون {label} بحد أقصى {max} حرف",
       "materialNameRequired": "اسم الخامة مطلوب",
-      "materialNameArRequired": "اسم الخامة (عربي) مطلوب"
+      "materialNameArRequired": "اسم الخامة (عربي) مطلوب",
+      "invalidUrl": "يجب أن يكون رابطًا صحيحًا (https://…)"
     },
     "submitErrors": {
       "createFailed": "فشل إنشاء الكابستون",
@@ -414,9 +426,9 @@
       "next": "التالي",
       "empty": "لا توجد صور بعد.",
       "limitReached": "المعرض ممتلئ. احذف صورًا لتحرير مساحة.",
-      "fileTooLarge": "يجب أن يكون حجم الملف {maxKb} ك.ب أو أقل.",
-      "fileType": "يُسمح فقط بصور JPEG أو PNG أو WebP أو GIF.",
+      "fileType": "يُسمح فقط بصور PNG أو JPEG.",
       "tooManyFiles": "يمكنك رفع {max} صور كحد أقصى في المرة الواحدة.",
+      "uploadFailed": "فشل الرفع",
       "actionsMenu": {
         "view": "عرض",
         "delete": "حذف"
@@ -443,12 +455,6 @@
     }
   },
   "Dashboard": {
-    "title": "المشروع جاهز!",
-    "description": "يمكنك الآن إضافة المكوّنات والبدء في البناء.",
-    "buttonHint": "لقد أضفنا مكوّن الزر مسبقًا من أجلك.",
-    "button": "زر",
-    "darkModeHint": "(اضغط <kbd>d</kbd> لتبديل الوضع الداكن)",
-    "overview": "نظرة عامة",
     "greetings": {
       "morning": "صباح الخير",
       "afternoon": "مساء الخير",

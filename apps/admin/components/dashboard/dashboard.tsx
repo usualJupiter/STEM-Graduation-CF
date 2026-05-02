@@ -1,64 +1,104 @@
 "use client"
 
-import { Fragment, useState } from "react"
-import { Star, Upload, ClipboardList, UserPlus, ArrowRight } from "lucide-react"
+import { Fragment, useEffect, useState } from "react"
+import {
+  ArrowRight,
+  ClipboardList,
+  Star,
+  Upload,
+  UserPlus,
+  type LucideIcon,
+} from "lucide-react"
 import { useTranslations } from "next-intl"
+
 import { Button } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
-import Link from "next/link"
-import { type LucideIcon } from "lucide-react"
 
-import CreateEvent from "@/components/events/createEvent"
-import CreateProject from "@/components/capstones/createProject"
 import AddEmailDialog from "@/components/settings/addEmailDialog"
+import ExportApplicationsGroup from "@/components/applications/exportApplicationsGroup"
+import CreateProject from "@/components/capstones/createProject"
+import CreateEvent from "@/components/events/createEvent"
+import { fetchJson } from "@/lib/api"
 
-interface DashboardProps {
-  className?: string
+interface Stats {
+  applications: { thisMonth: number; total: number }
+  visitors: { thisMonth: number | null; total: number | null }
 }
 
-const stats = [
+const PERIOD_COLOR = {
+  thisMonth: "text-green-600",
+  allTime: "text-indigo-600",
+} as const
+
+const STATS_FIELDS = [
   {
     labelKey: "visitors",
     periodKey: "thisMonth",
-    periodVariant: "green" as const,
-    value: "132",
+    pick: (s: Stats) => s.visitors.thisMonth,
   },
   {
     labelKey: "applications",
     periodKey: "thisMonth",
-    periodVariant: "green" as const,
-    value: "12",
+    pick: (s: Stats) => s.applications.thisMonth,
   },
   {
     labelKey: "totalVisitors",
     periodKey: "allTime",
-    periodVariant: "blue" as const,
-    value: "12,781",
+    pick: (s: Stats) => s.visitors.total,
   },
   {
     labelKey: "totalApplications",
     periodKey: "allTime",
-    periodVariant: "blue" as const,
-    value: "420",
+    pick: (s: Stats) => s.applications.total,
   },
-]
+] as const
 
-const quickAccessItems: {
-  icon: LucideIcon
-  key: string
-  href: string
-}[] = [
-  { icon: Star, key: "createEvent", href: "#" },
-  { icon: Upload, key: "uploadProject", href: "#" },
-  { icon: ClipboardList, key: "exportApplications", href: "#" },
-  { icon: UserPlus, key: "addUser", href: "#" },
-]
+const numberFmt = new Intl.NumberFormat()
+const fmt = (n: number | null) => (n == null ? "—" : numberFmt.format(n))
 
-export default function Dashboard({ className }: DashboardProps) {
+export default function Dashboard() {
   const t = useTranslations("Dashboard")
-  const [createOpen, setCreateOpen] = useState(false)
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [statsError, setStatsError] = useState(false)
+  const [createEventOpen, setCreateEventOpen] = useState(false)
   const [createProjectOpen, setCreateProjectOpen] = useState(false)
+  const [exportOpen, setExportOpen] = useState(false)
   const [addUserOpen, setAddUserOpen] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    fetchJson<{ data: Stats }>("/api/admin/dashboard/stats")
+      .then((res) => {
+        if (!cancelled) {
+          setStats(res.data)
+          setStatsError(false)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("[dashboard] stats fetch failed", err)
+          setStatsError(true)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const items: { key: string; icon: LucideIcon; onClick: () => void }[] = [
+    { key: "createEvent", icon: Star, onClick: () => setCreateEventOpen(true) },
+    {
+      key: "uploadProject",
+      icon: Upload,
+      onClick: () => setCreateProjectOpen(true),
+    },
+    {
+      key: "exportApplications",
+      icon: ClipboardList,
+      onClick: () => setExportOpen(true),
+    },
+    { key: "addUser", icon: UserPlus, onClick: () => setAddUserOpen(true) },
+  ]
 
   return (
     <div className="flex w-full flex-col items-center pb-6">
@@ -66,9 +106,9 @@ export default function Dashboard({ className }: DashboardProps) {
         <div className="flex flex-col items-center px-6 pt-6">
           <div className="w-full max-w-[1280px]">
             <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:flex lg:flex-row lg:items-center">
-              {stats.map((stat, index) => (
+              {STATS_FIELDS.map((stat, idx) => (
                 <Fragment key={stat.labelKey}>
-                  {index > 0 && (
+                  {idx > 0 && (
                     <Separator
                       orientation="vertical"
                       className="hidden h-16 self-center lg:block"
@@ -80,17 +120,17 @@ export default function Dashboard({ className }: DashboardProps) {
                         {t(`stats.labels.${stat.labelKey}`)}
                       </span>
                       <span
-                        className={
-                          stat.periodVariant === "green"
-                            ? "text-sm font-medium text-green-600"
-                            : "text-sm font-medium text-indigo-600"
-                        }
+                        className={`text-sm font-medium ${PERIOD_COLOR[stat.periodKey]}`}
                       >
                         {t(`stats.periods.${stat.periodKey}`)}
                       </span>
                     </div>
                     <span className="text-3xl font-semibold text-foreground">
-                      {stat.value}
+                      {stats
+                        ? fmt(stat.pick(stats))
+                        : statsError
+                          ? "—"
+                          : "…"}
                     </span>
                   </div>
                 </Fragment>
@@ -112,90 +152,45 @@ export default function Dashboard({ className }: DashboardProps) {
               </div>
 
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {quickAccessItems.map((item) => {
-                  const inner = (
-                    <>
-                      <div className="flex size-8 shrink-0 items-center justify-center rounded-none border bg-muted">
-                        <item.icon className="size-4 text-foreground" />
-                      </div>
-                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
-                        <span className="text-sm font-medium leading-4 text-foreground">
-                          {t(`quickAccess.items.${item.key}.title`)}
+                {items.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={item.onClick}
+                    className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
+                  >
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-none border bg-muted">
+                      <item.icon className="size-4 text-foreground" />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+                      <span className="text-sm font-medium leading-4 text-foreground">
+                        {t(`quickAccess.items.${item.key}.title`)}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {t(`quickAccess.items.${item.key}.description`)}
+                      </span>
+                    </div>
+                    <div className="flex h-10 items-center">
+                      <Button variant="ghost" size="icon" asChild>
+                        <span>
+                          <ArrowRight />
                         </span>
-                        <span className="text-sm text-muted-foreground">
-                          {t(`quickAccess.items.${item.key}.description`)}
-                        </span>
-                      </div>
-                      <div className="flex h-10 items-center">
-                        <Button variant="ghost" size="icon" asChild>
-                          <span>
-                            <ArrowRight />
-                          </span>
-                        </Button>
-                      </div>
-                    </>
-                  )
-
-                  if (item.key === "createEvent") {
-                    return (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => setCreateOpen(true)}
-                        className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
-                      >
-                        {inner}
-                      </button>
-                    )
-                  }
-
-                  if (item.key === "uploadProject") {
-                    return (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => setCreateProjectOpen(true)}
-                        className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
-                      >
-                        {inner}
-                      </button>
-                    )
-                  }
-
-                  if (item.key === "addUser") {
-                    return (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => setAddUserOpen(true)}
-                        className="flex items-start gap-2 rounded-none border bg-background px-3 py-2.5 text-start"
-                      >
-                        {inner}
-                      </button>
-                    )
-                  }
-
-                  return (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      className="flex items-start gap-2 rounded-none border px-3 py-2.5"
-                    >
-                      {inner}
-                    </Link>
-                  )
-                })}
+                      </Button>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <CreateEvent open={createOpen} onOpenChange={setCreateOpen} />
+      <CreateEvent open={createEventOpen} onOpenChange={setCreateEventOpen} />
       <CreateProject
         open={createProjectOpen}
         onOpenChange={setCreateProjectOpen}
       />
+      <ExportApplicationsGroup open={exportOpen} onOpenChange={setExportOpen} />
       <AddEmailDialog open={addUserOpen} onOpenChange={setAddUserOpen} />
     </div>
   )

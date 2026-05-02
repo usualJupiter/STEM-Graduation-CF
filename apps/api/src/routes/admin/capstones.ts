@@ -1,6 +1,7 @@
 import { Hono } from "hono"
 import { z } from "zod"
 
+import { requireAuth } from "../../lib/middleware"
 import { deleteObjects } from "../../lib/r2"
 import { slugify } from "../../lib/slug"
 import type { AppEnv } from "../../types"
@@ -45,9 +46,9 @@ const createSchema = z.object({
   ...sectionsBase,
   card_photo_key: z.string().trim().min(1).nullable().optional(),
   producers_photo_key: z.string().trim().min(1).nullable().optional(),
-  poster_link: z.string().trim().min(1).nullable().optional(),
-  portfolio_link: z.string().trim().min(1).nullable().optional(),
-  presentation_link: z.string().trim().min(1).nullable().optional(),
+  poster_link: z.string().trim().url().nullable().optional(),
+  portfolio_link: z.string().trim().url().nullable().optional(),
+  presentation_link: z.string().trim().url().nullable().optional(),
   students: z.array(personSchema).default([]),
   supervisors: z.array(personSchema).default([]),
   materials: z.array(materialSchema).max(MAX_MATERIALS).default([]),
@@ -87,13 +88,7 @@ async function uniqueSlug(db: AppEnv["Variables"]["db"], from: string): Promise<
 
 const app = new Hono<AppEnv>()
 
-app.use("*", async (c, next) => {
-  const auth = c.get("auth")
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-  if (!session) return c.json({ error: "Unauthorized" }, 401)
-  c.set("session", session)
-  await next()
-})
+app.use("*", requireAuth)
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(

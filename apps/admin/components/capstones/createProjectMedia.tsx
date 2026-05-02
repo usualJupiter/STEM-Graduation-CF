@@ -20,6 +20,7 @@ import {
   type MaterialDraft,
 } from "@/components/capstones/types"
 import type { FieldErrors } from "@/components/capstones/schemas"
+import { ACCEPT_ATTR } from "@/lib/upload"
 
 const MAX_PHOTOS = 6
 
@@ -46,10 +47,13 @@ export default function CreateProjectMedia({
   const tSubmit = useTranslations("Capstones.submit")
 
   const addMaterial = () => {
+    // Use strictly-decreasing negative IDs for client-only materials so they
+    // can't collide with each other or with server-assigned positive IDs.
+    const minId = value.materials.reduce((m, x) => Math.min(m, x.id), 0)
     onChange({
       materials: [
         ...value.materials,
-        { id: Date.now(), name_en: "", name_ar: "", photo: null },
+        { id: minId - 1, name_en: "", name_ar: "", photo: null },
       ],
     })
   }
@@ -112,7 +116,7 @@ export default function CreateProjectMedia({
           <Input
             id="project-photos"
             type="file"
-            accept="image/*"
+            accept={ACCEPT_ATTR}
             multiple
             className="rounded-none"
             onChange={(e) => {
@@ -205,7 +209,7 @@ function SingleImageField({
       <Input
         id={id}
         type="file"
-        accept="image/*"
+        accept={ACCEPT_ATTR}
         className="rounded-none"
         onChange={(e) => {
           const file = e.target.files?.[0]
@@ -310,7 +314,7 @@ function MaterialRow({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={ACCEPT_ATTR}
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]

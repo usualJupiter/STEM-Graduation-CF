@@ -2,6 +2,7 @@ import { Hono, type Context } from "hono"
 import { z } from "zod"
 
 import { buildXlsx, buildZip } from "../../lib/applicationsExport"
+import { requireAuth } from "../../lib/middleware"
 import type { AppEnv } from "../../types"
 
 const idSchema = z.string().uuid()
@@ -17,8 +18,16 @@ const listQuerySchema = z.object({
 
 const groupCreateSchema = z.object({
   name: z.string().trim().min(1).max(200),
-  academic_year_label: z.string().trim().min(1).max(50),
+  academic_year_label: z.string().trim().max(50).optional().default(""),
 })
+
+function currentAcademicYearLabel(now: Date = new Date()): string {
+  // Sept (month 8) onwards belongs to the new academic year.
+  const m = now.getUTCMonth()
+  const y = now.getUTCFullYear()
+  const start = m >= 8 ? y : y - 1
+  return `${start}/${start + 1}`
+}
 
 const groupUpdateSchema = z.object({
   name: z.string().trim().min(1).max(200).optional(),
@@ -30,13 +39,7 @@ const exportTypeSchema = z.enum(["xlsx", "zip"])
 
 const app = new Hono<AppEnv>()
 
-app.use("*", async (c, next) => {
-  const auth = c.get("auth")
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-  if (!session) return c.json({ error: "Unauthorized" }, 401)
-  c.set("session", session)
-  await next()
-})
+app.use("*", requireAuth)
 
 // ---------- Groups ----------
 
@@ -48,8 +51,6 @@ app.get("/groups", async (c) => {
     .select((eb) => [
       "application_groups.id",
       "application_groups.name",
-      "application_groups.academic_year_label",
-      "application_groups.declaration_text",
       "application_groups.is_active",
       "application_groups.created_at",
       eb.fn.count<number>("applications.id").as("application_count"),
@@ -77,7 +78,8 @@ app.post("/groups", async (c) => {
     .insertInto("application_groups")
     .values({
       name: parsed.data.name,
-      academic_year_label: parsed.data.academic_year_label,
+      academic_year_label:
+        parsed.data.academic_year_label || currentAcademicYearLabel(),
       declaration_text: "",
       is_active: 0,
       created_at: now,

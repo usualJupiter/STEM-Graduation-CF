@@ -52,11 +52,7 @@ interface ListResponse {
   meta: { total: number; page: number; limit: number }
 }
 
-interface EventsProps {
-  className?: string
-}
-
-export default function Events({ className }: EventsProps) {
+export default function Events() {
   const t = useTranslations("Events")
   const locale = useLocale()
 
@@ -131,7 +127,7 @@ export default function Events({ className }: EventsProps) {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
-    <div className={`flex flex-col items-center gap-0 px-6 pb-6 ${className ?? ""}`}>
+    <div className="flex flex-col items-center gap-0 px-6 pb-6">
       <div className="w-full max-w-[1280px] rounded-none border border-border bg-background shadow-sm">
         <div className="p-6">
           <div className="mx-auto max-w-[1280px] px-4">
@@ -198,7 +194,7 @@ export default function Events({ className }: EventsProps) {
                     {!loading && !error && filteredRows.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center text-muted-foreground">
-                          —
+                          {t("empty")}
                         </TableCell>
                       </TableRow>
                     )}
@@ -225,7 +221,6 @@ export default function Events({ className }: EventsProps) {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>{t("actionsMenu.view")}</DropdownMenuItem>
                                   <DropdownMenuItem onSelect={() => setEditingId(event.id)}>
                                     {t("actionsMenu.edit")}
                                   </DropdownMenuItem>

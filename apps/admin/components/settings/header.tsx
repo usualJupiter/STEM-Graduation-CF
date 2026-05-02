@@ -4,15 +4,7 @@ import { useLocale, useTranslations } from "next-intl"
 
 import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
-interface HeaderProps {
-  defaultValue?: string
-  onValueChange?: (value: string) => void
-}
-
-export default function Header({
-  defaultValue = "access",
-  onValueChange,
-}: HeaderProps) {
+export default function Header() {
   const t = useTranslations("Settings")
   const dir = useLocale() === "ar" ? "rtl" : "ltr"
 
@@ -29,11 +21,7 @@ export default function Header({
         </div>
       </div>
       <div className="mx-auto w-full max-w-[1280px] border-b border-border">
-        <Tabs
-          defaultValue={defaultValue}
-          onValueChange={onValueChange}
-          dir={dir}
-        >
+        <Tabs defaultValue="access" dir={dir}>
           <TabsList variant="line" className="h-10 gap-2 bg-transparent p-0">
             <TabsTrigger value="access" className="px-4 text-sm">
               {t("tabs.access")}

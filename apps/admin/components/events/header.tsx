@@ -29,8 +29,8 @@ export default function Header() {
         .then((res) => {
           if (!cancelled) setTotal(res.meta.total)
         })
-        .catch(() => {
-          /* ignore — button defaults to enabled if we can't read count */
+        .catch((err) => {
+          if (!cancelled) console.error("[events] count fetch failed", err)
         })
     }
     load()

@@ -1,5 +1,8 @@
 import Dashboard from "@/components/dashboard/dashboard"
 import Header from "@/components/dashboard/header"
+import { buildMetadata } from "@/lib/metadata"
+
+export const generateMetadata = buildMetadata("dashboard")
 
 export default function DashboardPage() {
   return (

@@ -77,7 +77,20 @@ export function buildSchemas(t: Translator) {
     ),
   })
 
-  return { infoSchema, dataSchema, mediaSchema }
+  const optionalUrl = z
+    .string()
+    .trim()
+    .refine((v) => v === "" || z.url().safeParse(v).success, {
+      message: t("validation.invalidUrl"),
+    })
+
+  const resourcesSchema = z.object({
+    poster_link: optionalUrl,
+    portfolio_link: optionalUrl,
+    presentation_link: optionalUrl,
+  })
+
+  return { infoSchema, dataSchema, mediaSchema, resourcesSchema }
 }
 
 export type FieldErrors = Record<string, string>

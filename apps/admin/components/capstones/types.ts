@@ -75,11 +75,3 @@ export const initialCapstoneForm: CapstoneFormState = {
   portfolio_link: "",
   presentation_link: "",
 }
-
-export function slotPreviewUrl(slot: ImageSlot): string {
-  return slot.kind === "existing" ? slot.url : URL.createObjectURL(slot.file)
-}
-
-export function slotLabel(slot: ImageSlot): string {
-  return slot.kind === "existing" ? "Current image" : slot.file.name
-}

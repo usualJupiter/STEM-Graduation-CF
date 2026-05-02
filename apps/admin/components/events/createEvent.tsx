@@ -28,9 +28,13 @@ import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import { fetchJson } from "@/lib/api"
+import {
+  ACCEPT_ATTR,
+  isAcceptedFile,
+  uploadImage,
+  uploadImages,
+} from "@/lib/upload"
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"] as const
-const MAX_BYTES = 1024 * 1024 // 1 MB
 const MAX_GALLERY = 5
 
 export const EVENTS_INVALIDATE_EVENT = "admin:events:invalidate"
@@ -40,11 +44,8 @@ type Translator = (key: string, values?: Record<string, unknown>) => string
 function buildSchema(t: Translator) {
   const fileSchema = z
     .instanceof(File, { message: t("validation.required") })
-    .refine((f) => (ALLOWED_TYPES as readonly string[]).includes(f.type), {
+    .refine(isAcceptedFile, {
       message: t("validation.fileType"),
-    })
-    .refine((f) => f.size <= MAX_BYTES, {
-      message: t("validation.fileTooLarge", { maxKb: MAX_BYTES / 1024 }),
     })
 
   return z.object({
@@ -67,30 +68,6 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>
 interface CreateEventProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
-}
-
-interface SignResponse {
-  data: { uploadUrl: string; key: string }
-}
-
-async function uploadFile(
-  file: File,
-  kind: "card" | "gallery",
-): Promise<string> {
-  const sign = await fetchJson<SignResponse>(
-    "/api/admin/uploads/event-photos/sign",
-    {
-      method: "POST",
-      body: JSON.stringify({ contentType: file.type, kind }),
-    },
-  )
-  const res = await fetch(sign.data.uploadUrl, {
-    method: "PUT",
-    body: file,
-    headers: { "Content-Type": file.type },
-  })
-  if (!res.ok) throw new Error(`R2 upload failed (${res.status})`)
-  return sign.data.key
 }
 
 export default function CreateEvent({
@@ -124,10 +101,9 @@ export default function CreateEvent({
   const onSubmit = async (values: FormValues) => {
     setSubmitError(null)
     try {
-      const cardKey = await uploadFile(values.card_photo, "card")
-      const galleryKeys = await Promise.all(
-        values.event_photos.map((file) => uploadFile(file, "gallery")),
-      )
+      const card = await uploadImage(values.card_photo, "events")
+      const gallery = await uploadImages(values.event_photos, "events")
+      const galleryKeys = gallery.map((g) => g.key)
       await fetchJson("/api/admin/events", {
         method: "POST",
         body: JSON.stringify({
@@ -137,7 +113,7 @@ export default function CreateEvent({
           description_ar: values.description_ar,
           event_date: values.event_date,
           event_time: values.event_time,
-          card_photo_key: cardKey,
+          card_photo_key: card.key,
           photo_keys: galleryKeys,
         }),
       })
@@ -156,25 +132,24 @@ export default function CreateEvent({
   const isSubmitting = form.formState.isSubmitting
 
   const validateFile = (file: File): string | null => {
-    if (!(ALLOWED_TYPES as readonly string[]).includes(file.type)) {
-      return t("validation.fileType")
-    }
-    if (file.size > MAX_BYTES) {
-      return t("validation.fileTooLarge", { maxKb: MAX_BYTES / 1024 })
-    }
+    if (!isAcceptedFile(file)) return t("validation.fileType")
     return null
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[850px]">
-        <DialogHeader className="p-4">
+      <DialogContent className="flex max-h-[90vh] flex-col gap-0 p-0 sm:max-w-[850px]">
+        <DialogHeader className="border-b border-border p-4">
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            <div className="flex-1 overflow-y-auto pt-4">
             <div className="flex flex-col gap-4 px-4 pb-4 md:flex-row">
               <div className="flex flex-1 flex-col gap-4">
                 <FormField
@@ -277,7 +252,7 @@ export default function CreateEvent({
                       <SingleFilePicker
                         value={field.value as File | undefined}
                         onChange={field.onChange}
-                        accept={ALLOWED_TYPES.join(",")}
+                        accept={ACCEPT_ATTR}
                         chooseLabel={t("chooseFile")}
                         removeLabel={t("removeFile")}
                         validate={validateFile}
@@ -299,7 +274,7 @@ export default function CreateEvent({
                       <MultiFilePicker
                         value={field.value ?? []}
                         onChange={field.onChange}
-                        accept={ALLOWED_TYPES.join(",")}
+                        accept={ACCEPT_ATTR}
                         max={MAX_GALLERY}
                         addLabel={t("addFiles")}
                         removeLabel={t("removeFile")}
@@ -317,6 +292,7 @@ export default function CreateEvent({
                 {submitError}
               </p>
             )}
+            </div>
 
             <DialogFooter className="border-t bg-muted/50 p-4">
               <Button
@@ -327,7 +303,11 @@ export default function CreateEvent({
               >
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-secondry-web text-white hover:bg-secondry-web/90"
+              >
                 {isSubmitting ? t("submitting") : t("submit")}
               </Button>
             </DialogFooter>

@@ -38,7 +38,6 @@ type Translator = (key: string, values?: Record<string, unknown>) => string
 function buildSchema(t: Translator) {
   return z.object({
     name: z.string().trim().min(1, t("validation.required")),
-    academic_year_label: z.string().trim().min(1, t("validation.required")),
   })
 }
 type FormValues = z.infer<ReturnType<typeof buildSchema>>
@@ -51,10 +50,7 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
   const form = useForm<FormValues>({
     // @ts-expect-error zod@4 schema types don't satisfy @hookform/resolvers@5 overloads (runtime is fine)
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: "",
-      academic_year_label: "",
-    },
+    defaultValues: { name: "" },
   })
 
   useEffect(() => {
@@ -81,7 +77,13 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
   const isSubmitting = form.formState.isSubmitting
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(o) => {
+        if (isSubmitting) return
+        onOpenChange?.(o)
+      }}
+    >
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
@@ -99,20 +101,7 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
                 <FormItem>
                   <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="2026 Wave 1" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="academic_year_label"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("yearLabel")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="2025/2026" {...field} />
+                    <Input placeholder={t("namePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -132,7 +121,11 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
               >
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-secondry-web text-white hover:bg-secondry-web/90"
+              >
                 {isSubmitting ? t("submitting") : t("create")}
               </Button>
             </DialogFooter>

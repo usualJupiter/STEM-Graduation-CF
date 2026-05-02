@@ -178,3 +178,7 @@
 :lang(ar) h6 {
   line-height: 1.5;
 }
+@media print {
+  @page { size: A4 portrait; margin: 0.7cm; }
+  body > *:not(.printable) { display: none !important; }
+}

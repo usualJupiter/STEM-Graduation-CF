@@ -5,6 +5,7 @@ import { createAuth } from "./lib/auth"
 import { createDb } from "./lib/db"
 import adminApplications from "./routes/admin/applications"
 import adminCapstones from "./routes/admin/capstones"
+import adminDashboard from "./routes/admin/dashboard"
 import adminEvents from "./routes/admin/events"
 import adminGallery from "./routes/admin/gallery"
 import adminSchedules from "./routes/admin/schedules"
@@ -26,23 +27,24 @@ app.use("*", async (c, next) => {
   await next()
 })
 
-app.use("/api/*", (c, next) => {
-  const origins = c.env.TRUSTED_ORIGINS
-    ? c.env.TRUSTED_ORIGINS.split(",")
+const parseOrigins = (raw: string | undefined): string[] =>
+  raw
+    ? raw
+        .split(",")
         .map((s) => s.trim())
         .filter(Boolean)
     : []
-  return cors({
-    origin: origins,
+
+app.use("/api/*", (c, next) =>
+  cors({
+    origin: parseOrigins(c.env.TRUSTED_ORIGINS),
     credentials: true,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  })(c, next)
-})
-
-app.on(["POST", "GET"], "/api/auth/*", (c) =>
-  c.get("auth").handler(c.req.raw),
+  })(c, next),
 )
+
+app.all("/api/auth/*", (c) => c.get("auth").handler(c.req.raw))
 
 app.route("/api/allowed-emails", allowedEmails)
 app.route("/api/events", events)
@@ -50,6 +52,7 @@ app.route("/api/capstones", capstones)
 app.route("/api/gallery", gallery)
 app.route("/api/schedules", schedules)
 app.route("/api/applications", applications)
+app.route("/api/admin/dashboard", adminDashboard)
 app.route("/api/admin/events", adminEvents)
 app.route("/api/admin/capstones", adminCapstones)
 app.route("/api/admin/uploads", adminUploads)

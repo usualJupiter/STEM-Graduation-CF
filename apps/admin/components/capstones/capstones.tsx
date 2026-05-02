@@ -38,20 +38,17 @@ type SortKey = (typeof SORT_OPTIONS)[number]
 
 const PAGE_SIZE = 20
 
-const LEVEL_VARIANT: Record<number, "default" | "secondary" | "destructive" | "outline"> = {
-  1: "secondary",
-  2: "outline",
-  3: "destructive",
+const LEVEL_CLASS: Record<number, string> = {
+  1: "bg-web-card-1 text-black",
+  2: "bg-web-card-2 text-black",
+  3: "bg-web-card-3 text-black",
 }
 
 interface AdminCapstoneRow {
   id: number
-  slug: string
   title_en: string
   title_ar: string
   level: number
-  semester: "first" | "second"
-  card_photo_key: string | null
   created_at: string
   author_name: string
 }
@@ -214,7 +211,7 @@ export default function Capstones() {
                           colSpan={6}
                           className="text-center text-muted-foreground"
                         >
-                          —
+                          {t("empty")}
                         </TableCell>
                       </TableRow>
                     )}
@@ -230,11 +227,13 @@ export default function Capstones() {
                             <TableCell>{row.id}</TableCell>
                             <TableCell>{name}</TableCell>
                             <TableCell>
-                              <Badge variant={LEVEL_VARIANT[row.level] ?? "default"}>
+                              <Badge className={LEVEL_CLASS[row.level]}>
                                 {t("level", { number: row.level })}
                               </Badge>
                             </TableCell>
-                            <TableCell>{row.created_at}</TableCell>
+                            <TableCell>
+                              {new Date(row.created_at).toLocaleString()}
+                            </TableCell>
                             <TableCell>{row.author_name}</TableCell>
                             <TableCell>
                               <DropdownMenu>

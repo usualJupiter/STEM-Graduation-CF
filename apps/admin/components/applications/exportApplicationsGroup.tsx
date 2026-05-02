@@ -25,8 +25,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { downloadAuthed } from "@/components/applications/download"
 import { fetchJson } from "@/lib/api"
+import { downloadAuthed } from "@/lib/download"
 
 interface ExportApplicationsGroupProps {
   open?: boolean
@@ -62,6 +62,8 @@ export default function ExportApplicationsGroup({
   useEffect(() => {
     if (!open) {
       setError(null)
+      setGroupId("")
+      setType("xlsx")
       return
     }
     let cancelled = false
@@ -69,9 +71,9 @@ export default function ExportApplicationsGroup({
       .then((res) => {
         if (cancelled) return
         setGroups(res.data)
-        if (res.data.length > 0 && !groupId) {
-          setGroupId(String(res.data[0]!.id))
-        }
+        setGroupId((current) =>
+          current || res.data.length === 0 ? current : String(res.data[0]!.id),
+        )
       })
       .catch((err: Error) => {
         if (!cancelled) setError(err.message)
@@ -79,7 +81,7 @@ export default function ExportApplicationsGroup({
     return () => {
       cancelled = true
     }
-  }, [open, groupId])
+  }, [open])
 
   const handleExport = async () => {
     if (!groupId) return
@@ -87,14 +89,14 @@ export default function ExportApplicationsGroup({
     setError(null)
     try {
       const group = groups.find((g) => String(g.id) === groupId)
-      const fallback = `${group?.name ?? "group"}.${type === "xlsx" ? "xlsx" : "zip"}`
+      const fallback = `${group?.name ?? "group"}.${type}`
       await downloadAuthed(
         `/api/admin/applications/groups/${groupId}/export?type=${type}`,
         fallback,
       )
       onOpenChange?.(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "failed")
+      setError(err instanceof Error ? err.message : t("failed"))
     } finally {
       setBusy(false)
     }
@@ -152,7 +154,11 @@ export default function ExportApplicationsGroup({
           >
             {t("cancel")}
           </Button>
-          <Button onClick={handleExport} disabled={!groupId || busy}>
+          <Button
+            onClick={handleExport}
+            disabled={!groupId || busy}
+            className="bg-secondry-web text-white hover:bg-secondry-web/90"
+          >
             {busy ? t("exporting") : t("export")}
           </Button>
         </DialogFooter>

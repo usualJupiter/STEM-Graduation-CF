@@ -2,19 +2,22 @@ import createNextIntlPlugin from "next-intl/plugin"
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
 
+const isDev = process.env.NODE_ENV !== "production"
+const devConnect = isDev ? " http://localhost:8787 ws://localhost:* http://localhost:*" : ""
+
 const ContentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://cdn.stem-program.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://challenges.cloudflare.com https://*.stem-program.com",
-  "frame-src https://challenges.cloudflare.com",
+  `connect-src 'self' https://challenges.cloudflare.com https://*.stem-program.com${devConnect}`,
+  "frame-src https://challenges.cloudflare.com https://www.google.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ")
 
 const securityHeaders = [

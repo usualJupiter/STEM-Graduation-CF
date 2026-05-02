@@ -1,6 +1,7 @@
 import { Hono } from "hono"
 import { z } from "zod"
 
+import { requireAuth } from "../../lib/middleware"
 import { deleteObjects } from "../../lib/r2"
 import type { AppEnv } from "../../types"
 
@@ -34,13 +35,7 @@ const listQuerySchema = z.object({
 
 const app = new Hono<AppEnv>()
 
-app.use("*", async (c, next) => {
-  const auth = c.get("auth")
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-  if (!session) return c.json({ error: "Unauthorized" }, 401)
-  c.set("session", session)
-  await next()
-})
+app.use("*", requireAuth)
 
 app.get("/", async (c) => {
   const parsed = listQuerySchema.safeParse(

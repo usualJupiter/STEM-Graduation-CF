@@ -1,5 +1,6 @@
+import type { Metadata } from "next"
 import { NextIntlClientProvider, hasLocale } from "next-intl"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { Alexandria } from "next/font/google"
 import { notFound } from "next/navigation"
 
@@ -15,6 +16,22 @@ const fontArabic = Alexandria({
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "Metadata" })
+  return {
+    title: {
+      default: t("appName"),
+      template: `%s | ${t("appName")}`,
+    },
+    description: t("appDescription"),
+  }
 }
 
 export default async function RootLayout({

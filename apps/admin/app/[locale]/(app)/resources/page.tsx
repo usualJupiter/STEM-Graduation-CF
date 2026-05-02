@@ -1,23 +1,8 @@
-"use client"
+import ResourcesView from "@/components/resources/resourcesView"
+import { buildMetadata } from "@/lib/metadata"
 
-import { useState } from "react"
-
-import Gallery from "@/components/resources/gallery"
-import Header from "@/components/resources/header"
-import Schedules from "@/components/resources/schedules"
+export const generateMetadata = buildMetadata("resources")
 
 export default function ResourcesPage() {
-  const [tab, setTab] = useState("gallery")
-
-  return (
-    <div>
-      <Header defaultValue={tab} onValueChange={setTab} />
-      <div hidden={tab !== "gallery"}>
-        <Gallery />
-      </div>
-      <div hidden={tab !== "lecture-schedules"}>
-        <Schedules />
-      </div>
-    </div>
-  )
+  return <ResourcesView />
 }
