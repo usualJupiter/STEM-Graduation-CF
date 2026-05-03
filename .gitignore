@@ -8,9 +8,12 @@ node_modules
 # Local env files
 .env
 .env.local
+.env.development
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
+.dev.vars
 
 # Testing
 coverage
@@ -26,6 +29,8 @@ coverage
 out/
 build
 dist
+.open-next/
+.wrangler/
 
 
 # Debug
