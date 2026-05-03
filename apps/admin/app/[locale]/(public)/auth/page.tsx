@@ -1,11 +1,20 @@
 "use client"
 
+import { Suspense } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 
 import Auth from "@/components/auth/auth"
 import { authClient } from "@/lib/auth-client"
 
 export default function AuthPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthInner />
+    </Suspense>
+  )
+}
+
+function AuthInner() {
   const { locale } = useParams<{ locale: string }>()
   const searchParams = useSearchParams()
   const hasError = searchParams.get("error") != null

@@ -1,7 +1,15 @@
 import { hasLocale } from "next-intl"
 import { getRequestConfig } from "next-intl/server"
 
+import enMessages from "../messages/en.json"
+import arMessages from "../messages/ar.json"
+
 import { routing } from "./routing"
+
+const messagesByLocale = {
+  en: enMessages,
+  ar: arMessages,
+} as const
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale
@@ -11,6 +19,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default,
+    messages: messagesByLocale[locale],
   }
 })

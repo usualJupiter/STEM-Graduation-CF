@@ -5,8 +5,12 @@ import { Alexandria } from "next/font/google"
 import { notFound } from "next/navigation"
 
 import "@workspace/ui/globals.css"
+import enMessages from "@/messages/en.json"
+import arMessages from "@/messages/ar.json"
 import { routing } from "@/i18n/routing"
 import { cn } from "@workspace/ui/lib/utils"
+
+const MESSAGES = { en: enMessages, ar: arMessages } as const
 
 const fontArabic = Alexandria({
   subsets: ["arabic", "latin"],
@@ -49,6 +53,7 @@ export default async function RootLayout({
 
   setRequestLocale(locale)
 
+  const messages = MESSAGES[locale as keyof typeof MESSAGES]
   const dir = locale === "ar" ? "rtl" : "ltr"
 
   return (
@@ -63,7 +68,7 @@ export default async function RootLayout({
       )}
     >
       <body>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
         </NextIntlClientProvider>
       </body>

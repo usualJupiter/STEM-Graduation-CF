@@ -1,3 +1,5 @@
+"use client"
+
 import { useTranslations } from "next-intl"
 
 import { Facebook, WhatsApp } from "@workspace/ui/components/svg"

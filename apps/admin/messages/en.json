@@ -162,6 +162,7 @@
       "off": "OFF",
       "activate": "Activate",
       "deactivate": "Deactivate",
+      "edit": "Edit",
       "delete": "Delete",
       "create": "Create New Group",
       "close": "Close",
@@ -182,10 +183,26 @@
       "description": "A group is a batch of applications, e.g. one academic year.",
       "name": "Group name",
       "namePlaceholder": "e.g. 2026 Wave 1",
+      "declarationText": "Declaration text",
+      "declarationTextPlaceholder": "Text shown to applicants on the final step. Leave empty to fill in later.",
       "cancel": "Cancel",
       "create": "Create Group",
       "submitting": "Creating…",
       "createFailed": "Failed to create group",
+      "validation": {
+        "required": "This field is required"
+      }
+    },
+    "editGroupDialog": {
+      "title": "Edit Group",
+      "description": "Update the group name and the declaration text shown to applicants.",
+      "name": "Group name",
+      "declarationText": "Declaration text",
+      "declarationTextPlaceholder": "Text shown to applicants on the final step.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "submitting": "Saving…",
+      "saveFailed": "Failed to save group",
       "validation": {
         "required": "This field is required"
       }

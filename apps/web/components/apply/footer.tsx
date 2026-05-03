@@ -1,3 +1,5 @@
+"use client"
+
 import { useTranslations } from "next-intl"
 
 const PRIVACY_PDF_URL =

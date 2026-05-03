@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
+import { Textarea } from "@workspace/ui/components/textarea"
 
 import { APPLICATION_GROUPS_INVALIDATE_EVENT } from "@/components/applications/constants"
 import { fetchJson } from "@/lib/api"
@@ -38,6 +39,7 @@ type Translator = (key: string, values?: Record<string, unknown>) => string
 function buildSchema(t: Translator) {
   return z.object({
     name: z.string().trim().min(1, t("validation.required")),
+    declaration_text: z.string().max(5000),
   })
 }
 type FormValues = z.infer<ReturnType<typeof buildSchema>>
@@ -50,7 +52,7 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
   const form = useForm<FormValues>({
     // @ts-expect-error zod@4 schema types don't satisfy @hookform/resolvers@5 overloads (runtime is fine)
     resolver: zodResolver(schema),
-    defaultValues: { name: "" },
+    defaultValues: { name: "", declaration_text: "" },
   })
 
   useEffect(() => {
@@ -102,6 +104,24 @@ export default function CreateGroup({ open, onOpenChange }: CreateGroupProps) {
                   <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
                     <Input placeholder={t("namePlaceholder")} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="declaration_text"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("declarationText")}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={t("declarationTextPlaceholder")}
+                      rows={6}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

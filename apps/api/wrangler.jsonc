@@ -8,7 +8,7 @@
     {
       "binding": "stem_db",
       "database_name": "stem",
-      "database_id": "92abf0e8-12d0-4858-afd8-dcb3734acdbf",
+      "database_id": "4435d041-ac38-4ccc-8f97-cea03f10494e",
       "migrations_dir": "migrations"
     }
   ],

@@ -7,8 +7,12 @@ import "@workspace/ui/globals.css"
 import { DirectionProvider } from "@workspace/ui/components/direction"
 import { cn } from "@workspace/ui/lib/utils"
 
+import enMessages from "@/messages/en.json"
+import arMessages from "@/messages/ar.json"
 import { routing } from "@/i18n/routing"
 import { env } from "@/lib/env"
+
+const MESSAGES = { en: enMessages, ar: arMessages } as const
 
 const fontArabic = Alexandria({
   subsets: ["arabic", "latin"],
@@ -105,6 +109,7 @@ export default async function RootLayout({
 
   setRequestLocale(locale)
 
+  const messages = MESSAGES[locale as keyof typeof MESSAGES]
   const dir = locale === "ar" ? "rtl" : "ltr"
 
   return (
@@ -118,8 +123,8 @@ export default async function RootLayout({
         locale === "ar" && fontArabic.className,
       )}
     >
-      <body>
-        <NextIntlClientProvider>
+      <body className="bg-main">
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <DirectionProvider dir={dir}>
             {children}
           </DirectionProvider>

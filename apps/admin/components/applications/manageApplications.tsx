@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 
@@ -25,6 +25,7 @@ import {
 import { APPLICATION_GROUPS_INVALIDATE_EVENT } from "@/components/applications/constants"
 import CreateGroup from "@/components/applications/createGroup"
 import DelGroup from "@/components/applications/delGroup"
+import EditGroup from "@/components/applications/editGroup"
 import { fetchJson } from "@/lib/api"
 
 interface ManageApplicationsProps {
@@ -35,6 +36,7 @@ interface ManageApplicationsProps {
 interface GroupRow {
   id: number
   name: string
+  declaration_text: string
   is_active: number
   application_count: number
 }
@@ -58,6 +60,11 @@ export default function ManageApplications({
     id: number
     name: string
     count: number
+  } | null>(null)
+  const [editing, setEditing] = useState<{
+    id: number
+    name: string
+    declaration_text: string
   } | null>(null)
 
   useEffect(() => {
@@ -180,6 +187,22 @@ export default function ManageApplications({
                               type="button"
                               variant="ghost"
                               size="icon-sm"
+                              aria-label={t("edit")}
+                              disabled={busyId === row.id}
+                              onClick={() =>
+                                setEditing({
+                                  id: row.id,
+                                  name: row.name,
+                                  declaration_text: row.declaration_text ?? "",
+                                })
+                              }
+                            >
+                              <Pencil />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon-sm"
                               aria-label={t("delete")}
                               disabled={busyId === row.id}
                               onClick={() =>
@@ -215,6 +238,12 @@ export default function ManageApplications({
       </Dialog>
 
       <CreateGroup open={createOpen} onOpenChange={setCreateOpen} />
+      <EditGroup
+        group={editing}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null)
+        }}
+      />
       <DelGroup
         groupId={deleting?.id ?? null}
         groupName={deleting?.name}

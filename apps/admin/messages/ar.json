@@ -162,6 +162,7 @@
       "off": "غير مُفعَّلة",
       "activate": "تفعيل",
       "deactivate": "إيقاف",
+      "edit": "تعديل",
       "delete": "حذف",
       "create": "إنشاء مجموعة جديدة",
       "close": "إغلاق",
@@ -182,10 +183,26 @@
       "description": "المجموعة هي دفعة طلبات لعام دراسي محدد.",
       "name": "اسم المجموعة",
       "namePlaceholder": "مثال: 2026 الدفعة الأولى",
+      "declarationText": "نص الإقرار",
+      "declarationTextPlaceholder": "النص الذي يظهر للطلاب في الخطوة الأخيرة. يمكن تركه فارغًا وإضافته لاحقًا.",
       "cancel": "إلغاء",
       "create": "إنشاء",
       "submitting": "جارٍ الإنشاء…",
       "createFailed": "فشل إنشاء المجموعة",
+      "validation": {
+        "required": "هذا الحقل مطلوب"
+      }
+    },
+    "editGroupDialog": {
+      "title": "تعديل المجموعة",
+      "description": "تحديث اسم المجموعة ونص الإقرار الذي يظهر للطلاب.",
+      "name": "اسم المجموعة",
+      "declarationText": "نص الإقرار",
+      "declarationTextPlaceholder": "النص الذي يظهر للطلاب في الخطوة الأخيرة.",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "submitting": "جارٍ الحفظ…",
+      "saveFailed": "فشل حفظ المجموعة",
       "validation": {
         "required": "هذا الحقل مطلوب"
       }

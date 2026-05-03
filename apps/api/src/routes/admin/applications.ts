@@ -26,6 +26,7 @@ const listQuerySchema = z.object({
 const groupCreateSchema = z.object({
   name: z.string().trim().min(1).max(200),
   academic_year_label: z.string().trim().max(50).optional().default(""),
+  declaration_text: z.string().max(5000).optional().default(""),
 })
 
 // Auto-fills `academic_year_label` when the create request omits it.
@@ -42,6 +43,7 @@ function currentAcademicYearLabel(now: Date = new Date()): string {
 const groupUpdateSchema = z.object({
   name: z.string().trim().min(1).max(200).optional(),
   academic_year_label: z.string().trim().min(1).max(50).optional(),
+  declaration_text: z.string().max(5000).optional(),
   is_active: z.boolean().optional(),
 })
 
@@ -61,6 +63,7 @@ app.get("/groups", async (c) => {
     .select((eb) => [
       "application_groups.id",
       "application_groups.name",
+      "application_groups.declaration_text",
       "application_groups.is_active",
       "application_groups.created_at",
       eb.fn.count<number>("applications.id").as("application_count"),
@@ -90,7 +93,7 @@ app.post("/groups", async (c) => {
       name: parsed.data.name,
       academic_year_label:
         parsed.data.academic_year_label || currentAcademicYearLabel(),
-      declaration_text: "",
+      declaration_text: parsed.data.declaration_text,
       is_active: 0,
       created_at: now,
       updated_at: now,
@@ -119,6 +122,8 @@ app.patch("/groups/:id", async (c) => {
   if (parsed.data.name !== undefined) updateValues.name = parsed.data.name
   if (parsed.data.academic_year_label !== undefined)
     updateValues.academic_year_label = parsed.data.academic_year_label
+  if (parsed.data.declaration_text !== undefined)
+    updateValues.declaration_text = parsed.data.declaration_text
   if (parsed.data.is_active !== undefined)
     updateValues.is_active = parsed.data.is_active ? 1 : 0
 

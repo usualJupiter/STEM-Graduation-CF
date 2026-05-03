@@ -51,7 +51,31 @@
       "Bash(git remote *)",
       "Bash(git *)",
       "Bash(git -C \"E:/Projects/STEM Graduation/STEM CF\" diff)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(bunx opennextjs-cloudflare *)",
+      "Bash(NEXT_PUBLIC_API_URL=https://api.stem-program.com bunx opennextjs-cloudflare build)",
+      "Bash(NEXT_PUBLIC_API_URL=https://api.stem-program.com NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA bunx opennextjs-cloudflare build)",
+      "Bash(npm view *)",
+      "Bash(awk '/middleware-manifest/ {for\\(i=1;i<=length\\($0\\);i++\\) {if\\(substr\\($0,i,20\\)~/middleware-manifest/\\) {print \"L\"NR\": \"substr\\($0,\\(i-80>0?i-80:1\\),200\\)\"\\\\n---\"; }}}' \"E:/Projects/STEM Graduation/STEM CF/apps/admin/.open-next/server-functions/default/apps/admin/handler.mjs\")",
+      "Bash(awk NR==2 {pos=index\\($0,\"Dynamic require\"\\); if\\(pos>0\\) print substr\\($0,pos-50,300\\)} *)",
+      "WebSearch",
+      "Bash(wait)",
+      "WebFetch(domain:opennext.js.org)",
+      "Bash(bun pm *)",
+      "Bash(bun info *)",
+      "Bash(grep -oE '>\\([A-Za-z][A-Za-z ]{3,30}\\)</')",
+      "Bash(grep -oE '>\\([A-Za-z][A-Za-z ]{3,30}|[؀-ۿ]+\\)</')",
+      "Bash(grep -oE \"messages:.{0,200}\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/.open-next/server-functions/default/apps/web/handler.mjs\")",
+      "Bash(grep -E 'NextIntl|messages.{0,30}locale')",
+      "Bash(grep -oE \"chunks/789|require.{0,3}\\\\\".\\\\\\\\/chunks/\" \"E:/Projects/STEM Graduation/STEM CF/apps/web/.open-next/server-functions/default/apps/web/handler.mjs\")",
+      "Bash(xargs -I '{}' sh -c 'c=$\\(grep -c \"برنامج\" \"{}\" 2>&1\\); if [ \"$c\" != \"0\" ]; then echo \"{}: $c\"; fi')",
+      "Bash(xargs -I '{}' sh -c 'c=$\\(grep -c \"STEM Program\" \"{}\" 2>&1\\); if [ \"$c\" != \"0\" ]; then echo \"{}: $c\"; fi')",
+      "Bash(awk '{n=NR; while \\(\\(p=index\\($0,\"STEM Program\"\\)\\)\\) {print \"L\"n\": ...\"substr\\($0,p-50,150\\)\"...\"; $0=substr\\($0,p+12\\)}}' \"E:/Projects/STEM Graduation/STEM CF/apps/web/.open-next/server-functions/default/apps/web/handler.mjs\")",
+      "Bash(awk '{n=NR; while \\(\\(p=index\\($0,\"برنامج ستيم\"\\)\\)\\) {print \"L\"n\": ...\"substr\\($0,p-50,150\\)\"...\"; $0=substr\\($0,p+12\\)}}' \"E:/Projects/STEM Graduation/STEM CF/apps/web/.next/server/chunks/789.js\")",
+      "Bash(grep -oE 'logo-web-[a-z]+\\\\.svg|>\\([A-Za-z][A-Za-z ]{3,30}|[؀-ۿ]+\\)</')",
+      "Bash(grep -oE '>\\([A-Za-z][A-Za-z ]{3,30}|[؀-ۿ][؀-ۿ ]{2,30}\\)</')",
+      "Bash(grep -oE 'logo-web-[a-z]+\\\\.svg|>\\([A-Za-z][A-Za-z ]{3,30}|[؀-ۿ][؀-ۿ ]{2,30}\\)</')",
+      "Bash(grep -oE 'logo-admin-[a-z]+\\\\.svg|>\\([A-Za-z][A-Za-z ]{3,30}|[؀-ۿ][؀-ۿ ]{2,30}\\)</')"
     ]
   }
 }

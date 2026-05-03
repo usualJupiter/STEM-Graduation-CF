@@ -2,7 +2,7 @@
 
 import { Globe, Menu } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useTransition } from "react"
+import { useState, useTransition } from "react"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -96,6 +96,8 @@ function LanguageSwitcher({ onMain = false }: { onMain?: boolean }) {
 
 export function Nav() {
   const t = useTranslations("Nav")
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const closeMobile = () => setMobileOpen(false)
 
   return (
     <nav className="relative z-50 flex w-full items-center justify-between bg-main px-6 py-6 text-main-foreground md:pl-12 md:pr-20">
@@ -157,7 +159,7 @@ export function Nav() {
 
       <div className="flex items-center gap-2 lg:hidden">
         <LanguageSwitcher onMain />
-        <Sheet>
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
@@ -172,7 +174,9 @@ export function Nav() {
             <SheetTitle className="sr-only">{t("menu")}</SheetTitle>
             <div className="flex flex-col gap-6 pt-8">
               <Button asChild className="bg-default-web text-main [a]:hover:bg-default-web/90">
-                <Link href="/apply">{t("apply")}</Link>
+                <Link href="/apply" onClick={closeMobile}>
+                  {t("apply")}
+                </Link>
               </Button>
               <div className="flex flex-col gap-2">
                 {NAV_KEYS.map((item) =>
@@ -185,6 +189,7 @@ export function Nav() {
                         <Link
                           key={child.key}
                           href={child.href}
+                          onClick={closeMobile}
                           className="rounded-md px-3 py-2 text-base font-semibold text-foreground hover:bg-accent"
                         >
                           {t(child.key)}
@@ -195,6 +200,7 @@ export function Nav() {
                     <Link
                       key={item.key}
                       href={item.href}
+                      onClick={closeMobile}
                       className="rounded-md px-3 py-2 text-base font-semibold text-foreground hover:bg-accent"
                     >
                       {t(item.key)}

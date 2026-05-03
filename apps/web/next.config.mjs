@@ -9,12 +9,12 @@ const devConnect = isDev ? " http://localhost:8787 ws://localhost:* http://local
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://cdn.stem-program.com",
   "font-src 'self' data:",
-  `connect-src 'self' https://challenges.cloudflare.com https://*.stem-program.com${devConnect}`,
-  "frame-src https://challenges.cloudflare.com https://www.google.com",
+  `connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://*.stem-program.com${devConnect}`,
+  "frame-src https://challenges.cloudflare.com https://www.google.com https://drive.google.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

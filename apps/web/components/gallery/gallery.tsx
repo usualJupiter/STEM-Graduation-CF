@@ -25,7 +25,7 @@ export default function Gallery({ images }: GalleryProps) {
   return (
     <section
       ref={container}
-      className="relative flex w-full flex-col items-center justify-center bg-background pb-[30vh] pt-[10vh]"
+      className="relative flex w-full flex-col items-center justify-center bg-background pb-[40vh] pt-[20vh]"
     >
       {images.map((src, i) => {
         const targetScale = Math.max(
@@ -66,7 +66,7 @@ function StickyCard({ i, src, progress, range, targetScale }: StickyCardProps) {
           scale,
           top: `calc(-5vh + ${stackOffset}px)`,
         }}
-        className="relative -top-1/4 flex aspect-[4/3] w-[92vw] max-w-[1200px] origin-top flex-col overflow-hidden rounded-3xl shadow-2xl"
+        className="relative -top-1/4 flex aspect-[4/3] w-[min(92vw,calc(80svh*4/3),1200px)] origin-top flex-col overflow-hidden rounded-3xl shadow-2xl"
       >
         <Image
           src={src}
