@@ -6,12 +6,13 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
 
 const isDev = process.env.NODE_ENV !== "production"
 const devConnect = isDev ? " http://localhost:8787 ws://localhost:* http://localhost:*" : ""
+const devImg = isDev ? " http://localhost:8787" : ""
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://cdn.stem-program.com",
+  `img-src 'self' data: blob: https://cdn.stem-program.com${devImg}`,
   "font-src 'self' data:",
   `connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com https://*.stem-program.com${devConnect}`,
   "frame-src https://challenges.cloudflare.com https://www.google.com https://drive.google.com",
@@ -47,6 +48,9 @@ const nextConfig = {
     root: monorepoRoot,
   },
   images: {
+    // Dev: skip the optimizer entirely so images load straight from local R2
+    // (the optimizer can't reach localhost reliably). Prod keeps optimization.
+    unoptimized: isDev,
     remotePatterns: [
       { protocol: "https", hostname: "cdn.stem-program.com" },
     ],

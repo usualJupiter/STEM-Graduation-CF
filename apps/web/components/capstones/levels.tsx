@@ -19,6 +19,8 @@ const LEVELS = [
     sectionClass: "bg-secondry-web",
     headingClass: "text-main-foreground",
     emptyClass: "text-main-foreground/70",
+    // Dark section: the HoverExpand rows use currentColor, so keep it light.
+    bodyClass: "text-main-foreground",
   },
   {
     level: 2,
@@ -26,6 +28,7 @@ const LEVELS = [
     sectionClass: "bg-web-third",
     headingClass: "text-primary",
     emptyClass: "text-primary/70",
+    bodyClass: "text-primary",
   },
   {
     level: 3,
@@ -33,6 +36,7 @@ const LEVELS = [
     sectionClass: "bg-white",
     headingClass: "text-primary",
     emptyClass: "text-primary/70",
+    bodyClass: "text-primary",
   },
 ] as const
 
@@ -46,7 +50,7 @@ export default function Levels({ items }: LevelsProps) {
 
   return (
     <div className="flex flex-col">
-      {LEVELS.map(({ level, key, sectionClass, headingClass, emptyClass }) => {
+      {LEVELS.map(({ level, key, sectionClass, headingClass, emptyClass, bodyClass }) => {
         const expandItems: HoverExpandItem[] = items
           .filter((c) => c.level === level)
           .map((c) => {
@@ -86,7 +90,7 @@ export default function Levels({ items }: LevelsProps) {
                 {t(`levels.${key}`)}
               </motion.h2>
               {expandItems.length > 0 ? (
-                <motion.div variants={fadeUpVariants}>
+                <motion.div variants={fadeUpVariants} className={bodyClass}>
                   <HoverExpand items={expandItems} />
                 </motion.div>
               ) : (

@@ -254,6 +254,7 @@ export default function CreateEvent({
                         onChange={field.onChange}
                         accept={ACCEPT_ATTR}
                         chooseLabel={t("chooseFile")}
+                        replaceLabel={t("replaceFile")}
                         removeLabel={t("removeFile")}
                         validate={validateFile}
                       />
@@ -355,6 +356,7 @@ function SingleFilePicker({
   onChange,
   accept,
   chooseLabel,
+  replaceLabel,
   removeLabel,
   validate,
 }: {
@@ -362,6 +364,7 @@ function SingleFilePicker({
   onChange: (file: File | undefined) => void
   accept: string
   chooseLabel: string
+  replaceLabel: string
   removeLabel: string
   validate?: (file: File) => string | null
 }) {
@@ -388,19 +391,6 @@ function SingleFilePicker({
           onChange(file)
         }}
       />
-      {!value && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setPickError(null)
-            inputRef.current?.click()
-          }}
-        >
-          {chooseLabel}
-        </Button>
-      )}
       {value && (
         <ul className="flex flex-col gap-1">
           <FileRow
@@ -414,6 +404,19 @@ function SingleFilePicker({
           />
         </ul>
       )}
+      {/* Always shown: picking a file sets a defined value (reliable re-render),
+          so this doubles as "replace" when a photo already exists. */}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          setPickError(null)
+          inputRef.current?.click()
+        }}
+      >
+        {value ? replaceLabel : chooseLabel}
+      </Button>
       {pickError && (
         <p className="text-xs text-destructive">{pickError}</p>
       )}

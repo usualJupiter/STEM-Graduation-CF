@@ -1,16 +1,14 @@
 /**
- * Admin: Issues presigned PUT URLs to R2 for client-side uploads.
- * Always image/webp, key shape `{prefix}/{uuid}.webp`. The client compresses
- * inputs to webp before requesting a URL, so this endpoint doesn't deal with
- * file bytes — only with naming and (for the gallery) capacity enforcement.
+ * Admin: Stores uploaded images in R2 via the bucket binding.
+ * The client compresses inputs to webp before sending; this endpoint validates
+ * size/prefix and writes the bytes, naming each object `{prefix}/{uuid}.webp`.
+ * Using the binding (instead of presigned S3 URLs) means dev writes to local R2
+ * and prod writes to prod R2 automatically — no cross-origin PUT to prod.
  */
-import { PutObjectCommand } from "@aws-sdk/client-s3"
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { Hono } from "hono"
 import { z } from "zod"
 
 import { requireAuth } from "../../lib/middleware"
-import { BUCKET_NAME, createS3Client } from "../../lib/r2"
 import type { AppEnv } from "../../types"
 
 const MAX_FILE_SIZE = 1024 * 1024
@@ -18,30 +16,36 @@ const MAX_BATCH = 5
 const GALLERY_TOTAL_LIMIT = 2 * 1024 * 1024 * 1024
 
 const PREFIXES = ["events", "capstones", "gallery"] as const
-
-const signSchema = z.object({
-  prefix: z.enum(PREFIXES),
-  files: z
-    .array(z.object({ size: z.number().int().positive().max(MAX_FILE_SIZE) }))
-    .min(1)
-    .max(MAX_BATCH),
-})
+const prefixSchema = z.enum(PREFIXES)
 
 const app = new Hono<AppEnv>()
 
 app.use("*", requireAuth)
 
-app.post("/sign", async (c) => {
-  const body = await c.req.json().catch(() => null)
-  const parsed = signSchema.safeParse(body)
-  if (!parsed.success) {
+app.post("/", async (c) => {
+  const form = await c.req.formData().catch(() => null)
+  if (!form) return c.json({ error: "Invalid payload" }, 400)
+
+  const prefixParsed = prefixSchema.safeParse(form.get("prefix"))
+  if (!prefixParsed.success) {
     return c.json(
-      { error: "Invalid payload", issues: parsed.error.issues },
+      { error: "Invalid payload", issues: prefixParsed.error.issues },
       400,
     )
   }
+  const prefix = prefixParsed.data
 
-  const { prefix, files } = parsed.data
+  const files = form
+    .getAll("files")
+    .filter((f): f is File => f instanceof File)
+  if (files.length === 0 || files.length > MAX_BATCH) {
+    return c.json({ error: "Invalid payload" }, 400)
+  }
+  for (const file of files) {
+    if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+      return c.json({ error: "Invalid payload" }, 400)
+    }
+  }
 
   // Gallery has a 2 GB total cap. Reject the batch up front if it would exceed
   // it; events/capstones uploads are unbounded (their own row counts cap them).
@@ -61,20 +65,13 @@ app.post("/sign", async (c) => {
     }
   }
 
-  const s3 = createS3Client(c.env)
   const items = await Promise.all(
-    files.map(async () => {
+    files.map(async (file) => {
       const key = `${prefix}/${crypto.randomUUID()}.webp`
-      const uploadUrl = await getSignedUrl(
-        s3,
-        new PutObjectCommand({
-          Bucket: BUCKET_NAME,
-          Key: key,
-          ContentType: "image/webp",
-        }),
-        { expiresIn: 600 },
-      )
-      return { uploadUrl, key }
+      await c.env.PUBLIC_MEDIA.put(key, await file.arrayBuffer(), {
+        httpMetadata: { contentType: "image/webp" },
+      })
+      return { key, size: file.size }
     }),
   )
 

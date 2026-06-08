@@ -8,12 +8,13 @@ const isDev = process.env.NODE_ENV !== "production"
 const devConnect = isDev
   ? " http://localhost:8787 ws://localhost:* http://localhost:*"
   : ""
+const devImg = isDev ? " http://localhost:8787" : ""
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://cdn.stem-program.com https://lh3.googleusercontent.com",
+  `img-src 'self' data: blob: https://cdn.stem-program.com https://lh3.googleusercontent.com${devImg}`,
   "font-src 'self' data:",
   `connect-src 'self' https://cloudflareinsights.com https://*.stem-program.com https://*.r2.cloudflarestorage.com${devConnect}`,
   "frame-src 'none'",
@@ -53,6 +54,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // Dev: skip the optimizer entirely so images load straight from local R2
+    // (the optimizer can't reach localhost reliably). Prod keeps optimization.
+    unoptimized: isDev,
     remotePatterns: [
       { protocol: "https", hostname: "cdn.stem-program.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },

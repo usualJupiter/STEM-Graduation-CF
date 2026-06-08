@@ -83,6 +83,21 @@ app.route("/api/admin/applications", adminApplications)
 app.get("/", (c) => c.text("STEM API"))
 app.get("/health", (c) => c.json({ status: "ok" }))
 
+// Serves public media straight from the R2 binding, but ONLY when CDN_BASE
+// points back at this worker (i.e. local dev). In prod CDN_BASE is the real CDN,
+// so this route 404s and is never used — prod behaviour is unchanged.
+app.get("/cdn/:key{.+}", async (c) => {
+  if (!c.env.CDN_BASE.startsWith(new URL(c.req.url).origin)) {
+    return c.json({ error: "Not found" }, 404)
+  }
+  const obj = await c.env.PUBLIC_MEDIA.get(c.req.param("key"))
+  if (!obj) return c.json({ error: "Not found" }, 404)
+  const headers = new Headers()
+  obj.writeHttpMetadata(headers)
+  headers.set("etag", obj.httpEtag)
+  return new Response(obj.body, { headers })
+})
+
 app.notFound((c) => c.json({ error: "Not found" }, 404))
 
 app.onError((err, c) => {

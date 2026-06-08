@@ -1,4 +1,4 @@
-import { fetchJson } from "@/lib/api"
+import { API_URL } from "@/lib/api"
 import { compressImage } from "@/lib/compress-image"
 
 export type UploadPrefix = "events" | "capstones" | "gallery"
@@ -18,8 +18,8 @@ export interface UploadResult {
   size: number
 }
 
-interface SignResponse {
-  data: { items: { uploadUrl: string; key: string }[] }
+interface UploadResponse {
+  data: { items: UploadResult[] }
 }
 
 export async function uploadImage(
@@ -43,27 +43,25 @@ export async function uploadImages(
 
   const blobs = await Promise.all(files.map((f) => compressImage(f, MAX_BYTES)))
 
-  const sign = await fetchJson<SignResponse>("/api/admin/uploads/sign", {
+  const form = new FormData()
+  form.append("prefix", prefix)
+  blobs.forEach((b, i) => form.append("files", b, `${i}.webp`))
+
+  // Multipart upload through the API — it writes to R2 via the bucket binding,
+  // so dev hits local R2 and prod hits prod R2. credentials: "include" sends
+  // the auth cookie; Content-Type is left unset so the browser adds the boundary.
+  const res = await fetch(`${API_URL}/api/admin/uploads`, {
     method: "POST",
-    body: JSON.stringify({
-      prefix,
-      files: blobs.map((b) => ({ size: b.size })),
-    }),
+    credentials: "include",
+    body: form,
   })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as
+      | { error?: string }
+      | null
+    throw new Error(body?.error ?? `Upload failed (${res.status})`)
+  }
 
-  await Promise.all(
-    sign.data.items.map(async (item, i) => {
-      const res = await fetch(item.uploadUrl, {
-        method: "PUT",
-        body: blobs[i]!,
-        headers: { "Content-Type": "image/webp" },
-      })
-      if (!res.ok) throw new Error(`Upload failed (${res.status})`)
-    }),
-  )
-
-  return sign.data.items.map((item, i) => ({
-    key: item.key,
-    size: blobs[i]!.size,
-  }))
+  const json = (await res.json()) as UploadResponse
+  return json.data.items
 }

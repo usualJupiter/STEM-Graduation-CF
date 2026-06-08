@@ -332,6 +332,7 @@ export default function EditEvent({ eventId, onOpenChange }: EditEventProps) {
                           onChange={field.onChange}
                           accept={ACCEPT_ATTR}
                           chooseLabel={t("chooseFile")}
+                          replaceLabel={t("replaceFile")}
                           removeLabel={t("removeFile")}
                           savedBadge={t("savedBadge")}
                           validate={validateFile}
@@ -445,6 +446,7 @@ function SingleFilePicker({
   onChange,
   accept,
   chooseLabel,
+  replaceLabel,
   removeLabel,
   savedBadge,
   validate,
@@ -453,6 +455,7 @@ function SingleFilePicker({
   onChange: (v: PhotoValue | undefined) => void
   accept: string
   chooseLabel: string
+  replaceLabel: string
   removeLabel: string
   savedBadge: string
   validate?: (file: File) => string | null
@@ -479,19 +482,6 @@ function SingleFilePicker({
           onChange({ kind: "new", file })
         }}
       />
-      {!value && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setPickError(null)
-            inputRef.current?.click()
-          }}
-        >
-          {chooseLabel}
-        </Button>
-      )}
       {value && (
         <ul className="flex flex-col gap-1">
           <PhotoRow
@@ -505,6 +495,19 @@ function SingleFilePicker({
           />
         </ul>
       )}
+      {/* Always shown: picking a file sets a defined value (reliable re-render),
+          so this doubles as "replace" when a photo already exists. */}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          setPickError(null)
+          inputRef.current?.click()
+        }}
+      >
+        {value ? replaceLabel : chooseLabel}
+      </Button>
       {pickError && (
         <p className="text-xs text-destructive">{pickError}</p>
       )}

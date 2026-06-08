@@ -29,8 +29,12 @@ export default function Resources({
   poster,
   browse,
 }: ResourcesProps) {
-  const downloads = [presentation, portfolio, poster].filter(
-    (l): l is { label: string; href: string } => l !== null,
+  const downloads = [
+    presentation && { kind: "presentation", ...presentation },
+    portfolio && { kind: "portfolio", ...portfolio },
+    poster && { kind: "poster", ...poster },
+  ].filter(
+    (l): l is { kind: string; label: string; href: string } => Boolean(l),
   )
 
   return (
@@ -60,7 +64,7 @@ export default function Resources({
         >
           {downloads.map((link) => (
             <Button
-              key={link.href}
+              key={link.kind}
               variant="transparent-outline"
               asChild
               className="h-12 w-full justify-center border-primary px-6 text-base font-bold text-primary hover:bg-primary/10 hover:text-primary [&_svg]:size-5"
